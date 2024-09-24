@@ -145,6 +145,7 @@ class KingMovesCalc implements PieceMovesCalculator {
 }
 
 class QueenMovesCalc implements PieceMovesCalculator {
+
     private final ChessBoard board;
     private final ChessPosition current_position;
     public QueenMovesCalc(ChessBoard board, ChessPosition current_position) {
@@ -171,6 +172,7 @@ class QueenMovesCalc implements PieceMovesCalculator {
 }
 
 class KnightMovesCalc implements PieceMovesCalculator {
+
     private final ChessBoard board;
     private final ChessPosition current_position;
     public KnightMovesCalc(ChessBoard board, ChessPosition current_position) {
@@ -310,6 +312,7 @@ class KnightMovesCalc implements PieceMovesCalculator {
 }
 
 class PawnMovesCalc implements PieceMovesCalculator {
+
     private final ChessBoard board;
     private final ChessPosition current_position;
     public PawnMovesCalc(ChessBoard board, ChessPosition current_position) {
@@ -332,10 +335,12 @@ class PawnMovesCalc implements PieceMovesCalculator {
         ChessPiece newPiece = board.getPiece(finalPosition);
         ChessPiece thisPiece = board.getPiece(current_position);
         return newPiece.getTeamColor() == thisPiece.getTeamColor();
+
     }
 }
 
 class BishopMovesCalc implements PieceMovesCalculator {
+
     private final ChessBoard board;
     private final ChessPosition current_position;
     public BishopMovesCalc(ChessBoard board, ChessPosition current_position) {
@@ -435,10 +440,12 @@ class BishopMovesCalc implements PieceMovesCalculator {
         ChessPiece newPiece = board.getPiece(finalPosition);
         ChessPiece thisPiece = board.getPiece(current_position);
         return newPiece.getTeamColor() == thisPiece.getTeamColor();
+
     }
 }
 
 class RookMovesCalc implements PieceMovesCalculator {
+
     private final ChessBoard board;
     private final ChessPosition current_position;
     public RookMovesCalc(ChessBoard board, ChessPosition current_position) {
@@ -459,5 +466,6 @@ class RookMovesCalc implements PieceMovesCalculator {
     @Override
     public boolean teamPiece(ChessPosition finalPosition) {
         return false;
+
     }
 }

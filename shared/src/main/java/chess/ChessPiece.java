@@ -57,6 +57,7 @@ public class ChessPiece {
         // return new ArrayList<>(); (collection of chess moves)
         // should send the board and position for sure
         // call specific piece moves function given this piece?
+
         switch (type) {
             case KING:
                 KingMovesCalc kingMoves = new KingMovesCalc(board, myPosition);
@@ -74,6 +75,7 @@ public class ChessPiece {
             case PAWN:
                 break;
         }
+
         throw new RuntimeException("Not implemented");
     }
 

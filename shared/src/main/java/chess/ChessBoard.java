@@ -11,7 +11,6 @@ import java.util.Objects;
  */
 public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
-
     public ChessBoard() {
         
     }
@@ -35,7 +34,6 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return squares[position.getRow()-1][position.getColumn()-1];
-        // code will not work if an empty square does not return as null
     }
 
     /**
