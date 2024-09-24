@@ -1,5 +1,9 @@
 package chess;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 /**
  * Represents a single square position on a chess board
  * <p>
@@ -31,5 +35,32 @@ public class ChessPosition {
      */
     public int getColumn() {
         return col;
+    }
+
+    @Override
+    public String toString() {
+        Map<Integer, String> alphaNum = new HashMap<>();
+        alphaNum.put(1, "a");
+        alphaNum.put(2, "b");
+        alphaNum.put(3, "c");
+        alphaNum.put(4, "d");
+        alphaNum.put(5, "e");
+        alphaNum.put(6, "f");
+        alphaNum.put(7, "g");
+        alphaNum.put(8, "h");
+        return "{" + alphaNum.get(row) + ", " + col + "}";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPosition that = (ChessPosition) o;
+        return row == that.row && col == that.col;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(row, col);
     }
 }
