@@ -21,17 +21,126 @@ class KingMovesCalc implements PieceMovesCalculator {
 
     @Override
     public Collection<ChessMove> pieceMoves() {
-        return List.of();
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
+
+        int rowIndex = current_position.getRow();
+        int colIndex = current_position.getColumn();
+        if (inBounds(rowIndex+1, colIndex)) {
+            ChessPosition finalPosition = new ChessPosition(rowIndex+1, colIndex);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
+        }
+
+        if (inBounds(rowIndex-1, colIndex)) {
+            ChessPosition finalPosition = new ChessPosition(rowIndex-1, colIndex);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
+        }
+
+        if (inBounds(rowIndex, colIndex+1)) {
+            ChessPosition finalPosition = new ChessPosition(rowIndex, colIndex+1);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
+        }
+
+        if (inBounds(rowIndex, colIndex-1)) {
+            ChessPosition finalPosition = new ChessPosition(rowIndex, colIndex-1);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
+        }
+
+        if (inBounds(rowIndex+1, colIndex+1)) {
+            ChessPosition finalPosition = new ChessPosition(rowIndex+1, colIndex+1);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
+        }
+
+        if (inBounds(rowIndex-1, colIndex-1)) {
+            ChessPosition finalPosition = new ChessPosition(rowIndex-1, colIndex-1);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
+        }
+
+        if (inBounds(rowIndex-1, colIndex+1)) {
+            ChessPosition finalPosition = new ChessPosition(rowIndex-1, colIndex+1);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
+        }
+
+        if (inBounds(rowIndex+1, colIndex-1)) {
+            ChessPosition finalPosition = new ChessPosition(rowIndex+1, colIndex-1);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
+        }
+        return validMoves;
     }
 
     @Override
     public boolean inBounds(int row, int column) {
-        return false;
+        return row > 0 && row < 9 && column > 0 && column < 9;
     }
 
     @Override
     public boolean teamPiece(ChessPosition finalPosition) {
-        return false;
+        ChessPiece newPiece = board.getPiece(finalPosition);
+        ChessPiece thisPiece = board.getPiece(current_position);
+        return newPiece.getTeamColor() == thisPiece.getTeamColor();
     }
 }
 
@@ -50,12 +159,14 @@ class QueenMovesCalc implements PieceMovesCalculator {
 
     @Override
     public boolean inBounds(int row, int column) {
-        return false;
+        return row > 0 && row < 9 && column > 0 && column < 9;
     }
 
     @Override
     public boolean teamPiece(ChessPosition finalPosition) {
-        return false;
+        ChessPiece newPiece = board.getPiece(finalPosition);
+        ChessPiece thisPiece = board.getPiece(current_position);
+        return newPiece.getTeamColor() == thisPiece.getTeamColor();
     }
 }
 
@@ -74,58 +185,113 @@ class KnightMovesCalc implements PieceMovesCalculator {
         if (inBounds(current_position.getRow()+2, current_position.getColumn()+1)) {
             ChessPosition finalPosition = new ChessPosition(current_position.getRow()+2,
                     current_position.getColumn()+1);
-            // optional if !teamPiece(finalPosition) statement possible
-            ChessMove validMove = new ChessMove(current_position, finalPosition, null);
-            validMoves.add(validMove);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
         }
 
         if (inBounds(current_position.getRow()+2, current_position.getColumn()-1)) {
             ChessPosition finalPosition = new ChessPosition(current_position.getRow()+2,
                     current_position.getColumn()-1);
-            ChessMove validMove = new ChessMove(current_position, finalPosition, null);
-            validMoves.add(validMove);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
         }
 
         if (inBounds(current_position.getRow()-2, current_position.getColumn()-1)) {
             ChessPosition finalPosition = new ChessPosition(current_position.getRow()-2,
                     current_position.getColumn()-1);
-            ChessMove validMove = new ChessMove(current_position, finalPosition, null);
-            validMoves.add(validMove);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
         }
 
         if (inBounds(current_position.getRow()-2, current_position.getColumn()+1)) {
             ChessPosition finalPosition = new ChessPosition(current_position.getRow()-2,
                     current_position.getColumn()+1);
-            ChessMove validMove = new ChessMove(current_position, finalPosition, null);
-            validMoves.add(validMove);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
         }
 
         if (inBounds(current_position.getRow()-1, current_position.getColumn()+2)) {
             ChessPosition finalPosition = new ChessPosition(current_position.getRow()-1,
                     current_position.getColumn()+2);
-            ChessMove validMove = new ChessMove(current_position, finalPosition, null);
-            validMoves.add(validMove);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
         }
 
         if (inBounds(current_position.getRow()-1, current_position.getColumn()-2)) {
             ChessPosition finalPosition = new ChessPosition(current_position.getRow()-1,
                     current_position.getColumn()-2);
-            ChessMove validMove = new ChessMove(current_position, finalPosition, null);
-            validMoves.add(validMove);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
         }
 
         if (inBounds(current_position.getRow()+1, current_position.getColumn()-2)) {
             ChessPosition finalPosition = new ChessPosition(current_position.getRow()+1,
                     current_position.getColumn()-2);
-            ChessMove validMove = new ChessMove(current_position, finalPosition, null);
-            validMoves.add(validMove);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
         }
 
         if (inBounds(current_position.getRow()+1, current_position.getColumn()+2)) {
             ChessPosition finalPosition = new ChessPosition(current_position.getRow()+1,
                     current_position.getColumn()+2);
-            ChessMove validMove = new ChessMove(current_position, finalPosition, null);
-            validMoves.add(validMove);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
         }
         return validMoves;
     }
@@ -137,7 +303,9 @@ class KnightMovesCalc implements PieceMovesCalculator {
 
     @Override
     public boolean teamPiece(ChessPosition finalPosition) {
-        return false;
+        ChessPiece newPiece = board.getPiece(finalPosition);
+        ChessPiece thisPiece = board.getPiece(current_position);
+        return newPiece.getTeamColor() == thisPiece.getTeamColor();
     }
 }
 
@@ -156,12 +324,14 @@ class PawnMovesCalc implements PieceMovesCalculator {
 
     @Override
     public boolean inBounds(int row, int column) {
-        return false;
+        return row > 0 && row < 9 && column > 0 && column < 9;
     }
 
     @Override
     public boolean teamPiece(ChessPosition finalPosition) {
-        return false;
+        ChessPiece newPiece = board.getPiece(finalPosition);
+        ChessPiece thisPiece = board.getPiece(current_position);
+        return newPiece.getTeamColor() == thisPiece.getTeamColor();
     }
 }
 

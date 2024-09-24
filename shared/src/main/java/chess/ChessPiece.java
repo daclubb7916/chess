@@ -59,14 +59,16 @@ public class ChessPiece {
         // call specific piece moves function given this piece?
         switch (type) {
             case KING:
-                break;
+                KingMovesCalc kingMoves = new KingMovesCalc(board, myPosition);
+                return kingMoves.pieceMoves();
             case QUEEN:
                 break;
             case BISHOP:
-                BishopMovesCalc moves = new BishopMovesCalc(board, myPosition);
-                return moves.pieceMoves();
+                BishopMovesCalc bishopMoves = new BishopMovesCalc(board, myPosition);
+                return bishopMoves.pieceMoves();
             case KNIGHT:
-                break;
+                KnightMovesCalc knightMoves = new KnightMovesCalc(board, myPosition);
+                return knightMoves.pieceMoves();
             case ROOK:
                 break;
             case PAWN:
