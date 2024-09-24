@@ -14,6 +14,22 @@ public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(pieceColor);
+        result = 31 * result + Objects.hashCode(type);
+        return result;
+    }
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
@@ -63,7 +79,8 @@ public class ChessPiece {
                 KingMovesCalc kingMoves = new KingMovesCalc(board, myPosition);
                 return kingMoves.pieceMoves();
             case QUEEN:
-                break;
+                QueenMovesCalc queenMoves = new QueenMovesCalc(board, myPosition);
+                return queenMoves.pieceMoves();
             case BISHOP:
                 BishopMovesCalc bishopMoves = new BishopMovesCalc(board, myPosition);
                 return bishopMoves.pieceMoves();
@@ -80,16 +97,4 @@ public class ChessPiece {
         throw new RuntimeException("Not implemented");
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChessPiece that = (ChessPiece) o;
-        return pieceColor == that.pieceColor && type == that.type;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(pieceColor, type);
-    }
 }

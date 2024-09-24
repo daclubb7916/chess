@@ -157,7 +157,148 @@ class QueenMovesCalc implements PieceMovesCalculator {
 
     @Override
     public Collection<ChessMove> pieceMoves() {
-        return List.of();
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
+
+        int rowIndex = current_position.getRow();
+        int colIndex = current_position.getColumn();
+        while (inBounds(rowIndex+1, colIndex)) {
+            rowIndex += 1;
+            ChessPosition finalPosition = new ChessPosition(rowIndex, colIndex);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+                break;
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
+        }
+
+        rowIndex = current_position.getRow();
+        colIndex = current_position.getColumn();
+        while (inBounds(rowIndex-1, colIndex)) {
+            rowIndex -= 1;
+            ChessPosition finalPosition = new ChessPosition(rowIndex, colIndex);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+                break;
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
+        }
+
+        rowIndex = current_position.getRow();
+        colIndex = current_position.getColumn();
+        while (inBounds(rowIndex, colIndex+1)) {
+            colIndex += 1;
+            ChessPosition finalPosition = new ChessPosition(rowIndex, colIndex);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+                break;
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
+        }
+
+        rowIndex = current_position.getRow();
+        colIndex = current_position.getColumn();
+        while (inBounds(rowIndex, colIndex-1)) {
+            colIndex -= 1;
+            ChessPosition finalPosition = new ChessPosition(rowIndex, colIndex);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+                break;
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
+        }
+
+        rowIndex = current_position.getRow();
+        colIndex = current_position.getColumn();
+        while (inBounds(rowIndex+1, colIndex+1)) {
+            rowIndex += 1;
+            colIndex += 1;
+            ChessPosition finalPosition = new ChessPosition(rowIndex, colIndex);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+                break;
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
+        }
+
+        rowIndex = current_position.getRow();
+        colIndex = current_position.getColumn();
+        while (inBounds(rowIndex-1, colIndex-1)) {
+            rowIndex -= 1;
+            colIndex -= 1;
+            ChessPosition finalPosition = new ChessPosition(rowIndex, colIndex);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+                break;
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
+        }
+
+        rowIndex = current_position.getRow();
+        colIndex = current_position.getColumn();
+        while (inBounds(rowIndex-1, colIndex+1)) {
+            rowIndex -= 1;
+            colIndex += 1;
+            ChessPosition finalPosition = new ChessPosition(rowIndex, colIndex);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+                break;
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
+        }
+
+        rowIndex = current_position.getRow();
+        colIndex = current_position.getColumn();
+        while (inBounds(rowIndex+1, colIndex-1)) {
+            rowIndex += 1;
+            colIndex -= 1;
+            ChessPosition finalPosition = new ChessPosition(rowIndex, colIndex);
+            if (board.getPiece(finalPosition) != null) {
+                if (!teamPiece(finalPosition)) {
+                    ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                    validMoves.add(validMove);
+                }
+                break;
+            } else {
+                ChessMove validMove = new ChessMove(current_position, finalPosition, null);
+                validMoves.add(validMove);
+            }
+        }
+        return validMoves;
     }
 
     @Override
