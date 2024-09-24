@@ -14,6 +14,23 @@ public class ChessMove {
     private final ChessPosition endPosition;
     private final ChessPiece.PieceType promotionPiece;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ChessMove chessMove = (ChessMove) o;
+        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(startPosition);
+        result = 31 * result + Objects.hashCode(endPosition);
+        result = 31 * result + Objects.hashCode(promotionPiece);
+        return result;
+    }
+
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
         this.startPosition = startPosition;
@@ -46,20 +63,31 @@ public class ChessMove {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChessMove chessMove = (ChessMove) o;
-        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(startPosition, endPosition, promotionPiece);
-    }
-
-    @Override
     public String toString() {
-        return startPosition.toString() + "->" + endPosition.toString();
+        String promo;
+        switch (promotionPiece) {
+            case KING:
+                promo = "King";
+                break;
+            case PAWN:
+                promo = "Pawn";
+                break;
+            case ROOK:
+                promo = "Rook";
+                break;
+            case QUEEN:
+                promo = "Queen";
+                break;
+            case BISHOP:
+                promo = "Bishop";
+                break;
+            case KNIGHT:
+                promo = "Knight";
+                break;
+            case null:
+                promo = "null";
+                break;
+        }
+        return startPosition.toString() + "->" + endPosition.toString() + promo;
     }
 }
