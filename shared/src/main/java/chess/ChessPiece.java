@@ -72,7 +72,8 @@ public class ChessPiece {
             case ROOK:
                 break;
             case PAWN:
-                break;
+                PawnMovesCalc pawnMoves = new PawnMovesCalc(board, myPosition);
+                return pawnMoves.pieceMoves();
         }
         throw new RuntimeException("Not implemented");
     }
