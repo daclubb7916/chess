@@ -88,7 +88,8 @@ public class ChessPiece {
                 KnightMovesCalc knightMoves = new KnightMovesCalc(board, myPosition);
                 return knightMoves.pieceMoves();
             case ROOK:
-                break;
+                RookMovesCalc rookMoves = new RookMovesCalc(board, myPosition);
+                return rookMoves.pieceMoves();
             case PAWN:
                 PawnMovesCalc pawnMoves = new PawnMovesCalc(board, myPosition);
                 return pawnMoves.pieceMoves();
