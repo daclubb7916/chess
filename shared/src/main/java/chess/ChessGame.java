@@ -91,6 +91,11 @@ public class ChessGame {
         }
         gameBoard.addPiece(move.getStartPosition(), null);
 
+        if (TeamTurn == TeamColor.WHITE) {
+            setTeamTurn(TeamColor.BLACK);
+        } else {
+            setTeamTurn(TeamColor.WHITE);
+        }
     }
 
     /**
