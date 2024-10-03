@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -9,7 +10,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard {
+public class ChessBoard implements Cloneable {
     private ChessPiece[][] squares = new ChessPiece[8][8];
 
     @Override
@@ -127,6 +128,58 @@ public class ChessBoard {
         }
     }
 
+    private boolean kingInMoves(ChessPosition newPosition) {
+        ChessPiece newChessPiece = getPiece(newPosition);
+        Collection<ChessMove> newPieceMoves = newChessPiece.pieceMoves(this, newPosition);
+        for (ChessMove aMove : newPieceMoves) {
+            ChessPiece endPiece = getPiece(aMove.getEndPosition());
+            if (endPiece == null) {
+                continue;
+            }
+            if (getPiece(aMove.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING) { // getPiece returns a null?
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isInCheck(ChessGame.TeamColor teamColor) {
+
+        for (int rowIndex = 1; rowIndex < 9; rowIndex++) {
+            for (int colIndex = 1; colIndex < 9; colIndex++) {
+
+                ChessPosition newPosition = new ChessPosition(rowIndex, colIndex);
+                if (getPiece(newPosition) == null) {
+                    continue;
+                }
+                if (getPiece(newPosition).getTeamColor() == teamColor) {
+                    continue;
+                }
+                if (kingInMoves(newPosition)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public ChessBoard clone() {
+        try {
+            ChessBoard clone = (ChessBoard) super.clone();
+
+            ChessPiece[][] clonedSquares = new ChessPiece[8][8];
+            for (int i = 0; i < 8; i++) {
+                //this might work lol
+                System.arraycopy(squares[i], 0, clonedSquares[i], 0, 8);
+            }
+
+            clone.squares = clonedSquares;
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }
 
 
