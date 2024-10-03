@@ -74,28 +74,32 @@ public class ChessPiece {
         // should send the board and position for sure
         // call specific piece moves function given this piece?
 
-        switch (type) {
-            case KING:
+        return switch (type) {
+            case KING -> {
                 KingMovesCalc kingMoves = new KingMovesCalc(board, myPosition);
-                return kingMoves.pieceMoves();
-            case QUEEN:
+                yield kingMoves.pieceMoves();
+            }
+            case QUEEN -> {
                 QueenMovesCalc queenMoves = new QueenMovesCalc(board, myPosition);
-                return queenMoves.pieceMoves();
-            case BISHOP:
+                yield queenMoves.pieceMoves();
+            }
+            case BISHOP -> {
                 BishopMovesCalc bishopMoves = new BishopMovesCalc(board, myPosition);
-                return bishopMoves.pieceMoves();
-            case KNIGHT:
+                yield bishopMoves.pieceMoves();
+            }
+            case KNIGHT -> {
                 KnightMovesCalc knightMoves = new KnightMovesCalc(board, myPosition);
-                return knightMoves.pieceMoves();
-            case ROOK:
+                yield knightMoves.pieceMoves();
+            }
+            case ROOK -> {
                 RookMovesCalc rookMoves = new RookMovesCalc(board, myPosition);
-                return rookMoves.pieceMoves();
-            case PAWN:
+                yield rookMoves.pieceMoves();
+            }
+            case PAWN -> {
                 PawnMovesCalc pawnMoves = new PawnMovesCalc(board, myPosition);
-                return pawnMoves.pieceMoves();
-        }
-
-        throw new RuntimeException("Not implemented");
+                yield pawnMoves.pieceMoves();
+            }
+        };
     }
 
 }
