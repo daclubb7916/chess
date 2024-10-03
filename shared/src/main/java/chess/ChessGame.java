@@ -14,6 +14,8 @@ public class ChessGame {
 
     public ChessGame() {
         this.TeamTurn = TeamColor.WHITE;
+        this.gameBoard = new ChessBoard();
+        gameBoard.resetBoard();
     }
 
     /**
@@ -58,7 +60,37 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+
+        if (gameBoard.getPiece(move.getStartPosition()) == null) {
+            throw new InvalidMoveException("No piece here");
+        }
+
+        ChessPiece pieceToMove = gameBoard.getPiece(move.getStartPosition());
+        if (pieceToMove.getTeamColor() != TeamTurn) {
+            throw new InvalidMoveException("Not this team's turn");
+        }
+
+        Collection<ChessMove> pieceMoves = pieceToMove.pieceMoves(gameBoard, move.getStartPosition());
+        boolean isInPieceMoves = false;
+        for (ChessMove validMove : pieceMoves) {
+            if (validMove.equals(move)) {
+                isInPieceMoves = true;
+                break;
+            }
+        }
+
+        if (!isInPieceMoves) {
+            throw new InvalidMoveException("Not a valid move");
+        }
+
+        if (move.getPromotionPiece() != null) {
+            ChessPiece promotedPiece = new ChessPiece(pieceToMove.getTeamColor(), move.getPromotionPiece());
+            gameBoard.addPiece(move.getEndPosition(), promotedPiece);
+        } else {
+            gameBoard.addPiece(move.getEndPosition(), pieceToMove);
+        }
+        gameBoard.addPiece(move.getStartPosition(), null);
+
     }
 
     /**
