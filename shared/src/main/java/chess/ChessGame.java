@@ -51,6 +51,7 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         throw new RuntimeException("Not implemented");
+        // move can't result in a check
     }
 
     /**
@@ -83,17 +84,8 @@ public class ChessGame {
             throw new InvalidMoveException("Not a valid move");
         }
 
-        //clone whole Board
-        ChessBoard clonedBoard = gameBoard.clone();
-        if (move.getPromotionPiece() != null) {
-            ChessPiece promotedPiece = new ChessPiece(pieceToMove.getTeamColor(), move.getPromotionPiece());
-            clonedBoard.addPiece(move.getEndPosition(), promotedPiece);
-        } else {
-            clonedBoard.addPiece(move.getEndPosition(), pieceToMove);
-        }
-        clonedBoard.addPiece(move.getStartPosition(), null);
-        if (clonedBoard.isInCheck(TeamTurn)) {
-            throw new InvalidMoveException("this move would place your King in check");
+        if (wouldResultInCheck(move)) {
+            throw new InvalidMoveException("This move would place your King in check");
         }
 
         if (move.getPromotionPiece() != null) {
@@ -121,6 +113,20 @@ public class ChessGame {
         return gameBoard.isInCheck(teamColor);
     }
 
+    private boolean wouldResultInCheck(ChessMove testMove) {
+        ChessBoard clonedBoard = gameBoard.clone();
+        ChessPiece pieceToMove = clonedBoard.getPiece(testMove.getStartPosition());
+        if (testMove.getPromotionPiece() != null) {
+            ChessPiece promotedPiece = new ChessPiece(pieceToMove.getTeamColor(), testMove.getPromotionPiece());
+            clonedBoard.addPiece(testMove.getEndPosition(), promotedPiece);
+        } else {
+            clonedBoard.addPiece(testMove.getEndPosition(), pieceToMove);
+        }
+        clonedBoard.addPiece(testMove.getStartPosition(), null);
+
+        return clonedBoard.isInCheck(TeamTurn);
+    }
+
     /**
      * Determines if the given team is in checkmate
      *
@@ -128,8 +134,11 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        // if is in check and any move by team won't change that
-        return false;
+        if (!gameBoard.isInCheck(teamColor)) {
+            return false;
+        }
+        // every move you could make will result in check
+        return true;
     }
 
     /**
