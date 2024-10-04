@@ -88,6 +88,6 @@ public class ChessMove {
                 promo = "null";
                 break;
         }
-        return startPosition.toString() + "->" + endPosition.toString() + promo;
+        return startPosition.toString() + "->" + endPosition.toString(); //optional: + promo
     }
 }

@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -50,8 +51,19 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
-        // move can't result in a check
+        if (gameBoard.getPiece(startPosition) == null) {
+            return null;
+        }
+        ChessPiece pieceToMove = gameBoard.getPiece(startPosition);
+        TeamTurn = pieceToMove.getTeamColor();
+        Collection<ChessMove> totalMoves = pieceToMove.pieceMoves(gameBoard, startPosition);
+        Collection<ChessMove> finalMoves = new ArrayList<>();
+        for (ChessMove move : totalMoves) {
+            if (!wouldResultInCheck(move)) {
+                finalMoves.add(move);
+            }
+        }
+        return finalMoves;
     }
 
     /**
@@ -138,6 +150,19 @@ public class ChessGame {
             return false;
         }
         // every move you could make will result in check
+        for (int rowIndex = 1; rowIndex < 9; rowIndex++) {
+            for (int colIndex = 1; colIndex < 9; colIndex++) {
+
+                ChessPosition newPosition = new ChessPosition(rowIndex, colIndex);
+                if (gameBoard.getPiece(newPosition) == null) {
+                    continue;
+                }
+                if (gameBoard.getPiece(newPosition).getTeamColor() != teamColor) {
+                    continue;
+                }
+                // check the pieces moves
+            }
+        }
         return true;
     }
 
