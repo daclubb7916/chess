@@ -157,10 +157,15 @@ public class ChessGame {
                 if (gameBoard.getPiece(newPosition) == null) {
                     continue;
                 }
+
                 if (gameBoard.getPiece(newPosition).getTeamColor() != teamColor) {
                     continue;
                 }
-                // check the pieces moves
+
+                if (!validMoves(newPosition).isEmpty()) {
+                    return false;
+                }
+
             }
         }
         return true;
@@ -174,7 +179,29 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (gameBoard.isInCheck(teamColor)) {
+            return false;
+        }
+        // every move you could make will result in check
+        for (int rowIndex = 1; rowIndex < 9; rowIndex++) {
+            for (int colIndex = 1; colIndex < 9; colIndex++) {
+
+                ChessPosition newPosition = new ChessPosition(rowIndex, colIndex);
+                if (gameBoard.getPiece(newPosition) == null) {
+                    continue;
+                }
+
+                if (gameBoard.getPiece(newPosition).getTeamColor() != teamColor) {
+                    continue;
+                }
+
+                if (!validMoves(newPosition).isEmpty()) {
+                    return false;
+                }
+
+            }
+        }
+        return true;
     }
 
     /**
