@@ -4,13 +4,13 @@ import request.*;
 import result.*;
 
 public class GameService {
-    public static void listGames(listGamesRequest request) {
+    public void listGames(listGamesRequest request) {
 
     }
-    public static void createGame(createGameRequest request) {
+    public void createGame(createGameRequest request) {
 
     }
-    public static void joinGame(joinGameRequest request) {
+    public void joinGame(joinGameRequest request) {
 
     }
 }

@@ -1,16 +1,27 @@
 package service;
 
+import dataaccess.*;
 import request.*;
 import result.*;
+import model.*;
 
 public class UserService {
-    public static void register(registerRequest request) {
+    private final UserDAO userDAO;
+    private final AuthDAO authDAO;
+
+    public UserService(UserDAO userDAO, AuthDAO authDAO) {
+        this.userDAO = userDAO;
+        this.authDAO = authDAO;
+    }
+
+    public void register(registerRequest request) {
 
     }
-    public static void login(loginRequest request) {
+    public void login(loginRequest request) {
 
     }
-    public static void logout(logoutRequest request) {
+    public void logout(logoutRequest request) {
 
     }
+
 }

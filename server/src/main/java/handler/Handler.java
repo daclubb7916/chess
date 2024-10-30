@@ -1,25 +1,25 @@
 package handler;
 
 public class Handler {
-    public static void clearHandler() {
+    public void clearHandler() {
 
     }
-    public static void registerHandler() {
+    public void registerHandler() {
 
     }
-    public static void loginHandler() {
+    public void loginHandler() {
 
     }
-    public static void logoutHandler() {
+    public void logoutHandler() {
 
     }
-    public static void listGamesHandler() {
+    public void listGamesHandler() {
 
     }
-    public static void createGameHandler() {
+    public void createGameHandler() {
 
     }
-    public static void joinGameHandler() {
+    public void joinGameHandler() {
 
     }
 }
