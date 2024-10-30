@@ -1,4 +1,4 @@
 package result;
 
-public class loginResult {
+public record loginResult() {
 }

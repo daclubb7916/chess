@@ -1,4 +1,4 @@
 package result;
 
-public class registerResult {
+public record registerResult() {
 }

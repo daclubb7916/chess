@@ -1,5 +1,5 @@
 package request;
 
-public class createGameRequest
+public record createGameRequest()
 {
 }

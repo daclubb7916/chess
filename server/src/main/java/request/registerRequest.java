@@ -1,4 +1,4 @@
 package request;
 
-public class registerRequest {
+public record registerRequest() {
 }

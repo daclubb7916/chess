@@ -1,4 +1,4 @@
 package result;
 
-public class clearResult {
+public record clearResult() {
 }
