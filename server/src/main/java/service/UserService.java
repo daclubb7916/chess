@@ -17,9 +17,17 @@ public class UserService {
     public void register(registerRequest request) {
 
     }
-    public void login(loginRequest request) {
 
+    public Record login(loginRequest request) {
+        try {
+            UserData userData = userDAO.getUser(request.username());
+            String authToken = authDAO.createAuth(userData.username());
+            return new loginResult(userData.username(), authToken);
+        } catch (DataAccessException ex) {
+            return new errorResult("Error: unauthorized");
+        }
     }
+
     public void logout(logoutRequest request) {
 
     }

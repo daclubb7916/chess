@@ -1,4 +1,4 @@
 package result;
 
-public record errorResult() {
+public record errorResult(String message) {
 }
