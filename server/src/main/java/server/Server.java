@@ -26,7 +26,7 @@ public class Server {
     }
 
     private Object login(Request req, Response res) {
-
+        handler.loginHandler(req.body());
     }
 
     public void stop() {

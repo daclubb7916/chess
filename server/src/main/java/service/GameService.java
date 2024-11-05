@@ -1,16 +1,15 @@
 package service;
 
 import request.*;
-import result.*;
 
 public class GameService {
-    public void listGames(listGamesRequest request) {
+    public void listGames(ListGamesRequest request) {
 
     }
-    public void createGame(createGameRequest request) {
+    public void createGame(CreateGameRequest request) {
 
     }
-    public void joinGame(joinGameRequest request) {
+    public void joinGame(JoinGameRequest request) {
 
     }
     public void clear() {

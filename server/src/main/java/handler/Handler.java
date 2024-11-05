@@ -1,15 +1,23 @@
 package handler;
 
+import com.google.gson.Gson;
+
 public class Handler {
+    private Gson serializer;
+
+    public Handler() {
+        this.serializer = new Gson();
+    }
+
     public void clearHandler() {
 
     }
     public void registerHandler() {
 
     }
-    public void loginHandler() {
-        // Receive message convert from JSON ?
-        // Receive Record object convert from object to JSON ?
+    public void loginHandler(String body) {
+
+
     }
     public void logoutHandler() {
 

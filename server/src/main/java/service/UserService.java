@@ -14,22 +14,22 @@ public class UserService {
         this.authDAO = authDAO;
     }
 
-    public void register(registerRequest request) {
+    public void register(RegisterRequest request) {
 
     }
 
-    public Record login(loginRequest request) {
+    public Record login(LoginRequest request) {
         try {
             UserData userData = userDAO.getUser(request.username());
             userDAO.validatePassword(userData, request.password());
             String authToken = authDAO.createAuth(userData.username());
-            return new loginResult(userData.username(), authToken);
+            return new LoginResult(userData.username(), authToken);
         } catch (DataAccessException ex) {
-            return new errorResult("Error: unauthorized");
+            return new Result("Error: unauthorized");
         }
     }
 
-    public void logout(logoutRequest request) {
+    public void logout(LogoutRequest request) {
 
     }
 
