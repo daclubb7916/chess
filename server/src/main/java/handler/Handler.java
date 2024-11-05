@@ -8,7 +8,8 @@ public class Handler {
 
     }
     public void loginHandler() {
-
+        // Receive message convert from JSON ?
+        // Receive Record object convert from object to JSON ?
     }
     public void logoutHandler() {
 

@@ -13,4 +13,7 @@ public class GameService {
     public void joinGame(joinGameRequest request) {
 
     }
+    public void clear() {
+
+    }
 }

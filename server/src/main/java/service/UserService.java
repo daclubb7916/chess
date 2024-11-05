@@ -21,6 +21,7 @@ public class UserService {
     public Record login(loginRequest request) {
         try {
             UserData userData = userDAO.getUser(request.username());
+            userDAO.validatePassword(userData, request.password());
             String authToken = authDAO.createAuth(userData.username());
             return new loginResult(userData.username(), authToken);
         } catch (DataAccessException ex) {

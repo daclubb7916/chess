@@ -3,21 +3,22 @@ package dataaccess;
 import model.UserData;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class MemoryUserDAO implements UserDAO {
-    private HashMap<String, UserData> users = new HashMap<>();
+    private final HashMap<String, UserData> users = new HashMap<>();
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
         if (users.containsKey(username)) {
             return users.get(username);
         }
-        throw new DataAccessException("user is not in DataBase");
+        throw new DataAccessException("User is not in DataBase");
     }
 
     @Override
     public void createUser(UserData user) {
-
+        users.put(user.username(), user);
     }
 
     @Override
@@ -29,4 +30,13 @@ public class MemoryUserDAO implements UserDAO {
     public void clear() {
 
     }
+
+    @Override
+    public void validatePassword(UserData user, String password) throws DataAccessException {
+        if (!Objects.equals(password, user.password())) {
+            throw new DataAccessException("Password does not match");
+        }
+    }
+
+
 }

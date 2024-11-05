@@ -7,4 +7,5 @@ public interface UserDAO {
     public void createUser(UserData user);
     public void deleteUser(UserData user);
     public void clear();
+    public void validatePassword(UserData user, String password) throws DataAccessException;
 }
