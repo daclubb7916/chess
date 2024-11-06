@@ -4,39 +4,22 @@ import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import exception.ResponseException;
 import request.*;
 import result.*;
 import service.UserService;
+import spark.Request;
+import spark.Response;
+import spark.Route;
 
-public class Handler {
-    private Gson serializer;
-    private UserService userService;
+public class Handler implements Route {
 
-    public Handler(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) {
-        this.serializer = new Gson();
-        this.userService = new UserService(userDAO, authDAO);
-    }
-
-    public void clearHandler() {
+    public Handler() {
 
     }
-    public void registerHandler() {
 
-    }
-    public void loginHandler(String body) {
-        LoginRequest request = serializer.fromJson(body, LoginRequest.class);
-        Result result = userService.login(request);
-    }
-    public void logoutHandler() {
-
-    }
-    public void listGamesHandler() {
-
-    }
-    public void createGameHandler() {
-
-    }
-    public void joinGameHandler() {
-
+    @Override
+    public Object handle(Request request, Response response) throws ResponseException {
+        return null;
     }
 }

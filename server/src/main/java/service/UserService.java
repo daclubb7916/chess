@@ -18,14 +18,14 @@ public class UserService {
 
     }
 
-    public Result login(LoginRequest request) {
+    public LoginResult login(LoginRequest request) throws Exception {
         try {
             UserData userData = userDAO.getUser(request.username());
             userDAO.validatePassword(userData, request.password());
             String authToken = authDAO.createAuth(userData.username());
             return new LoginResult(userData.username(), authToken);
         } catch (DataAccessException ex) {
-            return new Result("Error: unauthorized");
+            throw new Exception("Error: unauthorized");
         }
     }
 
