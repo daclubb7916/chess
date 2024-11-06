@@ -2,12 +2,19 @@ package server;
 
 import handler.Handler;
 import spark.*;
+import dataaccess.*;
 
 public class Server {
+    private UserDAO userDAO;
+    private AuthDAO authDAO;
+    private GameDAO gameDAO;
     private Handler handler;
 
     public Server() {
-        this.handler = new Handler();
+        this.userDAO = new MemoryUserDAO();
+        this.authDAO = new MemoryAuthDAO();
+        this.gameDAO = new MemoryGameDAO();
+        this.handler = new Handler(userDAO, authDAO, gameDAO);
     }
 
     public int run(int desiredPort) {

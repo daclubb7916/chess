@@ -18,7 +18,7 @@ public class UserService {
 
     }
 
-    public Record login(LoginRequest request) {
+    public Result login(LoginRequest request) {
         try {
             UserData userData = userDAO.getUser(request.username());
             userDAO.validatePassword(userData, request.password());
