@@ -5,14 +5,15 @@ import exception.ResponseException;
 import request.RegisterRequest;
 import result.RegisterResult;
 import service.UserService;
+import dataaccess.*;
 import spark.Request;
 import spark.Response;
 
 public class RegisterHandler extends Handler {
     private final UserService userService;
 
-    public RegisterHandler(UserService userService) {
-        this.userService = userService;
+    public RegisterHandler(UserDAO userDAO, AuthDAO authDAO) {
+        this.userService = new UserService(userDAO, authDAO);
     }
 
     @Override

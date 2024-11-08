@@ -12,7 +12,4 @@ public class GameService {
     public void joinGame(JoinGameRequest request) {
 
     }
-    public void clear() {
-
-    }
 }

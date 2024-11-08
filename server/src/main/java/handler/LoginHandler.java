@@ -1,6 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
+import dataaccess.*;
 import exception.ResponseException;
 import request.LoginRequest;
 import result.LoginResult;
@@ -11,8 +12,8 @@ import spark.Response;
 public class LoginHandler extends Handler {
     private final UserService userService;
 
-    public LoginHandler(UserService userService) {
-        this.userService = userService;
+    public LoginHandler(UserDAO userDAO, AuthDAO authDAO) {
+        this.userService = new UserService(userDAO, authDAO);
     }
 
     @Override

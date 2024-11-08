@@ -3,20 +3,23 @@ package server;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import handler.*;
-import service.*;
 import spark.*;
 import dataaccess.*;
 
 import java.util.Map;
 
 public class Server {
-    private final UserService userService;
+    private final RegisterHandler registerHandler;
+    private final LoginHandler loginHandler;
+    private final LogoutHandler logoutHandler;
 
     public Server() {
         UserDAO userDAO = new MemoryUserDAO();
         AuthDAO authDAO = new MemoryAuthDAO();
         GameDAO gameDAO = new MemoryGameDAO();
-        this.userService = new UserService(userDAO, authDAO);
+        this.registerHandler = new RegisterHandler(userDAO, authDAO);
+        this.loginHandler = new LoginHandler(userDAO, authDAO);
+        this.logoutHandler = new LogoutHandler(userDAO, authDAO);
     }
 
     public int run(int desiredPort) {
@@ -24,8 +27,9 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        Spark.post("/user", (req, res) -> (new RegisterHandler(userService).handle(req, res)));
-        Spark.post("/session", (req, res) -> (new LoginHandler(userService)).handle(req, res));
+        Spark.post("/user", registerHandler);
+        Spark.post("/session", loginHandler);
+        Spark.delete("/session", logoutHandler);
         Spark.exception(ResponseException.class, this::exceptionHandler);
 
         Spark.awaitInitialization();

@@ -38,8 +38,13 @@ public class UserService {
         }
     }
 
-    public void logout(LogoutRequest request) {
-
+    public void logout(LogoutRequest request) throws ResponseException {
+        try {
+            AuthData authData = authDAO.getAuth(request.authToken());
+            authDAO.deleteAuth(authData.authToken());
+        } catch (DataAccessException ex) {
+            throw new ResponseException(401, "Error: unauthorized");
+        }
     }
 
 }
