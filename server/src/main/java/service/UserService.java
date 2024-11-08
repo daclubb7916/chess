@@ -15,8 +15,16 @@ public class UserService {
         this.authDAO = authDAO;
     }
 
-    public void register(RegisterRequest request) {
-
+    public RegisterResult register(RegisterRequest request) throws ResponseException {
+        try {
+            UserData userData = userDAO.getUser(request.username());
+            throw new ResponseException(403, "Error: already taken");
+        } catch (DataAccessException ex) {
+            UserData userData = new UserData(request.username(), request.password(), request.email());
+            userDAO.createUser(userData);
+            String authToken = authDAO.createAuth(userData.username());
+            return new RegisterResult(userData.username(), authToken);
+        }
     }
 
     public LoginResult login(LoginRequest request) throws ResponseException {

@@ -21,7 +21,7 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        // Register your endpoints and handle exceptions here.
+        Spark.post("/user", (req, res) -> (new RegisterHandler(userService).handle(req, res)));
         Spark.post("/session", (req, res) -> (new LoginHandler(userService)).handle(req, res));
         Spark.exception(ResponseException.class, this::exceptionHandler);
 
