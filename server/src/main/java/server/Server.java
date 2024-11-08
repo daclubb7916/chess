@@ -1,21 +1,19 @@
 package server;
 
 import exception.ResponseException;
-import handler.Handler;
+import handler.*;
+import service.UserService;
 import spark.*;
 import dataaccess.*;
 
 public class Server {
-    private UserDAO userDAO;
-    private AuthDAO authDAO;
-    private GameDAO gameDAO;
-    // private Handler handler;
+    private final UserService userService;
 
     public Server() {
-        this.userDAO = new MemoryUserDAO();
-        this.authDAO = new MemoryAuthDAO();
-        this.gameDAO = new MemoryGameDAO();
-        // this.handler = new Handler(userDAO, authDAO, gameDAO);
+        UserDAO userDAO = new MemoryUserDAO();
+        AuthDAO authDAO = new MemoryAuthDAO();
+        GameDAO gameDAO = new MemoryGameDAO();
+        this.userService = new UserService(userDAO, authDAO);
     }
 
     public int run(int desiredPort) {
@@ -24,10 +22,8 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-
-        //This line initializes the server and can be removed once you have a functioning endpoint 
-        // Spark.post("/session", this::login);
-        // initialize the DAO's
+        Spark.post("/session", (req, res) -> (new LoginHandler(userService)).handle(req, res));
+        Spark.exception(ResponseException.class, this::exceptionHandler);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -36,5 +32,9 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
+    }
+
+    private void exceptionHandler(ResponseException ex, Request req, Response res) {
+        res.status(ex.StatusCode());
     }
 }

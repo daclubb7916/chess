@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.*;
+import exception.ResponseException;
 import request.*;
 import result.*;
 import model.*;
@@ -18,14 +19,14 @@ public class UserService {
 
     }
 
-    public LoginResult login(LoginRequest request) throws Exception {
+    public LoginResult login(LoginRequest request) throws ResponseException {
         try {
             UserData userData = userDAO.getUser(request.username());
             userDAO.validatePassword(userData, request.password());
             String authToken = authDAO.createAuth(userData.username());
             return new LoginResult(userData.username(), authToken);
         } catch (DataAccessException ex) {
-            throw new Exception("Error: unauthorized");
+            throw new ResponseException(401, "Error: unauthorized");
         }
     }
 
