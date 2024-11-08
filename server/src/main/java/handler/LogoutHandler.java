@@ -18,8 +18,8 @@ public class LogoutHandler extends Handler {
 
     @Override
     public Object handle(Request req, Response res) throws ResponseException {
-        LogoutRequest request = new Gson().fromJson(req.headers("authToken"), LogoutRequest.class);
-        userService.logout(request);
-        return new LogoutResult();
+        LogoutRequest request = new LogoutRequest(req.headers("authorization"));
+        LogoutResult result = userService.logout(request);
+        return new Gson().toJson(result);
     }
 }
