@@ -1,10 +1,13 @@
 package server;
 
+import com.google.gson.Gson;
 import exception.ResponseException;
 import handler.*;
 import service.*;
 import spark.*;
 import dataaccess.*;
+
+import java.util.Map;
 
 public class Server {
     private final UserService userService;
@@ -35,6 +38,8 @@ public class Server {
     }
 
     private void exceptionHandler(ResponseException ex, Request req, Response res) {
+        var body = new Gson().toJson(Map.of("message", ex.getMessage()));
         res.status(ex.StatusCode());
+        res.body(body);
     }
 }
