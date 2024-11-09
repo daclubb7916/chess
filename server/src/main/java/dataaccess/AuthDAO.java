@@ -2,8 +2,8 @@ package dataaccess;
 import model.*;
 
 public interface AuthDAO {
-    public String createAuth(String username);
-    public AuthData getAuth(String authToken) throws DataAccessException;
-    public void deleteAuth(String authToken);
-    public void clear();
+    String createAuth(String username);
+    AuthData getAuth(String authToken) throws DataAccessException;
+    void deleteAuth(String authToken);
+    void clear();
 }
