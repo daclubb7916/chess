@@ -24,8 +24,7 @@ public class TestLogin {
             Assertions.assertEquals(request.username(), result.username(),
                     "Usernames of request and result are not equal");
         } catch (ResponseException ex) {
-            System.out.print("Threw Response Exception: ");
-            System.out.println(ex.getMessage());
+            Assertions.fail(ex.getMessage());
         }
     }
 

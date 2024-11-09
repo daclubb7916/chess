@@ -12,6 +12,7 @@ public class Server {
     private final RegisterHandler registerHandler;
     private final LoginHandler loginHandler;
     private final LogoutHandler logoutHandler;
+    private final CreateGameHandler createGameHandler;
 
     public Server() {
         UserDAO userDAO = new MemoryUserDAO();
@@ -20,6 +21,7 @@ public class Server {
         this.registerHandler = new RegisterHandler(userDAO, authDAO);
         this.loginHandler = new LoginHandler(userDAO, authDAO);
         this.logoutHandler = new LogoutHandler(userDAO, authDAO);
+        this.createGameHandler = new CreateGameHandler(userDAO, authDAO, gameDAO);
     }
 
     public int run(int desiredPort) {
@@ -30,6 +32,7 @@ public class Server {
         Spark.post("/user", registerHandler);
         Spark.post("/session", loginHandler);
         Spark.delete("/session", logoutHandler);
+        Spark.post("/game", createGameHandler);
         Spark.exception(ResponseException.class, this::exceptionHandler);
 
         Spark.awaitInitialization();

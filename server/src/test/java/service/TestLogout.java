@@ -23,8 +23,7 @@ public class TestLogout {
             Assertions.assertEquals("AuthToken does not exist", exception.getMessage());
             Assertions.assertInstanceOf(LogoutResult.class, result);
         } catch (ResponseException ex) {
-            System.out.print("Threw ResponseException: ");
-            System.out.println(ex.getMessage());
+            Assertions.fail(ex.getMessage());
         }
     }
 

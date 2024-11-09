@@ -21,12 +21,8 @@ public class TestRegister {
             RegisterResult result = userService.register(request);
             UserData userData = userDAO.getUser(result.username());
             Assertions.assertEquals(result.username(), userData.username());
-        } catch (ResponseException ex) {
-            System.out.print("Threw ResponseException: ");
-            System.out.println(ex.getMessage());
-        } catch (DataAccessException ex) {
-            System.out.print("Threw DataAccessException: ");
-            System.out.println(ex.getMessage());
+        } catch (ResponseException | DataAccessException ex) {
+            Assertions.fail(ex.getMessage());
         }
     }
 
