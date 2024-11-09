@@ -39,7 +39,9 @@ public class GameService {
 
     }
     public void clear() {
-
+        userDAO.clear();
+        authDAO.clear();
+        gameDAO.clear();
     }
 
     public AuthData authenticateUser(String authToken) throws ResponseException {
