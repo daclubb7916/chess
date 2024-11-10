@@ -6,6 +6,7 @@ import request.*;
 import result.*;
 import dataaccess.*;
 import model.*;
+import java.util.*;
 
 public class GameService {
     private final UserDAO userDAO;
@@ -18,8 +19,10 @@ public class GameService {
         this.gameDAO = gameDAO;
     }
 
-    public void listGames(ListGamesRequest request) {
-
+    public ListGamesResult listGames(ListGamesRequest request) throws ResponseException {
+        AuthData authData = authenticateUser(request.authToken());
+        Collection<GameData> games = gameDAO.listGames();
+        return new ListGamesResult(games);
     }
 
     public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {

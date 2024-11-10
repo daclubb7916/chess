@@ -14,6 +14,7 @@ public class Server {
     private final LoginHandler loginHandler;
     private final LogoutHandler logoutHandler;
     private final CreateGameHandler createGameHandler;
+    private final ListGamesHandler listGamesHandler;
 
     public Server() {
         UserDAO userDAO = new MemoryUserDAO();
@@ -24,6 +25,7 @@ public class Server {
         this.loginHandler = new LoginHandler(userDAO, authDAO);
         this.logoutHandler = new LogoutHandler(userDAO, authDAO);
         this.createGameHandler = new CreateGameHandler(userDAO, authDAO, gameDAO);
+        this.listGamesHandler = new ListGamesHandler(userDAO, authDAO, gameDAO);
     }
 
     public int run(int desiredPort) {

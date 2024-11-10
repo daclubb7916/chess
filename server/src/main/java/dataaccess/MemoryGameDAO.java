@@ -3,10 +3,7 @@ package dataaccess;
 import model.GameData;
 import model.UserData;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class MemoryGameDAO implements GameDAO {
     private final HashMap<Integer, GameData> games = new HashMap<>();
@@ -30,7 +27,7 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public Collection<GameData> listGames() {
-        return List.of();
+        return new ArrayList<>(games.values());
     }
 
     @Override
