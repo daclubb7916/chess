@@ -53,6 +53,11 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
+    public boolean isEmpty() {
+        return games.isEmpty();
+    }
+
+    @Override
     public int getNumGames() {
         return numGames;
     }

@@ -30,6 +30,11 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
+    public boolean isEmpty() {
+        return authTokens.isEmpty();
+    }
+
+    @Override
     public void clear() {
         authTokens.clear();
     }

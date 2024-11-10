@@ -27,6 +27,11 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     @Override
+    public boolean isEmpty() {
+        return users.isEmpty();
+    }
+
+    @Override
     public void validatePassword(UserData user, String password) throws DataAccessException {
         if (!Objects.equals(password, user.password())) {
             throw new DataAccessException("Password does not match");

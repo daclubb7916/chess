@@ -9,5 +9,6 @@ public interface GameDAO {
     GameData getGame(int gameID) throws DataAccessException;
     void updateGame(GameData game);
     void clear();
+    boolean isEmpty();
     int getNumGames();
 }
