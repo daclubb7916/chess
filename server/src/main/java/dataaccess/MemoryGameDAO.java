@@ -44,7 +44,7 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public void clear() {
-        numGames = 0;
+        numGames = 1;
         games.clear();
     }
 
