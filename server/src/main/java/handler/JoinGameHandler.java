@@ -1,7 +1,26 @@
 package handler;
 
-public class JoinGameHandler extends Handler {
-    public JoinGameHandler() {
+import com.google.gson.Gson;
+import dataaccess.*;
+import exception.ResponseException;
+import result.JoinGameResult;
+import request.JoinGameRequest;
+import service.GameService;
+import spark.Request;
+import spark.Response;
 
+public class JoinGameHandler extends Handler {
+    private final GameService service;
+
+    public JoinGameHandler(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) {
+        this.service = new GameService(userDAO, authDAO, gameDAO);
+    }
+
+    @Override
+    public Object handle(Request req, Response res) throws ResponseException {
+        JoinGameRequest request = new Gson().fromJson(req.body(), JoinGameRequest.class);
+        request = new JoinGameRequest(request.playerColor(), request.gameID(), req.headers("authorization"));
+        JoinGameResult result = service.joinGame(request);
+        return new Gson().toJson(result);
     }
 }

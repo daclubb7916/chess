@@ -1,7 +1,6 @@
 package dataaccess;
 
 import model.GameData;
-import model.UserData;
 
 import java.util.*;
 
@@ -39,8 +38,8 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void updateGame(GameData game) {
-
+    public void updateGame(GameData gameData) {
+        games.put(gameData.gameID(), gameData);
     }
 
     @Override

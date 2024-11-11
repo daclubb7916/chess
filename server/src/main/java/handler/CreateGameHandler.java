@@ -19,7 +19,7 @@ public class CreateGameHandler extends Handler {
     @Override
     public Object handle(Request req, Response res) throws ResponseException {
         CreateGameRequest request = new Gson().fromJson(req.body(), CreateGameRequest.class);
-        request = new CreateGameRequest(req.headers("authorization"), request.gameName());
+        request = new CreateGameRequest(request.gameName(), req.headers("authorization"));
         CreateGameResult result = gameService.createGame(request);
         return new Gson().toJson(result);
     }

@@ -38,20 +38,46 @@ public class GameService {
         }
     }
 
-    public void joinGame(JoinGameRequest request) {
+    public JoinGameResult joinGame(JoinGameRequest request) throws ResponseException {
+        AuthData authData = authenticateUser(request.authToken());
 
+        try {
+            GameData gameData = gameDAO.getGame(request.gameID());
+            gameDAO.updateGame(addUserToGameData(request, gameData, authData));
+        } catch (DataAccessException ex) {
+            throw new ResponseException(400, "Error: bad request");
+        }
+        return new JoinGameResult();
     }
+
     public void clear() {
         userDAO.clear();
         authDAO.clear();
         gameDAO.clear();
     }
 
-    public AuthData authenticateUser(String authToken) throws ResponseException {
+    private AuthData authenticateUser(String authToken) throws ResponseException {
         try {
             return authDAO.getAuth(authToken);
         } catch (DataAccessException ex) {
             throw new ResponseException(401, "Error: unauthorized");
         }
+    }
+
+    private GameData addUserToGameData(JoinGameRequest request, GameData gameData, AuthData authData) throws ResponseException {
+        if (Objects.equals(request.playerColor(), "White")) {
+            if (gameData.whiteUsername() == null) {
+                return new GameData(gameData.gameID(), authData.username(),
+                        gameData.blackUsername(), gameData.gameName(), gameData.game());
+            }
+
+        } else {
+            if (gameData.blackUsername() == null) {
+                return new GameData(gameData.gameID(), gameData.whiteUsername(), authData.username(),
+                        gameData.gameName(), gameData.game());
+            }
+        }
+
+        throw new ResponseException(403, "Error: already taken");
     }
 }
