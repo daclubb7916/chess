@@ -11,7 +11,7 @@ public class Handler implements Route {
     }
 
     @Override
-    public Object handle(Request request, Response response) throws ResponseException {
+    public Object handle(Request req, Response res) throws ResponseException {
         return null;
     }
 }

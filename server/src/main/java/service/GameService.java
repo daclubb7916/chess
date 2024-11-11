@@ -65,7 +65,7 @@ public class GameService {
     }
 
     private GameData addUserToGameData(JoinGameRequest request, GameData gameData, AuthData authData) throws ResponseException {
-        if (Objects.equals(request.playerColor(), "White")) {
+        if (Objects.equals(request.playerColor(), "WHITE")) {
             if (gameData.whiteUsername() == null) {
                 return new GameData(gameData.gameID(), authData.username(),
                         gameData.blackUsername(), gameData.gameName(), gameData.game());

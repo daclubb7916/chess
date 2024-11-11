@@ -38,5 +38,4 @@ public class MemoryUserDAO implements UserDAO {
         }
     }
 
-
 }
