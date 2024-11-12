@@ -1,4 +1,4 @@
-package chess.PieceMovesCalculator;
+package chess.pieceMovesCalculator;
 
 import chess.*;
 import java.util.Collection;
