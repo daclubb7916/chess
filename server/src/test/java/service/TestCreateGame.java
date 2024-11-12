@@ -18,7 +18,7 @@ public class TestCreateGame {
         MemoryGameDAO gameDAO = new MemoryGameDAO();
         GameService gameService = new GameService(userDAO, authDAO, gameDAO);
         String authToken = authDAO.createAuth("billy");
-        CreateGameRequest request = new CreateGameRequest(authToken, "pedant");
+        CreateGameRequest request = new CreateGameRequest("pedant", authToken);
 
         try {
             CreateGameResult result = gameService.createGame(request);
@@ -37,7 +37,7 @@ public class TestCreateGame {
         MemoryGameDAO gameDAO = new MemoryGameDAO();
         GameService gameService = new GameService(userDAO, authDAO, gameDAO);
         String authToken = authDAO.createAuth("billy");
-        CreateGameRequest request = new CreateGameRequest(authToken, "pedant");
+        CreateGameRequest request = new CreateGameRequest("pedant", authToken);
 
         try {
             GameData gameData = new GameData(
