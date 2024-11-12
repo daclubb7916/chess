@@ -20,6 +20,9 @@ public class JoinGameHandler extends Handler {
     public Object handle(Request req, Response res) throws ResponseException {
         JoinGameRequest request = new Gson().fromJson(req.body(), JoinGameRequest.class);
         request = new JoinGameRequest(request.playerColor(), request.gameID(), req.headers("authorization"));
+        if (request.playerColor() == null) {
+            throw new ResponseException(400, "Error: bad request");
+        }
         JoinGameResult result = service.joinGame(request);
         return new Gson().toJson(result);
     }
