@@ -1,5 +1,7 @@
 package chess;
 
+import chess.PieceMovesCalculator.*;
+
 import java.util.Collection;
 import java.util.Objects;
 
@@ -69,10 +71,6 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-
-        // return new ArrayList<>(); (collection of chess moves)
-        // should send the board and position for sure
-        // call specific piece moves function given this piece?
 
         return switch (type) {
             case KING -> {
