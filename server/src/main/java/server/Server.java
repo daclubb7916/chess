@@ -55,7 +55,7 @@ public class Server {
 
     private void exceptionHandler(ResponseException ex, Request req, Response res) {
         var body = new Gson().toJson(Map.of("message", ex.getMessage()));
-        res.status(ex.StatusCode());
+        res.status(ex.getStatusCode());
         res.body(body);
     }
 }

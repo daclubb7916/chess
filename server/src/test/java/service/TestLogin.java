@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Assertions;
 public class TestLogin {
 
     @Test
-    public void TestLoginWithValidUser() {
+    public void testLoginWithValidUser() {
         UserData user = new UserData("billy", "billy", "billy@aol.com");
         MemoryUserDAO userDAO = new MemoryUserDAO();
         MemoryAuthDAO authDAO = new MemoryAuthDAO();
@@ -29,7 +29,7 @@ public class TestLogin {
     }
 
     @Test
-    public void TestLoginWithoutExistingUser() {
+    public void testLoginWithoutExistingUser() {
         MemoryUserDAO userDAO = new MemoryUserDAO();
         MemoryAuthDAO authDAO = new MemoryAuthDAO();
         LoginRequest request = new LoginRequest("billy", "billy");
