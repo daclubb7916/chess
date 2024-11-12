@@ -10,11 +10,11 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
-    private TeamColor TeamTurn;
+    private TeamColor teamTurn;
     private ChessBoard gameBoard;
 
     public ChessGame() {
-        this.TeamTurn = TeamColor.WHITE;
+        this.teamTurn = TeamColor.WHITE;
         this.gameBoard = new ChessBoard();
         gameBoard.resetBoard();
     }
@@ -23,7 +23,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        return TeamTurn;
+        return teamTurn;
     }
 
     /**
@@ -32,7 +32,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        TeamTurn = team;
+        teamTurn = team;
     }
 
     /**
@@ -55,7 +55,7 @@ public class ChessGame {
             return null;
         }
         ChessPiece pieceToMove = gameBoard.getPiece(startPosition);
-        TeamTurn = pieceToMove.getTeamColor();
+        teamTurn = pieceToMove.getTeamColor();
         Collection<ChessMove> totalMoves = pieceToMove.pieceMoves(gameBoard, startPosition);
         Collection<ChessMove> finalMoves = new ArrayList<>();
         for (ChessMove move : totalMoves) {
@@ -79,7 +79,7 @@ public class ChessGame {
         }
 
         ChessPiece pieceToMove = gameBoard.getPiece(move.getStartPosition());
-        if (pieceToMove.getTeamColor() != TeamTurn) {
+        if (pieceToMove.getTeamColor() != teamTurn) {
             throw new InvalidMoveException("Not this team's turn");
         }
 
@@ -108,7 +108,7 @@ public class ChessGame {
         }
         gameBoard.addPiece(move.getStartPosition(), null);
 
-        if (TeamTurn == TeamColor.WHITE) {
+        if (teamTurn == TeamColor.WHITE) {
             setTeamTurn(TeamColor.BLACK);
         } else {
             setTeamTurn(TeamColor.WHITE);
@@ -136,7 +136,7 @@ public class ChessGame {
         }
         clonedBoard.addPiece(testMove.getStartPosition(), null);
 
-        return clonedBoard.isInCheck(TeamTurn);
+        return clonedBoard.isInCheck(teamTurn);
     }
 
     /**
