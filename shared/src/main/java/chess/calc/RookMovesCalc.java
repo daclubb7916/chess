@@ -1,4 +1,4 @@
-package chess.pieceMovesCalculator;
+package chess.calc;
 
 import chess.ChessBoard;
 import chess.ChessMove;
@@ -7,12 +7,12 @@ import chess.ChessPosition;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class KingMovesCalc implements PieceMovesCalculator {
+public class RookMovesCalc implements PieceMovesCalculator {
     private final ChessBoard board;
     private final ChessPosition myPosition;
     private ArrayList<ChessMove> validMoves = new ArrayList<>();
 
-    public KingMovesCalc(ChessBoard board, ChessPosition myPosition) {
+    public RookMovesCalc(ChessBoard board, ChessPosition myPosition) {
         this.board = board;
         this.myPosition = myPosition;
     }
@@ -23,29 +23,31 @@ public class KingMovesCalc implements PieceMovesCalculator {
         int rowIndex = myPosition.getRow();
         int colIndex = myPosition.getColumn();
 
-        singleMove(rowIndex+1, colIndex);
-        singleMove(rowIndex-1, colIndex);
-        singleMove(rowIndex, colIndex+1);
-        singleMove(rowIndex, colIndex-1);
-        singleMove(rowIndex+1, colIndex+1);
-        singleMove(rowIndex+1, colIndex-1);
-        singleMove(rowIndex-1, colIndex+1);
-        singleMove(rowIndex-1, colIndex-1);
+        multiMove(rowIndex, colIndex, 1, 0);
+        multiMove(rowIndex, colIndex, -1, 0);
+        multiMove(rowIndex, colIndex, 0, 1);
+        multiMove(rowIndex, colIndex, 0, -1);
 
         return validMoves;
     }
 
-    public void singleMove(int row, int col) {
-        ChessPosition otherPosition = new ChessPosition(row, col);
-        if (isValid(otherPosition)) {
-            addToMoves(otherPosition);
+    public void multiMove(int row, int col, int rowInc, int colInc) {
+        row += rowInc;
+        col += colInc;
+        while (inBounds(row, col)) {
+            ChessPosition otherPosition = new ChessPosition(row, col);
+            if (isValid(otherPosition)) {
+                addToMoves(otherPosition);
+            }
+            if (board.getPiece(otherPosition) != null) {
+                break;
+            }
+            row += rowInc;
+            col += colInc;
         }
     }
 
     public boolean isValid(ChessPosition otherPosition) {
-        if (!inBounds(otherPosition.getRow(), otherPosition.getColumn())) {
-            return false;
-        }
         if (board.getPiece(otherPosition) == null) {
             return true;
         }

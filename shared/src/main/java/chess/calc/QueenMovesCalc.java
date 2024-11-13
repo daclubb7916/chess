@@ -1,4 +1,4 @@
-package chess.pieceMovesCalculator;
+package chess.calc;
 
 import chess.ChessBoard;
 import chess.ChessMove;
@@ -7,12 +7,12 @@ import chess.ChessPosition;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class BishopMovesCalc implements PieceMovesCalculator {
+public class QueenMovesCalc implements PieceMovesCalculator {
     private final ChessBoard board;
     private final ChessPosition myPosition;
     private ArrayList<ChessMove> validMoves = new ArrayList<>();
 
-    public BishopMovesCalc(ChessBoard board, ChessPosition myPosition) {
+    public QueenMovesCalc(ChessBoard board, ChessPosition myPosition) {
         this.board = board;
         this.myPosition = myPosition;
     }
@@ -23,6 +23,10 @@ public class BishopMovesCalc implements PieceMovesCalculator {
         int rowIndex = myPosition.getRow();
         int colIndex = myPosition.getColumn();
 
+        multiMove(rowIndex, colIndex, 1, 0);
+        multiMove(rowIndex, colIndex, -1, 0);
+        multiMove(rowIndex, colIndex, 0, 1);
+        multiMove(rowIndex, colIndex, 0, -1);
         multiMove(rowIndex, colIndex, 1, 1);
         multiMove(rowIndex, colIndex, 1, -1);
         multiMove(rowIndex, colIndex, -1, 1);
