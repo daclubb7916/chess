@@ -6,6 +6,18 @@ import java.util.Collection;
 import java.util.List;
 
 public class SqlGameDAO implements GameDAO {
+
+    public SqlGameDAO() throws DataAccessException {
+        String createTableStatement = """
+            CREATE TABLE IF NOT EXISTS games (
+                id INT NOT NULL AUTO_INCREMENT,
+                gameData TEXT NOT NULL,
+                PRIMARY KEY (id)
+            )
+            """;
+        DatabaseManager.configureDatabase(createTableStatement);
+    }
+
     @Override
     public void createGame(GameData game) throws DataAccessException {
 
