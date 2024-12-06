@@ -10,9 +10,12 @@ public class SqlGameDAO implements GameDAO {
     public SqlGameDAO() throws DataAccessException {
         String createTableStatement = """
             CREATE TABLE IF NOT EXISTS games (
-                id INT NOT NULL AUTO_INCREMENT,
-                gameData TEXT NOT NULL,
-                PRIMARY KEY (id)
+                gameID INT NOT NULL AUTO_INCREMENT,
+                whiteUsername VARCHAR(255) DEFAULT NULL,
+                blackUsername VARCHAR(255) DEFAULT NULL,
+                gameName VARCHAR(255) NOT NULL,
+                game TEXT NOT NULL,
+                PRIMARY KEY (gameID)
             )
             """;
         DatabaseManager.configureDatabase(createTableStatement);

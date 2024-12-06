@@ -9,10 +9,10 @@ public class SqlUserDAO implements UserDAO {
     public SqlUserDAO() throws DataAccessException {
         String createTableStatement = """
             CREATE TABLE IF NOT EXISTS users (
-                id INT NOT NULL AUTO_INCREMENT,
                 username VARCHAR(255) NOT NULL,
-                userData TEXT NOT NULL,
-                PRIMARY KEY (id)
+                password VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                PRIMARY KEY (username)
             )
             """;
         DatabaseManager.configureDatabase(createTableStatement);
