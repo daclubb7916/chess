@@ -5,7 +5,7 @@ import java.util.Collection;
 
 public interface GameDAO {
     GameData createGame(GameData game) throws DataAccessException;
-    Collection<GameData> listGames();
+    Collection<GameData> listGames() throws DataAccessException;
     GameData getGame(int gameID) throws DataAccessException;
     void updateGame(GameData game);
     void clear();

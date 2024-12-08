@@ -21,8 +21,13 @@ public class GameService {
 
     public ListGamesResult listGames(ListGamesRequest request) throws ResponseException {
         AuthData authData = authenticateUser(request.authToken());
-        Collection<GameData> games = gameDAO.listGames();
-        return new ListGamesResult(games);
+        try {
+            Collection<GameData> games = gameDAO.listGames();
+            return new ListGamesResult(games);
+        } catch (DataAccessException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+
     }
 
     public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {

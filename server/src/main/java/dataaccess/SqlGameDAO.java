@@ -5,6 +5,7 @@ import model.GameData;
 import com.google.gson.Gson;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -53,8 +54,22 @@ public class SqlGameDAO implements GameDAO {
     }
 
     @Override
-    public Collection<GameData> listGames() {
-        return List.of();
+    public Collection<GameData> listGames() throws DataAccessException {
+        Collection<GameData> games = new ArrayList<>();
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT * FROM games";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        games.add(readGame(rs));
+                    }
+                }
+            }
+
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
+        return games;
     }
 
     @Override
