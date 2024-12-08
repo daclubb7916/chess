@@ -7,7 +7,6 @@ import com.google.gson.Gson;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
@@ -93,8 +92,17 @@ public class SqlGameDAO implements GameDAO {
     }
 
     @Override
-    public void updateGame(GameData game) {
+    public void updateGame(GameData game) throws DataAccessException {
+        String statement = "UPDATE games " +
+                "SET whiteUsername=?, blackUsername=?, game=? " +
+                "WHERE gameID=?";
+        String json = new Gson().toJson(game.game());
+        int id = executeUpdate(statement, game.whiteUsername(),
+                game.blackUsername(), json, game.gameID());
 
+        if (id == 0) {
+            throw new DataAccessException("Failed to update game");
+        }
     }
 
     @Override
