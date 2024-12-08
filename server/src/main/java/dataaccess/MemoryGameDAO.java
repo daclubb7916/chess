@@ -13,7 +13,7 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void createGame(GameData game) throws DataAccessException {
+    public GameData createGame(GameData game) throws DataAccessException {
         for (GameData gameData : games.values()) {
             if (Objects.equals(gameData.gameName(), game.gameName())) {
                 throw new DataAccessException("Name already taken");
@@ -22,6 +22,7 @@ public class MemoryGameDAO implements GameDAO {
 
         games.put(game.gameID(), game);
         numGames += 1;
+        return game;
     }
 
     @Override

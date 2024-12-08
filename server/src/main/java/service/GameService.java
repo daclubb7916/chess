@@ -31,8 +31,8 @@ public class GameService {
                 null, request.gameName(), new ChessGame());
 
         try {
-            gameDAO.createGame(gameData);
-            return new CreateGameResult(gameData.gameID());
+            GameData newGame = gameDAO.createGame(gameData);
+            return new CreateGameResult(newGame.gameID());
         } catch (DataAccessException ex) {
             throw new ResponseException(400, "Error: bad request");
         }
