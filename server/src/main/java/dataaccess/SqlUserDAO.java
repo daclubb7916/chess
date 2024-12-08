@@ -20,12 +20,35 @@ public class SqlUserDAO implements UserDAO {
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        return null;
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT username, password, email FROM users WHERE id=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()) {
+                    return new UserData(rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("email"));
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("User is not in DataBase");
+        }
     }
 
     @Override
-    public void createUser(UserData user) {
+    public void createUser(UserData user) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, user.username());
+                ps.setString(2, user.password());
+                ps.setString(3, user.email());
+                ps.executeUpdate();
+            }
 
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
     }
 
     @Override

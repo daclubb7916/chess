@@ -3,7 +3,7 @@ import model.*;
 
 public interface UserDAO {
     UserData getUser(String username) throws DataAccessException;
-    void createUser(UserData user);
+    void createUser(UserData user) throws DataAccessException;
     void clear();
     boolean isEmpty();
     void validatePassword(UserData user, String password) throws DataAccessException;

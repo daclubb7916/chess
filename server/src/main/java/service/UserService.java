@@ -6,6 +6,8 @@ import request.*;
 import result.*;
 import model.*;
 
+import java.util.Objects;
+
 public class UserService {
     private final UserDAO userDAO;
     private final AuthDAO authDAO;
@@ -19,11 +21,20 @@ public class UserService {
         try {
             UserData userData = userDAO.getUser(request.username());
             throw new ResponseException(403, "Error: already taken");
+
         } catch (DataAccessException ex) {
+            if (!Objects.equals(ex.getMessage(), "User is not in DataBase")) {
+                throw new ResponseException(500, "Error: " + ex.getMessage());
+            }
+
             UserData userData = new UserData(request.username(), request.password(), request.email());
-            userDAO.createUser(userData);
-            String authToken = authDAO.createAuth(userData.username());
-            return new RegisterResult(userData.username(), authToken);
+            try {
+                userDAO.createUser(userData);
+                String authToken = authDAO.createAuth(userData.username());
+                return new RegisterResult(userData.username(), authToken);
+            } catch (DataAccessException exc) {
+                throw new ResponseException(500, "Error: " + exc.getMessage());
+            }
         }
     }
 
