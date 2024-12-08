@@ -33,8 +33,12 @@ public class GameService {
         try {
             GameData newGame = gameDAO.createGame(gameData);
             return new CreateGameResult(newGame.gameID());
+
         } catch (DataAccessException ex) {
-            throw new ResponseException(400, "Error: bad request");
+            if (Objects.equals(ex.getMessage(), "Name already taken")) {
+                throw new ResponseException(400, "Error: bad request");
+            }
+            throw new ResponseException(500, "Error: " + ex.getMessage());
         }
     }
 
