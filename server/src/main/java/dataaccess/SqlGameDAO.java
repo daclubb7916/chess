@@ -35,22 +35,23 @@ public class SqlGameDAO implements GameDAO {
             try (var prep = conn.prepareStatement(checkStatement)) {
                 prep.setString(1, game.gameName());
                 try (var rs = prep.executeQuery()) {
-                    throw new DataAccessException("Name already taken");
-
-                } catch (SQLException ex) {
-                    String statement = "INSERT INTO games " +
-                            "(whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
-                    String json = new Gson().toJson(game.game());
-                    int gameID = executeUpdate(statement, game.whiteUsername(),
-                            game.blackUsername(), game.gameName(), json);
-                    return new GameData(gameID, game.whiteUsername(),
-                            game.blackUsername(), game.gameName(), game.game());
+                    if (rs.next()) {
+                        throw new DataAccessException("Name already taken");
+                    }
                 }
             }
 
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
+
+        String statement = "INSERT INTO games " +
+                "(whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
+        String json = new Gson().toJson(game.game());
+        int gameID = executeUpdate(statement, game.whiteUsername(),
+                game.blackUsername(), game.gameName(), json);
+        return new GameData(gameID, game.whiteUsername(),
+                game.blackUsername(), game.gameName(), game.game());
     }
 
     @Override
@@ -82,13 +83,13 @@ public class SqlGameDAO implements GameDAO {
                     if (rs.next()) {
                         return readGame(rs);
                     }
+                    throw new DataAccessException("Game not found");
                 }
             }
 
         } catch (SQLException ex) {
-            throw new DataAccessException("Game not found");
+            throw new DataAccessException(ex.getMessage());
         }
-        return null;
     }
 
     @Override

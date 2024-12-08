@@ -26,13 +26,16 @@ public class SqlUserDAO implements UserDAO {
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
-                    return new UserData(rs.getString("username"),
-                            rs.getString("password"),
-                            rs.getString("email"));
+                    if (rs.next()) {
+                        return new UserData(rs.getString("username"),
+                                rs.getString("password"),
+                                rs.getString("email"));
+                    }
+                    throw new DataAccessException("User is not in DataBase");
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("User is not in DataBase");
+            throw new DataAccessException(ex.getMessage());
         }
     }
 

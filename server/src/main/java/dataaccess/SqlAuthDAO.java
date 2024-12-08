@@ -42,13 +42,16 @@ public class SqlAuthDAO implements AuthDAO {
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, authToken);
                 try (var rs = ps.executeQuery()) {
-                    return new AuthData(rs.getString("authToken"),
-                            rs.getString("username"));
+                    if (rs.next()) {
+                        return new AuthData(rs.getString("authToken"),
+                                rs.getString("username"));
+                    }
+                    throw new DataAccessException("AuthToken does not exist");
                 }
             }
 
         } catch (SQLException ex) {
-            throw new DataAccessException("AuthToken does not exist");
+            throw new DataAccessException(ex.getMessage());
         }
     }
 
