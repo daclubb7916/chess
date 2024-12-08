@@ -58,7 +58,10 @@ public class UserService {
             authDAO.deleteAuth(authData.authToken());
             return new LogoutResult();
         } catch (DataAccessException ex) {
-            throw new ResponseException(401, "Error: unauthorized");
+            if (Objects.equals(ex.getMessage(), "AuthToken does not exist")) {
+                throw new ResponseException(401, "Error: unauthorized");
+            }
+            throw new ResponseException(500, "Error: " + ex.getMessage());
         }
     }
 
