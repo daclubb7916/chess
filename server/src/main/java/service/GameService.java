@@ -50,10 +50,14 @@ public class GameService {
         return new JoinGameResult();
     }
 
-    public void clear() {
-        userDAO.clear();
-        authDAO.clear();
-        gameDAO.clear();
+    public void clear() throws ResponseException {
+        try {
+            userDAO.clear();
+            authDAO.clear();
+            gameDAO.clear();
+        } catch (DataAccessException ex) {
+            throw new ResponseException(500, "Error: " + ex.getMessage());
+        }
     }
 
     private AuthData authenticateUser(String authToken) throws ResponseException {

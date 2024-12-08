@@ -1,6 +1,5 @@
 package dataaccess;
 
-import exception.ResponseException;
 import model.UserData;
 import java.sql.*;
 
@@ -52,7 +51,16 @@ public class SqlUserDAO implements UserDAO {
     }
 
     @Override
-    public void clear() {
+    public void clear() throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "TRUNCATE users";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.executeUpdate();
+            }
+
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
 
     }
 
