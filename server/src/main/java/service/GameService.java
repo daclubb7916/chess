@@ -49,7 +49,10 @@ public class GameService {
             GameData gameData = gameDAO.getGame(request.gameID());
             gameDAO.updateGame(addUserToGameData(request, gameData, authData));
         } catch (DataAccessException ex) {
-            throw new ResponseException(400, "Error: bad request");
+            if (Objects.equals(ex.getMessage(), "Game not found")) {
+                throw new ResponseException(400, "Error: bad request");
+            }
+            throw new ResponseException(500, "Error: " + ex.getMessage());
         }
         return new JoinGameResult();
     }
