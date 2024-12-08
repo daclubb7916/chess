@@ -45,7 +45,8 @@ public class UserService {
             String authToken = authDAO.createAuth(userData.username());
             return new LoginResult(userData.username(), authToken);
         } catch (DataAccessException ex) {
-            if (Objects.equals(ex.getMessage(), "Password does not match")) {
+            if (Objects.equals(ex.getMessage(), "Password does not match") ||
+                    (Objects.equals(ex.getMessage(), "User is not in DataBase"))) {
                 throw new ResponseException(401, "Error: unauthorized");
             }
             throw new ResponseException(500, "Error: " + ex.getMessage());

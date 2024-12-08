@@ -2,6 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.*;
+import exception.ResponseException;
 import model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,11 @@ public class TestClear {
         Assertions.assertFalse(userDAO.isEmpty(), "User wasn't added");
         Assertions.assertFalse(authDAO.isEmpty(), "AuthData wasn't added");
         Assertions.assertFalse(gameDAO.isEmpty(), "Game wasn't added");
-        service.clear();
+        try {
+            service.clear();
+        } catch (ResponseException ex) {
+            Assertions.fail(ex.getMessage());
+        }
         Assertions.assertTrue(userDAO.isEmpty(), "User data wasn't cleared");
         Assertions.assertTrue(authDAO.isEmpty(), "AuthToken data wasn't cleared");
         Assertions.assertTrue(gameDAO.isEmpty(), "Game data wasn't cleared");
