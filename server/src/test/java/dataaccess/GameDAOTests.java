@@ -82,6 +82,15 @@ public class GameDAOTests {
     }
 
     @Test
+    public void testGetGameUnsuccessfully() throws DataAccessException {
+        addSomeGames();
+        DataAccessException ex = Assertions.assertThrows(
+                DataAccessException.class,
+                () -> gameDAO.getGame(4));
+        Assertions.assertEquals("Game not found", ex.getMessage());
+    }
+
+    @Test
     public void testUpdateGame() {
 
     }
