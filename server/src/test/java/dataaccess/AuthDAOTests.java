@@ -43,6 +43,12 @@ public class AuthDAOTests {
     }
 
     @Test
+    public void testCreateAuthUnsuccess() {
+        DataAccessException ex = Assertions.assertThrows(DataAccessException.class,
+                () -> authDAO.createAuth(null));
+    }
+
+    @Test
     public void testGetAuthWithValidAuthToken() throws DataAccessException {
         String[] authTokens = addSomeAuthTokens();
         AuthData authData = authDAO.getAuth(authTokens[1]);
