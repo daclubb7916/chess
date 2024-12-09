@@ -3,10 +3,7 @@ package dataaccess;
 import chess.*;
 import com.google.gson.Gson;
 import model.GameData;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -26,6 +23,19 @@ public class GameDAOTests {
     public void emptyTable() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             String statement = "TRUNCATE games";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.executeUpdate();
+            }
+
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
+    }
+
+    @AfterAll
+    public static void deleteTable() throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "DROP TABLE games";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.executeUpdate();
             }

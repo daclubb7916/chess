@@ -9,39 +9,34 @@ import dataaccess.*;
 import java.util.Map;
 
 public class Server {
-    private final ClearHandler clearHandler;
-    private final RegisterHandler registerHandler;
-    private final LoginHandler loginHandler;
-    private final LogoutHandler logoutHandler;
-    private final CreateGameHandler createGameHandler;
-    private final ListGamesHandler listGamesHandler;
-    private final JoinGameHandler joinGameHandler;
+
+    private UserDAO userDAO;
+    private AuthDAO authDAO;
+    private GameDAO gameDAO;
 
     public Server() {
-        UserDAO userDAO = new MemoryUserDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
-        this.clearHandler = new ClearHandler(userDAO, authDAO, gameDAO);
-        this.registerHandler = new RegisterHandler(userDAO, authDAO);
-        this.loginHandler = new LoginHandler(userDAO, authDAO);
-        this.logoutHandler = new LogoutHandler(userDAO, authDAO);
-        this.createGameHandler = new CreateGameHandler(userDAO, authDAO, gameDAO);
-        this.listGamesHandler = new ListGamesHandler(userDAO, authDAO, gameDAO);
-        this.joinGameHandler = new JoinGameHandler(userDAO, authDAO, gameDAO);
     }
 
     public int run(int desiredPort) {
+        try {
+            userDAO = new SqlUserDAO();
+            authDAO = new SqlAuthDAO();
+            gameDAO = new SqlGameDAO();
+        } catch (DataAccessException ex) {
+            System.out.println("Unable to start SQL server");
+        }
+
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
 
-        Spark.delete("/db", clearHandler);
-        Spark.post("/user", registerHandler);
-        Spark.post("/session", loginHandler);
-        Spark.delete("/session", logoutHandler);
-        Spark.post("/game", createGameHandler);
-        Spark.get("/game", listGamesHandler);
-        Spark.put("/game", joinGameHandler);
+        Spark.delete("/db", new ClearHandler(userDAO, authDAO, gameDAO));
+        Spark.post("/user", new RegisterHandler(userDAO, authDAO));
+        Spark.post("/session", new LoginHandler(userDAO, authDAO));
+        Spark.delete("/session", new LogoutHandler(userDAO, authDAO));
+        Spark.post("/game", new CreateGameHandler(userDAO, authDAO, gameDAO));
+        Spark.get("/game", new ListGamesHandler(userDAO, authDAO, gameDAO));
+        Spark.put("/game", new JoinGameHandler(userDAO, authDAO, gameDAO));
         Spark.exception(ResponseException.class, this::exceptionHandler);
 
         Spark.awaitInitialization();

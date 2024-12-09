@@ -1,10 +1,7 @@
 package dataaccess;
 
 import model.AuthData;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -22,6 +19,19 @@ public class AuthDAOTests {
     public void emptyTable() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             String statement = "TRUNCATE authTokens";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.executeUpdate();
+            }
+
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
+    }
+
+    @AfterAll
+    public static void deleteTable() throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "DROP TABLE authTokens";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.executeUpdate();
             }

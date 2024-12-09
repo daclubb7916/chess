@@ -1,10 +1,7 @@
 package dataaccess;
 
 import model.UserData;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
@@ -22,6 +19,19 @@ public class UserDAOTests {
     public void emptyTable() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             String statement = "TRUNCATE users";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.executeUpdate();
+            }
+
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
+    }
+
+    @AfterAll
+    public static void deleteTable() throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "DROP TABLE users";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.executeUpdate();
             }
