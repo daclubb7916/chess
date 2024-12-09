@@ -3,6 +3,7 @@ package dataaccess;
 import model.AuthData;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.UUID;
 
 public class SqlAuthDAO implements AuthDAO {
@@ -12,7 +13,7 @@ public class SqlAuthDAO implements AuthDAO {
             CREATE TABLE IF NOT EXISTS authTokens (
                 authToken VARCHAR(255) NOT NULL,
                 username VARCHAR(255) NOT NULL,
-                PRIMARY KEY (authTOKEN)
+                PRIMARY KEY (authToken)
             )
             """;
         DatabaseManager.configureDatabase(createTableStatement);

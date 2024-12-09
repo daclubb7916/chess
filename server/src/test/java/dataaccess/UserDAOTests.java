@@ -90,7 +90,7 @@ public class UserDAOTests {
     }
 
     @Test
-    public void testClearAndIsEmpty() throws DataAccessException {
+    public void testIsEmptyAndClear() throws DataAccessException {
         addSomeUsers();
         Assertions.assertFalse(userDAO.isEmpty());
         userDAO.clear();
