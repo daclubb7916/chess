@@ -54,20 +54,31 @@ public class GameDAOTests {
         GameData gameData = gameDAO.createGame(new GameData(1,
                 null, null,
                 "thisIsChess", new ChessGame()));
+        GameData newData = new GameData(5,
+                "chester", "craig",
+                "thisIsChess", new ChessGame());
         DataAccessException e = Assertions.assertThrows(
                 DataAccessException.class,
-                () -> gameDAO.createGame(gameData));
+                () -> gameDAO.createGame(newData));
         Assertions.assertEquals("Name already taken", e.getMessage());
     }
 
     @Test
-    public void testListGames() {
-
+    public void testListGamesSuccessfully() throws DataAccessException {
+        addSomeGames();
+        Collection<GameData> games = gameDAO.listGames();
+        Assertions.assertEquals(3, games.size());
     }
 
     @Test
-    public void testGetGame() {
-
+    public void testGetGameSuccessfully() throws DataAccessException {
+        addSomeGames();
+        GameData game = gameDAO.getGame(1);
+        Assertions.assertEquals("winnah", game.gameName());
+        game = gameDAO.getGame(2);
+        Assertions.assertEquals("joke", game.whiteUsername());
+        game = gameDAO.getGame(3);
+        Assertions.assertNull(game.blackUsername());
     }
 
     @Test
@@ -80,7 +91,7 @@ public class GameDAOTests {
 
     }
 
-    private Collection<Integer> addSomeGames() throws DataAccessException {
+    private void addSomeGames() throws DataAccessException {
         Collection<Integer> gameIDs = new ArrayList<>();
         String statement = "INSERT INTO games " +
                 "(whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
@@ -96,14 +107,12 @@ public class GameDAOTests {
                     ps.setString(2, blackUsernames[i]);
                     ps.setString(3, gameNames[i]);
                     ps.setString(4, new Gson().toJson(games[i]));
+                    ps.executeUpdate();
+                    var rs = ps.getGeneratedKeys();
+                    if (rs.next()) {
+                        gameIDs.add(rs.getInt(1));
+                    }
                 }
-
-                ps.executeUpdate();
-                var rs = ps.getGeneratedKeys();
-                while (rs.next()) {
-                    gameIDs.add(rs.getInt(1));
-                }
-                return gameIDs;
 
             }
         } catch (SQLException ex) {
