@@ -2,16 +2,17 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import model.GameData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class GameDAOTests {
 
@@ -36,8 +37,27 @@ public class GameDAOTests {
     }
 
     @Test
-    public void testCreateGame() {
+    public void testCreateGameSuccessfully() throws DataAccessException {
+        GameData gameData = gameDAO.createGame(
+                    new GameData(3, "becky",
+                            null, "tress", new ChessGame()));
+        GameData sameGame = gameDAO.getGame(gameData.gameID());
+        Assertions.assertEquals(sameGame.gameID(), gameData.gameID());
+        Assertions.assertEquals(sameGame.whiteUsername(), gameData.whiteUsername());
+        Assertions.assertEquals(sameGame.blackUsername(), gameData.blackUsername());
+        Assertions.assertEquals(sameGame.gameName(), gameData.gameName());
+        Assertions.assertEquals(new Gson().toJson(sameGame.game()), new Gson().toJson(gameData.game()));
+    }
 
+    @Test
+    public void testCreateGameWithExistingName() throws DataAccessException {
+        GameData gameData = gameDAO.createGame(new GameData(1,
+                null, null,
+                "thisIsChess", new ChessGame()));
+        DataAccessException e = Assertions.assertThrows(
+                DataAccessException.class,
+                () -> gameDAO.createGame(gameData));
+        Assertions.assertEquals("Name already taken", e.getMessage());
     }
 
     @Test
