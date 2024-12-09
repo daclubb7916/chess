@@ -21,28 +21,7 @@ public class GameDAOTests {
 
     @AfterEach
     public void emptyTable() throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            String statement = "TRUNCATE games";
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.executeUpdate();
-            }
-
-        } catch (SQLException ex) {
-            throw new DataAccessException(ex.getMessage());
-        }
-    }
-
-    @AfterAll
-    public static void deleteTable() throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            String statement = "DROP TABLE games";
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.executeUpdate();
-            }
-
-        } catch (SQLException ex) {
-            throw new DataAccessException(ex.getMessage());
-        }
+        gameDAO.clear();
     }
 
     @Test

@@ -17,28 +17,7 @@ public class AuthDAOTests {
 
     @AfterEach
     public void emptyTable() throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            String statement = "TRUNCATE authTokens";
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.executeUpdate();
-            }
-
-        } catch (SQLException ex) {
-            throw new DataAccessException(ex.getMessage());
-        }
-    }
-
-    @AfterAll
-    public static void deleteTable() throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            String statement = "DROP TABLE authTokens";
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.executeUpdate();
-            }
-
-        } catch (SQLException ex) {
-            throw new DataAccessException(ex.getMessage());
-        }
+        authDAO.clear();
     }
 
     @Test
