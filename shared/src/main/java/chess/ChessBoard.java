@@ -52,79 +52,41 @@ public class ChessBoard {
         return squares[position.getRow() - 1][position.getColumn() - 1];
     }
 
+    private void createAndAddPiece(ChessGame.TeamColor color, ChessPiece.PieceType type, int row, int col) {
+        ChessPiece piece = new ChessPiece(color, type);
+        ChessPosition position = new ChessPosition(row, col);
+        addPiece(position, piece);
+    }
+
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        // white side
-        ChessPiece whiteRook = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
-        ChessPosition position = new ChessPosition(1, 1);
-        addPiece(position, whiteRook);
-        whiteRook = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
-        position = new ChessPosition(1, 8);
-        addPiece(position, whiteRook);
-
-        ChessPiece whiteKnight = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
-        position = new ChessPosition(1, 2);
-        addPiece(position, whiteKnight);
-        whiteKnight = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
-        position = new ChessPosition(1, 7);
-        addPiece(position, whiteKnight);
-
-        ChessPiece whiteBishop = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-        position = new ChessPosition(1, 3);
-        addPiece(position, whiteBishop);
-        whiteBishop = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-        position = new ChessPosition(1, 6);
-        addPiece(position, whiteBishop);
-
-        ChessPiece whiteQueen = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
-        position = new ChessPosition(1, 4);
-        addPiece(position, whiteQueen);
-        ChessPiece whiteKing = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
-        position = new ChessPosition(1, 5);
-        addPiece(position, whiteKing);
+        createAndAddPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK, 1, 1);
+        createAndAddPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK, 1, 8);
+        createAndAddPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT, 1, 2);
+        createAndAddPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT, 1, 7);
+        createAndAddPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP, 1, 3);
+        createAndAddPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP, 1, 6);
+        createAndAddPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN, 1, 4);
+        createAndAddPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING, 1, 5);
 
         for (int i = 1; i < 9; i++) {
-            ChessPiece whitePawn = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-            position = new ChessPosition(2, i);
-            addPiece(position, whitePawn);
+            createAndAddPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN, 2, i);
         }
 
-        //black side
-        ChessPiece blackRook = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-        position = new ChessPosition(8, 1);
-        addPiece(position, blackRook);
-        blackRook = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-        position = new ChessPosition(8, 8);
-        addPiece(position, blackRook);
-
-        ChessPiece blackKnight = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-        position = new ChessPosition(8, 2);
-        addPiece(position, blackKnight);
-        blackKnight = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-        position = new ChessPosition(8, 7);
-        addPiece(position, blackKnight);
-
-        ChessPiece blackBishop = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-        position = new ChessPosition(8, 3);
-        addPiece(position, blackBishop);
-        blackBishop = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-        position = new ChessPosition(8, 6);
-        addPiece(position, blackBishop);
-
-        ChessPiece blackQueen = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
-        position = new ChessPosition(8, 4);
-        addPiece(position, blackQueen);
-        ChessPiece blackKing = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
-        position = new ChessPosition(8, 5);
-        addPiece(position, blackKing);
+        createAndAddPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK, 8, 1);
+        createAndAddPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK, 8, 8);
+        createAndAddPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT, 8, 2);
+        createAndAddPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT, 8, 7);
+        createAndAddPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP, 8, 3);
+        createAndAddPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP, 8, 6);
+        createAndAddPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN, 8, 4);
+        createAndAddPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING, 8, 5);
 
         for (int i = 1; i < 9; i++) {
-            ChessPiece blackPawn = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
-            position = new ChessPosition(7, i);
-            addPiece(position, blackPawn);
+            createAndAddPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN, 7, i);
         }
     }
 }
