@@ -45,19 +45,18 @@ public abstract class PieceMovesCalc {
         }
     }
 
-    public void multiMove(int row, int col, int rowInc, int colInc) {
-        row += rowInc;
-        col += colInc;
-        while (inBounds(row, col)) {
-            ChessPosition otherPosition = new ChessPosition(row, col);
-            if (isValid(otherPosition)) {
-                addToMoves(otherPosition);
-            }
+    public void multiMove(int rowInc, int colInc) {
+        int row = myPosition.getRow() + rowInc;
+        int col = myPosition.getColumn() + colInc;
+        ChessPosition otherPosition = new ChessPosition(row, col);
+        while (isValid(otherPosition)) {
+            addToMoves(otherPosition);
             if (board.getPiece(otherPosition) != null) {
                 break;
             }
             row += rowInc;
             col += colInc;
+            otherPosition = new ChessPosition(row, col);
         }
     }
 

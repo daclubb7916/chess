@@ -15,13 +15,10 @@ public class RookMovesCalc extends PieceMovesCalc {
     @Override
     public Collection<ChessMove> pieceMoves() {
 
-        int rowIndex = myPosition.getRow();
-        int colIndex = myPosition.getColumn();
-
-        multiMove(rowIndex, colIndex, 1, 0);
-        multiMove(rowIndex, colIndex, -1, 0);
-        multiMove(rowIndex, colIndex, 0, 1);
-        multiMove(rowIndex, colIndex, 0, -1);
+        multiMove(1, 0);
+        multiMove(-1, 0);
+        multiMove(0, 1);
+        multiMove(0, -1);
 
         return validMoves;
     }

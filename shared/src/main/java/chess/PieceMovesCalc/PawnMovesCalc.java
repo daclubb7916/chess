@@ -28,72 +28,92 @@ public class PawnMovesCalc extends PieceMovesCalc {
     }
 
     private void pawnMoveWhite(int row, int col) {
+        if (row == 7) {
+            promotionWhite(row, col);
+            return;
+        }
+
         ChessPosition otherPosition = new ChessPosition(row+1, col);
         if (isValidForward(otherPosition)) {
-            if (row == 7) {
-                addPromotedMoves(otherPosition);
-            } else {
-                addToMoves(otherPosition);
-                if (row == 2) {
-                    otherPosition = new ChessPosition(row+2, col);
-                    if (isValidForward(otherPosition)) {
-                        addToMoves(otherPosition);
-                    }
+            addToMoves(otherPosition);
+            if (row == 2) {
+                otherPosition = new ChessPosition(row+2, col);
+                if (isValidForward(otherPosition)) {
+                    addToMoves(otherPosition);
                 }
             }
         }
 
         otherPosition = new ChessPosition(row+1, col+1);
         if (isValidAttack(otherPosition)) {
-            if (row == 7) {
-                addPromotedMoves(otherPosition);
-            } else {
-                addToMoves(otherPosition);
-            }
+            addToMoves(otherPosition);
         }
 
         otherPosition = new ChessPosition(row+1, col-1);
         if (isValidAttack(otherPosition)) {
-            if (row == 7) {
-                addPromotedMoves(otherPosition);
-            } else {
-                addToMoves(otherPosition);
-            }
+            addToMoves(otherPosition);
+        }
+    }
+
+    private void promotionWhite(int row, int col) {
+        ChessPosition otherPosition = new ChessPosition(row+1, col);
+        if (isValidForward(otherPosition)) {
+            addPromotedMoves(otherPosition);
+        }
+
+        otherPosition = new ChessPosition(row+1, col+1);
+        if (isValidAttack(otherPosition)) {
+            addPromotedMoves(otherPosition);
+        }
+
+        otherPosition = new ChessPosition(row+1, col-1);
+        if (isValidAttack(otherPosition)) {
+            addPromotedMoves(otherPosition);
         }
     }
 
     private void pawnMoveBlack(int row, int col) {
+        if (row == 2) {
+            promotionBlack(row, col);
+            return;
+        }
+
         ChessPosition otherPosition = new ChessPosition(row-1, col);
         if (isValidForward(otherPosition)) {
-            if (row == 2) {
-                addPromotedMoves(otherPosition);
-            } else {
-                addToMoves(otherPosition);
-                if (row == 7) {
-                    otherPosition = new ChessPosition(row-2, col);
-                    if (isValidForward(otherPosition)) {
-                        addToMoves(otherPosition);
-                    }
+            addToMoves(otherPosition);
+            if (row == 7) {
+                otherPosition = new ChessPosition(row-2, col);
+                if (isValidForward(otherPosition)) {
+                    addToMoves(otherPosition);
                 }
             }
         }
 
         otherPosition = new ChessPosition(row-1, col+1);
         if (isValidAttack(otherPosition)) {
-            if (row == 2) {
-                addPromotedMoves(otherPosition);
-            } else {
-                addToMoves(otherPosition);
-            }
+            addToMoves(otherPosition);
         }
 
         otherPosition = new ChessPosition(row-1, col-1);
         if (isValidAttack(otherPosition)) {
-            if (row == 2) {
-                addPromotedMoves(otherPosition);
-            } else {
-                addToMoves(otherPosition);
-            }
+            addToMoves(otherPosition);
+        }
+    }
+
+    private void promotionBlack(int row, int col) {
+        ChessPosition otherPosition = new ChessPosition(row-1, col);
+        if (isValidForward(otherPosition)) {
+            addPromotedMoves(otherPosition);
+        }
+
+        otherPosition = new ChessPosition(row-1, col+1);
+        if (isValidAttack(otherPosition)) {
+            addPromotedMoves(otherPosition);
+        }
+
+        otherPosition = new ChessPosition(row-1, col-1);
+        if (isValidAttack(otherPosition)) {
+            addPromotedMoves(otherPosition);
         }
     }
 
