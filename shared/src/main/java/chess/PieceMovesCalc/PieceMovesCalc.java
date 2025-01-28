@@ -39,4 +39,27 @@ public abstract class PieceMovesCalc {
         }
         return !isTeamMate(otherPosition);
     }
+
+    public void singleMove(int row, int col) {
+        ChessPosition otherPosition = new ChessPosition(row, col);
+        if (isValid(otherPosition)) {
+            addToMoves(otherPosition);
+        }
+    }
+
+    public void multiMove(int row, int col, int rowInc, int colInc) {
+        row += rowInc;
+        col += colInc;
+        while (inBounds(row, col)) {
+            ChessPosition otherPosition = new ChessPosition(row, col);
+            if (isValid(otherPosition)) {
+                addToMoves(otherPosition);
+            }
+            if (board.getPiece(otherPosition) != null) {
+                break;
+            }
+            row += rowInc;
+            col += colInc;
+        }
+    }
 }
