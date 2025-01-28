@@ -14,6 +14,19 @@ public class KnightMovesCalc extends PieceMovesCalc {
 
     @Override
     public Collection<ChessMove> pieceMoves() {
+
+        int rowIndex = myPosition.getRow();
+        int colIndex = myPosition.getColumn();
+
+        singleMove(rowIndex+2, colIndex+1);
+        singleMove(rowIndex+2, colIndex-1);
+        singleMove(rowIndex-2, colIndex+1);
+        singleMove(rowIndex-2, colIndex-1);
+        singleMove(rowIndex+1, colIndex+2);
+        singleMove(rowIndex-1, colIndex+2);
+        singleMove(rowIndex+1, colIndex-2);
+        singleMove(rowIndex-1, colIndex-2);
+
         return validMoves;
     }
 }
