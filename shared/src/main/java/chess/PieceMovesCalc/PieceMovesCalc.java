@@ -6,15 +6,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public abstract class PieceMovesCalc {
-    private final ChessBoard board;
-    private final ChessPosition myPosition;
-    private final ChessGame.TeamColor pawnColor;
-    private final ArrayList<ChessMove> validMoves = new ArrayList<>();
+    public final ChessBoard board;
+    public final ChessPosition myPosition;
+    public final ArrayList<ChessMove> validMoves = new ArrayList<>();
 
     public PieceMovesCalc(ChessBoard board, ChessPosition myPosition) {
         this.board = board;
         this.myPosition = myPosition;
-        this.pawnColor = board.getPiece(myPosition).getTeamColor();
     }
 
     public boolean inBounds(int row, int col) {
@@ -62,4 +60,6 @@ public abstract class PieceMovesCalc {
             col += colInc;
         }
     }
+
+    public abstract Collection<ChessMove> pieceMoves();
 }
