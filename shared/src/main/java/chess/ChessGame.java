@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -51,7 +52,19 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        if (board.getPiece(startPosition) == null) {
+            return null;
+        }
+        ChessPiece pieceToMove = board.getPiece(startPosition);
+        teamTurn = pieceToMove.getTeamColor();
+        Collection<ChessMove> totalMoves = pieceToMove.pieceMoves(board, startPosition);
+        Collection<ChessMove> finalMoves = new ArrayList<>();
+        for (ChessMove move : totalMoves) {
+            if (!wouldResultInCheck(move)) {
+                finalMoves.add(move);
+            }
+        }
+        return finalMoves;
     }
 
     private void addToBoard(ChessMove move, ChessPiece piece) {
@@ -72,7 +85,6 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         Collection<ChessMove> pieceMoves = validMoves(move.getStartPosition());
-
         if (pieceMoves == null) {
             throw new InvalidMoveException("No piece here");
         }
@@ -151,6 +163,10 @@ public class ChessGame {
         setBoard(originalBoard);
         return inCheck;
     }
+
+    // private boolean allMovesResultInCheck(TeamColor teamColor) {
+
+    // }
 
     /**
      * Determines if the given team is in checkmate
