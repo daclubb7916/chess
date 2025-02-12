@@ -54,6 +54,16 @@ public class ChessGame {
         throw new RuntimeException("Not implemented");
     }
 
+    private void addToBoard(ChessMove move, ChessPiece piece) {
+        if (move.getPromotionPiece() != null) {
+            ChessPiece promotedPiece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+            board.addPiece(move.getEndPosition(), promotedPiece);
+        } else {
+            board.addPiece(move.getEndPosition(), piece);
+        }
+        board.addPiece(move.getStartPosition(), null);
+    }
+
     /**
      * Makes a move in a chess game
      *
@@ -81,14 +91,7 @@ public class ChessGame {
         if (!inPieceMoves) {
             throw new InvalidMoveException("Not a valid move");
         }
-
-        if (move.getPromotionPiece() != null) {
-            ChessPiece promotedPiece = new ChessPiece(pieceToMove.getTeamColor(), move.getPromotionPiece());
-            board.addPiece(move.getEndPosition(), promotedPiece);
-        } else {
-            board.addPiece(move.getEndPosition(), pieceToMove);
-        }
-        board.addPiece(move.getStartPosition(), null);
+        addToBoard(move, pieceToMove);
 
         if (teamTurn == TeamColor.WHITE) {
             setTeamTurn(TeamColor.BLACK);
@@ -123,10 +126,11 @@ public class ChessGame {
             for (int colIndex = 1; colIndex < 9; colIndex++) {
 
                 ChessPosition newPosition = new ChessPosition(rowIndex, colIndex);
-                if (board.getPiece(newPosition) == null) {
+                ChessPiece newPiece = board.getPiece(newPosition);
+                if (newPiece == null) {
                     continue;
                 }
-                if (board.getPiece(newPosition).getTeamColor() == teamColor) {
+                if (newPiece.getTeamColor() == teamColor) {
                     continue;
                 }
                 if (kingInMoves(newPosition)) {
@@ -135,6 +139,17 @@ public class ChessGame {
             }
         }
         return false;
+    }
+
+    private boolean wouldResultInCheck(ChessMove testMove) {
+        ChessBoard originalBoard = board;
+        setBoard(originalBoard.clone());
+        ChessPiece pieceToMove = board.getPiece(testMove.getStartPosition());
+        addToBoard(testMove, pieceToMove);
+
+        boolean inCheck = isInCheck(teamTurn);
+        setBoard(originalBoard);
+        return inCheck;
     }
 
     /**
