@@ -10,7 +10,7 @@ import java.util.Arrays;
  */
 public class ChessBoard {
 
-    private final ChessPiece[][] squares = new ChessPiece[8][8];
+    private ChessPiece[][] squares = new ChessPiece[8][8];
 
     @Override
     public boolean equals(Object o) {
@@ -87,6 +87,23 @@ public class ChessBoard {
 
         for (int i = 1; i < 9; i++) {
             createAndAddPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN, 7, i);
+        }
+    }
+
+    @Override
+    public ChessBoard clone() {
+        try {
+            ChessBoard clone = (ChessBoard) super.clone();
+
+            ChessPiece[][] clonedSquares = new ChessPiece[8][8];
+            for (int i = 0; i < 8; i++) {
+                System.arraycopy(squares[i], 0, clonedSquares[i], 0, 8);
+            }
+
+            clone.squares = clonedSquares;
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
         }
     }
 }
