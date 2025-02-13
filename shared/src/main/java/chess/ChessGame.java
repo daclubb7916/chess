@@ -155,7 +155,8 @@ public class ChessGame {
 
     private boolean wouldResultInCheck(ChessMove testMove) {
         ChessBoard originalBoard = board;
-        setBoard(originalBoard.clone());
+        ChessBoard clone = board.clone();
+        setBoard(clone);
         ChessPiece pieceToMove = board.getPiece(testMove.getStartPosition());
         addToBoard(testMove, pieceToMove);
 
@@ -180,7 +181,6 @@ public class ChessGame {
                 if (!validMoves(newPosition).isEmpty()) {
                     return false;
                 }
-
             }
         }
         return true;
