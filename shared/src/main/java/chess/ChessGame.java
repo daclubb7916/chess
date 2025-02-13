@@ -164,9 +164,27 @@ public class ChessGame {
         return inCheck;
     }
 
-    // private boolean allMovesResultInCheck(TeamColor teamColor) {
+    private boolean allMovesResultInCheck(TeamColor teamColor) {
+        for (int rowIndex = 1; rowIndex < 9; rowIndex++) {
+            for (int colIndex = 1; colIndex < 9; colIndex++) {
 
-    // }
+                ChessPosition newPosition = new ChessPosition(rowIndex, colIndex);
+                if (board.getPiece(newPosition) == null) {
+                    continue;
+                }
+
+                if (board.getPiece(newPosition).getTeamColor() != teamColor) {
+                    continue;
+                }
+
+                if (!validMoves(newPosition).isEmpty()) {
+                    return false;
+                }
+
+            }
+        }
+        return true;
+    }
 
     /**
      * Determines if the given team is in checkmate
