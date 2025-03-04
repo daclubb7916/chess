@@ -1,4 +1,3 @@
 package result;
 
-public class ErrorResult {
-}
+public record ErrorResult(int errorCode, String message) { }
