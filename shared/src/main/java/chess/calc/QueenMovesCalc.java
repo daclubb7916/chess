@@ -1,4 +1,4 @@
-package chess.PieceMovesCalc;
+package chess.calc;
 
 import chess.ChessBoard;
 import chess.ChessMove;
@@ -6,9 +6,9 @@ import chess.ChessPosition;
 
 import java.util.Collection;
 
-public class RookMovesCalc extends PieceMovesCalc {
+public class QueenMovesCalc extends PieceMovesCalc {
 
-    public RookMovesCalc(ChessBoard board, ChessPosition myPosition) {
+    public QueenMovesCalc(ChessBoard board, ChessPosition myPosition) {
         super(board, myPosition);
     }
 
@@ -19,6 +19,10 @@ public class RookMovesCalc extends PieceMovesCalc {
         multiMove(-1, 0);
         multiMove(0, 1);
         multiMove(0, -1);
+        multiMove(1, 1);
+        multiMove(1, -1);
+        multiMove(-1, 1);
+        multiMove(-1, -1);
 
         return validMoves;
     }
