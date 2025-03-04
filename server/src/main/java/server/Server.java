@@ -1,18 +1,36 @@
 package server;
 
+import com.google.gson.Gson;
+import exception.ResponseException;
+import handler.*;
 import spark.*;
+import dataaccess.*;
+import java.util.Map;
 
 public class Server {
 
-    public int run(int desiredPort) {
-        Spark.port(desiredPort);
+    private UserDAO userDAO;
+    private AuthDAO authDAO;
+    private GameDAO gameDAO;
 
+    public Server() {
+    }
+
+    public int run(int desiredPort) {
+        userDAO = new MemoryUserDAO();
+        authDAO = new MemoryAuthDAO();
+        gameDAO = new MemoryGameDAO();
+        Spark.port(desiredPort);
         Spark.staticFiles.location("web");
 
-        // Register your endpoints and handle exceptions here.
-
-        //This line initializes the server and can be removed once you have a functioning endpoint 
-        Spark.init();
+        Spark.delete("/db", new ClearHandler(userDAO, authDAO, gameDAO));
+        Spark.post("/user", new RegisterHandler(userDAO, authDAO));
+        Spark.post("/session", new LoginHandler(userDAO, authDAO));
+        Spark.delete("/session", new LogoutHandler(userDAO, authDAO));
+        Spark.post("/game", new CreateGameHandler(userDAO, authDAO, gameDAO));
+        Spark.get("/game", new ListGamesHandler(userDAO, authDAO, gameDAO));
+        Spark.put("/game", new JoinGameHandler(userDAO, authDAO, gameDAO));
+        Spark.exception(ResponseException.class, this::exceptionHandler);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -21,5 +39,11 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
+    }
+
+    private void exceptionHandler(ResponseException ex, Request req, Response res) {
+        var body = new Gson().toJson(Map.of("message", ex.getMessage()));
+        res.status(ex.getStatusCode());
+        res.body(body);
     }
 }
