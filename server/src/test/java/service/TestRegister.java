@@ -2,12 +2,10 @@ package service;
 
 import dataaccess.*;
 import exception.ResponseException;
-import org.junit.jupiter.api.BeforeEach;
 import request.RegisterRequest;
 import result.RegisterResult;
 import model.UserData;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.*;
 
 public class TestRegister {
 
