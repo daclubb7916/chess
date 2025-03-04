@@ -8,6 +8,8 @@ import request.JoinGameRequest;
 import service.GameService;
 import spark.*;
 
+import java.util.Objects;
+
 public class JoinGameHandler implements Route {
     private final GameService service;
 
@@ -18,11 +20,12 @@ public class JoinGameHandler implements Route {
     @Override
     public Object handle(Request req, Response res) throws ResponseException {
         JoinGameRequest request = new Gson().fromJson(req.body(), JoinGameRequest.class);
-        request = new JoinGameRequest(request.playerColor(), request.gameID(), req.headers("authorization"));
-        if (request.playerColor() == null) {
-            throw new ResponseException(400, "Error: bad request");
+        if ((Objects.equals(request.playerColor(), "WHITE")) ||
+                (Objects.equals(request.playerColor(), "BLACK"))) {
+            request = new JoinGameRequest(request.playerColor(), request.gameID(), req.headers("authorization"));
+            JoinGameResult result = service.joinGame(request);
+            return new Gson().toJson(result);
         }
-        JoinGameResult result = service.joinGame(request);
-        return new Gson().toJson(result);
+        throw new ResponseException(400, "Error: bad request");
     }
 }
