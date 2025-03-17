@@ -78,6 +78,14 @@ public class UserDAOTests {
         Assertions.assertEquals("Password does not match", ex.getMessage());
     }
 
+    @Test
+    public void testIsEmptyAndClear() throws DataAccessException {
+        addSomeUsers();
+        Assertions.assertFalse(userDAO.isEmpty());
+        userDAO.clear();
+        Assertions.assertTrue(userDAO.isEmpty());
+    }
+
     private void addSomeUsers() throws DataAccessException {
         String[] usernames = {"bernard", "kdot", "gretchen"};
         String[] passwords = {"b1zn1zz", "1overB0y", "ggP0zers"};
