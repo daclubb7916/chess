@@ -78,6 +78,41 @@ public class GameDAOTests {
         Assertions.assertEquals("Game not found", ex.getMessage());
     }
 
+    @Test
+    public void testUpdateGameSuccessfully() throws DataAccessException {
+        addSomeGames();
+        GameData gameData = gameDAO.getGame(2);
+        ChessGame chessGame = gameData.game();
+        ChessPosition startPosition = new ChessPosition(2, 1);
+        ChessPosition endPosition = new ChessPosition(4, 1);
+        ChessMove chessMove = new ChessMove(startPosition, endPosition, null);
+
+        try {
+            chessGame.makeMove(chessMove);
+        } catch (InvalidMoveException ex) {
+            Assertions.fail("Invalid move");
+        }
+
+        GameData newGame = new GameData(2, gameData.whiteUsername(),
+                "Becky", gameData.gameName(), chessGame);
+        gameDAO.updateGame(newGame);
+
+        GameData updated = gameDAO.getGame(2);
+        Assertions.assertEquals(new Gson().toJson(newGame.game()), new Gson().toJson(updated.game()));
+        Assertions.assertEquals("Becky", updated.blackUsername());
+    }
+
+    @Test
+    public void testUpdateGameUnsuccessfully() throws DataAccessException {
+        addSomeGames();
+        GameData game = gameDAO.getGame(2);
+        GameData newGame = new GameData(2, game.whiteUsername(),
+                game.blackUsername(), null, game.game());
+        DataAccessException ex = Assertions.assertThrows(
+                DataAccessException.class,
+                () -> gameDAO.updateGame(newGame));
+    }
+
     private void addSomeGames() throws DataAccessException {
         Collection<Integer> gameIDs = new ArrayList<>();
         String statement = "INSERT INTO games " +
