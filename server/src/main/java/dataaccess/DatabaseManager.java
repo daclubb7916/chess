@@ -43,6 +43,7 @@ public class DatabaseManager {
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
+            conn.close();
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
@@ -67,6 +68,17 @@ public class DatabaseManager {
             return conn;
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    static void configureDatabase(String statement) throws DataAccessException {
+        createDatabase();
+        try (var conn = getConnection()) {
+            try (var createTableStatement = conn.prepareStatement(statement)) {
+                createTableStatement.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
         }
     }
 }
