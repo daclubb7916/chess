@@ -57,6 +57,18 @@ public class UserDAOTests {
                         "gretchen", "ggP0zers", "gma@gmail.com")));
     }
 
+    @Test
+    public void testValidatePasswordWithValidPassword() throws DataAccessException {
+        addSomeUsers();
+        UserData user = userDAO.getUser("bernard");
+        try {
+            userDAO.validatePassword(user, "b1zn1zz");
+        } catch (DataAccessException ex) {
+            Assertions.fail(ex.getMessage());
+        }
+
+    }
+
     private void addSomeUsers() throws DataAccessException {
         String[] usernames = {"bernard", "kdot", "gretchen"};
         String[] passwords = {"b1zn1zz", "1overB0y", "ggP0zers"};
