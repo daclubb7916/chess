@@ -36,6 +36,21 @@ public class AuthDAOTests {
                 () -> authDAO.createAuth(null));
     }
 
+    @Test
+    public void testGetAuthWithValidAuthToken() throws DataAccessException {
+        String[] authTokens = addSomeAuthTokens();
+        AuthData authData = authDAO.getAuth(authTokens[1]);
+        Assertions.assertEquals("kdot", authData.username());
+    }
+
+    @Test
+    public void testGetAuthWithoutValidAuthToken() throws DataAccessException {
+        String[] authTokens = addSomeAuthTokens();
+        DataAccessException ex = Assertions.assertThrows(DataAccessException.class,
+                () -> authDAO.getAuth(UUID.randomUUID().toString()));
+        Assertions.assertEquals("AuthToken does not exist", ex.getMessage());
+    }
+
     private String[] addSomeAuthTokens() throws DataAccessException {
         String[] authTokens = {UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(), UUID.randomUUID().toString()};
