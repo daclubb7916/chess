@@ -65,6 +65,14 @@ public class AuthDAOTests {
                 () -> authDAO.getAuth(UUID.randomUUID().toString()));
     }
 
+    @Test
+    public void testIsEmptyAndClear() throws DataAccessException {
+        String[] authTokens = addSomeAuthTokens();
+        Assertions.assertFalse(authDAO.isEmpty());
+        authDAO.clear();
+        Assertions.assertTrue(authDAO.isEmpty());
+    }
+
     private String[] addSomeAuthTokens() throws DataAccessException {
         String[] authTokens = {UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(), UUID.randomUUID().toString()};
