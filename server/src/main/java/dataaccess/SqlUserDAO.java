@@ -70,7 +70,17 @@ public class SqlUserDAO implements UserDAO {
 
     @Override
     public boolean isEmpty() throws DataAccessException {
-        return false;
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT * FROM users";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    return !rs.next();
+                }
+            }
+
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
     }
 
     @Override
