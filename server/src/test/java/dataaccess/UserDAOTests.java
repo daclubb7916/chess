@@ -40,6 +40,15 @@ public class UserDAOTests {
         Assertions.assertEquals("User is not in DataBase", ex.getMessage());
     }
 
+    @Test
+    public void testCreateUserWithValidEntry() {
+        try {
+            userDAO.createUser(new UserData("jelly", "Jrodz", "jellz@joz.com"));
+        } catch (DataAccessException ex) {
+            Assertions.fail(ex.getMessage());
+        }
+    }
+
     private void addSomeUsers() throws DataAccessException {
         String[] usernames = {"bernard", "kdot", "gretchen"};
         String[] passwords = {"b1zn1zz", "1overB0y", "ggP0zers"};
