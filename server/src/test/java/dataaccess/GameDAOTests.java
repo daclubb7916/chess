@@ -113,6 +113,14 @@ public class GameDAOTests {
                 () -> gameDAO.updateGame(newGame));
     }
 
+    @Test
+    public void testIsEmptyAndClear() throws DataAccessException {
+        addSomeGames();
+        Assertions.assertFalse(gameDAO.isEmpty());
+        gameDAO.clear();
+        Assertions.assertTrue(gameDAO.isEmpty());
+    }
+
     private void addSomeGames() throws DataAccessException {
         Collection<Integer> gameIDs = new ArrayList<>();
         String statement = "INSERT INTO games " +
