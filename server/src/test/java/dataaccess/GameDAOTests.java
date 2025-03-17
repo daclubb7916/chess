@@ -51,6 +51,13 @@ public class GameDAOTests {
         Assertions.assertEquals("Name already taken", e.getMessage());
     }
 
+    @Test
+    public void testListGamesSuccessfully() throws DataAccessException {
+        addSomeGames();
+        Collection<GameData> games = gameDAO.listGames();
+        Assertions.assertEquals(3, games.size());
+    }
+
     private void addSomeGames() throws DataAccessException {
         Collection<Integer> gameIDs = new ArrayList<>();
         String statement = "INSERT INTO games " +
