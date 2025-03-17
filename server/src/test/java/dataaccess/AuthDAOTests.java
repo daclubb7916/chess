@@ -19,6 +19,23 @@ public class AuthDAOTests {
         authDAO.clear();
     }
 
+    @Test
+    public void testCreateAuthSuccess() {
+        try {
+            String authToken = authDAO.createAuth("bernie");
+            AuthData authData = authDAO.getAuth(authToken);
+            Assertions.assertEquals(authToken, authData.authToken());
+        } catch (DataAccessException ex) {
+            Assertions.fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testCreateAuthUnsuccess() {
+        DataAccessException ex = Assertions.assertThrows(DataAccessException.class,
+                () -> authDAO.createAuth(null));
+    }
+
     private String[] addSomeAuthTokens() throws DataAccessException {
         String[] authTokens = {UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(), UUID.randomUUID().toString()};
