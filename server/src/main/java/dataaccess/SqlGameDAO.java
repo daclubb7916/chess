@@ -26,7 +26,28 @@ public class SqlGameDAO implements GameDAO {
 
     @Override
     public GameData createGame(GameData game) throws DataAccessException {
-        return null;
+        try (var conn = DatabaseManager.getConnection()) {
+            String checkStatement = "SELECT * FROM games WHERE gameName=?";
+            try (var prep = conn.prepareStatement(checkStatement)) {
+                prep.setString(1, game.gameName());
+                try (var rs = prep.executeQuery()) {
+                    if (rs.next()) {
+                        throw new DataAccessException("Name already taken");
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+
+        String statement = "INSERT INTO games " +
+                "(whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
+        String json = new Gson().toJson(game.game());
+        int gameID = executeUpdate(statement, game.whiteUsername(),
+                game.blackUsername(), game.gameName(), json);
+        return new GameData(gameID, game.whiteUsername(),
+                game.blackUsername(), game.gameName(), game.game());
     }
 
     @Override
@@ -57,5 +78,39 @@ public class SqlGameDAO implements GameDAO {
     @Override
     public int getNumGames() {
         return 0;
+    }
+
+    private int executeUpdate(String statement, Object... params) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
+                for (var i = 0; i < params.length; i++) {
+                    var param = params[i];
+                    if (param instanceof String p) {
+                        ps.setString(i + 1, p);
+                    }
+                    else if (param instanceof Integer p) {
+                        ps.setInt(i + 1, p);
+                    }
+                    else if (param == null) {
+                        ps.setNull(i + 1, NULL);
+                    }
+                }
+                ps.executeUpdate();
+
+                var rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+                return 0;
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    private GameData readGame(ResultSet rs) throws SQLException {
+        ChessGame chessGame = new Gson().fromJson(rs.getString("game"), ChessGame.class);
+        return new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"),
+                rs.getString("blackUsername"), rs.getString("gameName"), chessGame);
     }
 }
