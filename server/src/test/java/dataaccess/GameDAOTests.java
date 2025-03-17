@@ -58,6 +58,26 @@ public class GameDAOTests {
         Assertions.assertEquals(3, games.size());
     }
 
+    @Test
+    public void testGetGameSuccessfully() throws DataAccessException {
+        addSomeGames();
+        GameData game = gameDAO.getGame(1);
+        Assertions.assertEquals("winnah", game.gameName());
+        game = gameDAO.getGame(2);
+        Assertions.assertEquals("joke", game.whiteUsername());
+        game = gameDAO.getGame(3);
+        Assertions.assertNull(game.blackUsername());
+    }
+
+    @Test
+    public void testGetGameUnsuccessfully() throws DataAccessException {
+        addSomeGames();
+        DataAccessException ex = Assertions.assertThrows(
+                DataAccessException.class,
+                () -> gameDAO.getGame(4));
+        Assertions.assertEquals("Game not found", ex.getMessage());
+    }
+
     private void addSomeGames() throws DataAccessException {
         Collection<Integer> gameIDs = new ArrayList<>();
         String statement = "INSERT INTO games " +
