@@ -51,6 +51,20 @@ public class AuthDAOTests {
         Assertions.assertEquals("AuthToken does not exist", ex.getMessage());
     }
 
+    @Test
+    public void testDeleteAuthWithValidAuthToken() throws DataAccessException {
+        String[] authTokens = addSomeAuthTokens();
+        authDAO.deleteAuth(authTokens[0]);
+        DataAccessException ex = Assertions.assertThrows(DataAccessException.class,
+                () -> authDAO.getAuth(authTokens[0]));
+    }
+
+    @Test
+    public void testDeleteAuthWithoutValidAuthToken() {
+        DataAccessException ex = Assertions.assertThrows(DataAccessException.class,
+                () -> authDAO.getAuth(UUID.randomUUID().toString()));
+    }
+
     private String[] addSomeAuthTokens() throws DataAccessException {
         String[] authTokens = {UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(), UUID.randomUUID().toString()};
