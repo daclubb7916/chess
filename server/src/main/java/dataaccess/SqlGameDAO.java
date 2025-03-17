@@ -36,7 +36,6 @@ public class SqlGameDAO implements GameDAO {
                     }
                 }
             }
-
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
@@ -52,7 +51,21 @@ public class SqlGameDAO implements GameDAO {
 
     @Override
     public Collection<GameData> listGames() throws DataAccessException {
-        return List.of();
+        Collection<GameData> games = new ArrayList<>();
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT * FROM games";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        games.add(readGame(rs));
+                    }
+                }
+            }
+
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
+        return games;
     }
 
     @Override
