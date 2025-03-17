@@ -17,9 +17,13 @@ public class Server {
     }
 
     public int run(int desiredPort) {
-        userDAO = new MemoryUserDAO();
-        authDAO = new MemoryAuthDAO();
-        gameDAO = new MemoryGameDAO();
+        try {
+            userDAO = new SqlUserDAO();
+            authDAO = new SqlAuthDAO();
+            gameDAO = new SqlGameDAO();
+        } catch (DataAccessException ex) {
+            System.out.println("Unable to start SQL server");
+        }
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
 
