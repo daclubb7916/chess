@@ -49,6 +49,14 @@ public class UserDAOTests {
         }
     }
 
+    @Test
+    public void testCreateUserWithUsernameAlreadyInUse() throws DataAccessException {
+        addSomeUsers();
+        DataAccessException ex = Assertions.assertThrows(DataAccessException.class,
+                () -> userDAO.createUser(new UserData(
+                        "gretchen", "ggP0zers", "gma@gmail.com")));
+    }
+
     private void addSomeUsers() throws DataAccessException {
         String[] usernames = {"bernard", "kdot", "gretchen"};
         String[] passwords = {"b1zn1zz", "1overB0y", "ggP0zers"};
