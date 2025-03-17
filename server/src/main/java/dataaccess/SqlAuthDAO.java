@@ -19,7 +19,19 @@ public class SqlAuthDAO implements AuthDAO {
 
     @Override
     public String createAuth(String username) throws DataAccessException {
-        return "";
+        String authToken = UUID.randomUUID().toString();
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "INSERT INTO authTokens (authToken, username) VALUES (?, ?)";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
+                ps.setString(2, username);
+                ps.executeUpdate();
+                return authToken;
+            }
+
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
     }
 
     @Override
