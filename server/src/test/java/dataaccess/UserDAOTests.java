@@ -69,6 +69,15 @@ public class UserDAOTests {
 
     }
 
+    @Test
+    public void testValidatePasswordWithoutValidPassword() throws DataAccessException {
+        addSomeUsers();
+        UserData user = userDAO.getUser("bernard");
+        DataAccessException ex = Assertions.assertThrows(DataAccessException.class,
+                () -> userDAO.validatePassword(user, "Buzn1zz"));
+        Assertions.assertEquals("Password does not match", ex.getMessage());
+    }
+
     private void addSomeUsers() throws DataAccessException {
         String[] usernames = {"bernard", "kdot", "gretchen"};
         String[] passwords = {"b1zn1zz", "1overB0y", "ggP0zers"};
