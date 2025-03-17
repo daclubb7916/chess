@@ -85,6 +85,8 @@ public class SqlUserDAO implements UserDAO {
 
     @Override
     public void validatePassword(UserData user, String password) throws DataAccessException {
-
+        if (!BCrypt.checkpw(password, user.password())) {
+            throw new DataAccessException("Password does not match");
+        }
     }
 }
