@@ -23,6 +23,34 @@ public class GameDAOTests {
         gameDAO.clear();
     }
 
+    @Test
+    public void testCreateGameSuccessfully() throws DataAccessException {
+        GameData gameData = gameDAO.createGame(
+                new GameData(3, "becky",
+                        null, "tress", new ChessGame()));
+        GameData sameGame = gameDAO.getGame(gameData.gameID());
+        Assertions.assertNotEquals(0, gameData.gameID());
+        Assertions.assertEquals(sameGame.gameID(), gameData.gameID());
+        Assertions.assertEquals(sameGame.whiteUsername(), gameData.whiteUsername());
+        Assertions.assertEquals(sameGame.blackUsername(), gameData.blackUsername());
+        Assertions.assertEquals(sameGame.gameName(), gameData.gameName());
+        Assertions.assertEquals(new Gson().toJson(sameGame.game()), new Gson().toJson(gameData.game()));
+    }
+
+    @Test
+    public void testCreateGameWithExistingName() throws DataAccessException {
+        GameData gameData = gameDAO.createGame(new GameData(1,
+                null, null,
+                "thisIsChess", new ChessGame()));
+        GameData newData = new GameData(5,
+                "chester", "craig",
+                "thisIsChess", new ChessGame());
+        DataAccessException e = Assertions.assertThrows(
+                DataAccessException.class,
+                () -> gameDAO.createGame(newData));
+        Assertions.assertEquals("Name already taken", e.getMessage());
+    }
+
     private void addSomeGames() throws DataAccessException {
         Collection<Integer> gameIDs = new ArrayList<>();
         String statement = "INSERT INTO games " +
