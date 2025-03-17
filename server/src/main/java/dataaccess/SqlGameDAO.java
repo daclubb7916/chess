@@ -88,7 +88,15 @@ public class SqlGameDAO implements GameDAO {
 
     @Override
     public void updateGame(GameData game) throws DataAccessException {
-
+        if ((game.gameName() == null) || (game.game() == null)) {
+            throw new DataAccessException("Invalid null values");
+        }
+        String statement = "UPDATE games " +
+                "SET whiteUsername = ?, blackUsername = ?, game = ? " +
+                "WHERE gameID=?";
+        String json = new Gson().toJson(game.game());
+        int id = executeUpdate(statement, game.whiteUsername(),
+                game.blackUsername(), json, game.gameID());
     }
 
     @Override
