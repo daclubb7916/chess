@@ -13,6 +13,16 @@ public class GameDAOTests {
 
     private static GameDAO gameDAO;
 
+    @BeforeAll
+    public static void createDatabase() throws DataAccessException {
+        gameDAO = new SqlGameDAO();
+    }
+
+    @AfterEach
+    public void emptyTable() throws DataAccessException {
+        gameDAO.clear();
+    }
+
     private void addSomeGames() throws DataAccessException {
         Collection<Integer> gameIDs = new ArrayList<>();
         String statement = "INSERT INTO games " +
