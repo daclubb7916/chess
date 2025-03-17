@@ -40,7 +40,19 @@ public class SqlUserDAO implements UserDAO {
 
     @Override
     public void createUser(UserData user) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
+            try (var ps = conn.prepareStatement(statement)) {
+                String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
+                ps.setString(1, user.username());
+                ps.setString(2, hashedPassword);
+                ps.setString(3, user.email());
+                ps.executeUpdate();
+            }
 
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
     }
 
     @Override
