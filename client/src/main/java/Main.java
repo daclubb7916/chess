@@ -7,6 +7,6 @@ public class Main {
             serverUrl = args[0];
         }
 
-        new Repl();
+        new Repl(serverUrl);
     }
 }
