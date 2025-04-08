@@ -13,4 +13,11 @@ public class Repl {
         postLogin = new PostLogin(serverUrl);
         gamePlay = new GamePlay(serverUrl);
     }
+
+    public void run() {
+        System.out.println("♔ This is Chess! Type 'help' to get started ♔");
+        Scanner scanner = new Scanner(System.in);
+        String result = "";
+
+    }
 }
