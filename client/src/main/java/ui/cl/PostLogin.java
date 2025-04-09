@@ -19,7 +19,15 @@ public class PostLogin implements ClientUI {
 
     @Override
     public String help() {
-        return "";
+        return """
+                commands:
+                    create <NAME> - to create a chess game
+                    list - to list all chess games
+                    join <ID> [WHITE|BLACK] - to join a chess game
+                    observe <ID> - to observe a chess game
+                    logout - to exit to login menu
+                    help - to view commands
+                """;
     }
 
     @Override

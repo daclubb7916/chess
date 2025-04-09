@@ -33,12 +33,13 @@ public class Repl {
 
             try {
                 result = ui.eval(line);
-                System.out.println(result);
+                System.out.print(result);
             } catch (Throwable e) {
                 var msg = e.toString();
-                System.out.println(msg);
+                System.out.print(msg);
             }
         }
+        System.out.println();
     }
 
     public enum State {

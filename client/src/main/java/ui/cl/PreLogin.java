@@ -35,7 +35,13 @@ public class PreLogin implements ClientUI {
 
     @Override
     public String help() {
-        return "";
+        return """
+                commands:
+                    register <USERNAME> <PASSWORD> <EMAIL> - to create an account
+                    login <USERNAME> <PASSWORD> - to login to your account
+                    quit - to exit application
+                    help - to view commands
+                """;
     }
 
     @Override
