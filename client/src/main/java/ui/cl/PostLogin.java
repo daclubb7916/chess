@@ -1,17 +1,18 @@
 package ui.cl;
 
 import exception.ResponseException;
+import model.GameData;
 import result.*;
 import request.*;
 import server.ServerFacade;
 import ui.*;
-
-import java.util.Arrays;
+import java.util.*;
 
 import static ui.EscapeSequences.*;
 
 public class PostLogin implements ClientUI {
     private final ServerFacade server;
+    private Collection<GameData> games;
 
     public PostLogin(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -25,10 +26,10 @@ public class PostLogin implements ClientUI {
             var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "create" -> create(params);
-                case "list" -> list(params);
-                case "join" -> join(params);
-                case "observe" -> observe(params);
+                case "create" -> create(params, request.authToken());
+                case "list" -> list(request.authToken());
+                case "join" -> join(params, request.authToken());
+                case "observe" -> observe(params, request.authToken());
                 case "logout" -> logout(request.authToken());
                 default -> help(request.authToken());
             };
@@ -42,8 +43,8 @@ public class PostLogin implements ClientUI {
                 commands:
                     create <NAME> - to create a chess game
                     list - to list all chess games
-                    join <ID> [WHITE|BLACK] - to join a chess game
-                    observe <ID> - to observe a chess game
+                    join <gameID> [WHITE|BLACK] - to join a chess game
+                    observe <gameID> - to observe a chess game
                     logout - to exit to login menu
                     help - to view commands
                 """;
@@ -56,24 +57,35 @@ public class PostLogin implements ClientUI {
         System.out.print("Chess >>> " + SET_TEXT_COLOR_MAGENTA);
     }
 
-    private ClientResult create(String... params) throws ResponseException {
-        return new ClientResult(null, State.SIGNEDIN, null);
+    private ClientResult create(String[] params, String authToken) throws ResponseException {
+        if (params.length == 1) {
+            CreateGameResult result = server.createGame(new CreateGameRequest(params[0], authToken));
+            String message = String.format("Chess Game '%s' created with gameId %d", params[0], result.gameID());
+            updateGames(authToken);
+            return new ClientResult(message, State.SIGNEDIN, authToken);
+        }
+        throw new ResponseException(400, "Expected format: create <NAME>");
     }
 
-    private ClientResult list(String... params) throws ResponseException {
-        return new ClientResult(null, State.SIGNEDIN, null);
+    private ClientResult list(String authToken) throws ResponseException {
+        return new ClientResult(null, State.SIGNEDIN, authToken);
     }
 
-    private ClientResult join(String... params) throws ResponseException {
-        return new ClientResult(null, State.SIGNEDIN, null);
+    private ClientResult join(String[] params, String authToken) throws ResponseException {
+        return new ClientResult(null, State.SIGNEDIN, authToken);
     }
 
-    private ClientResult observe(String... params) throws ResponseException {
-        return new ClientResult(null, State.SIGNEDIN, null);
+    private ClientResult observe(String[] params, String authToken) throws ResponseException {
+        return new ClientResult(null, State.SIGNEDIN, authToken);
     }
 
     private ClientResult logout(String authToken) throws ResponseException {
         server.logout(new LogoutRequest(authToken));
         return new ClientResult("Logged out user", State.SIGNEDOUT, null);
+    }
+
+    private void updateGames(String authToken) throws ResponseException {
+        ListGamesResult result = server.listGames(new ListGamesRequest(authToken));
+        games = result.games();
     }
 }

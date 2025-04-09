@@ -33,6 +33,10 @@ public class PreLogin implements ClientUI {
         }
     }
 
+    private void clear() throws ResponseException {
+        server.clear();
+    }
+
     public ClientResult help() {
         String result = """
                 commands:
