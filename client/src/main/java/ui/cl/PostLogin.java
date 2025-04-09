@@ -75,10 +75,13 @@ public class PostLogin implements ClientUI {
         StringBuilder sb = new StringBuilder();
         int i = 1;
         for (GameData game : games) {
+            String whiteUser = (game.whiteUsername() == null) ? "none" : game.whiteUsername();
+            String blackUser = (game.blackUsername() == null) ? "none" : game.blackUsername();
             sb.append("\n    ").append(i).append(". Name: ").append(game.gameName()).append(", White Player: ");
-            sb.append(game.whiteUsername()).append(", Black Player: ").append(game.blackUsername());
+            sb.append(whiteUser).append(", Black Player: ").append(blackUser);
             i += 1;
         }
+        sb.append("\n");
         return new ClientResult(sb.toString(), State.SIGNEDIN, authToken);
     }
 
