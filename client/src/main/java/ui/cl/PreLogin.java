@@ -1,6 +1,8 @@
 package ui.cl;
 
 import exception.ResponseException;
+import result.*;
+import request.*;
 import server.ServerFacade;
 import java.util.Arrays;
 import ui.*;
@@ -53,12 +55,19 @@ public class PreLogin implements ClientUI {
 
     private ClientResult register(String... params) throws ResponseException {
         if (params.length == 3) {
-
+            RegisterResult result = server.register(new RegisterRequest(params[0], params[1], params[2]));
+            String message = String.format("Registered user %s", result.username());
+            return new ClientResult(message, State.SIGNEDIN, result.authToken());
         }
         throw new ResponseException(400, "Expected format: register <USERNAME> <PASSWORD> <EMAIL>");
     }
 
     private ClientResult login(String... params) throws ResponseException {
-        return new ClientResult("", State.SIGNEDIN, null);
+        if (params.length == 2) {
+            LoginResult result = server.login(new LoginRequest(params[0], params[1]));
+            String message = String.format("Signed in as %s", result.username());
+            return new ClientResult(message, State.SIGNEDIN, result.authToken());
+        }
+        throw new ResponseException(400, "Expected format: register <USERNAME> <PASSWORD>");
     }
 }
