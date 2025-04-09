@@ -20,4 +20,9 @@ public class GamePlay implements ClientUI {
     public String help() {
         return "";
     }
+
+    @Override
+    public void printPrompt() {
+
+    }
 }

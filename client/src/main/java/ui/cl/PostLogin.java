@@ -20,4 +20,9 @@ public class PostLogin implements ClientUI {
     public String help() {
         return "";
     }
+
+    @Override
+    public void printPrompt() {
+
+    }
 }
