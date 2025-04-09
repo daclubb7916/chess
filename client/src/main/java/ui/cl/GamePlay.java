@@ -6,11 +6,9 @@ import static ui.EscapeSequences.*;
 
 public class GamePlay implements ClientUI {
     private final ServerFacade server;
-    private final String serverUrl;
 
     public GamePlay(String serverUrl) {
         server = new ServerFacade(serverUrl);
-        this.serverUrl = serverUrl;
     }
 
     @Override
@@ -18,7 +16,6 @@ public class GamePlay implements ClientUI {
         return new ClientResult(null, null, null);
     }
 
-    @Override
     public ClientResult help() {
         return new ClientResult(null, null, null);
     }

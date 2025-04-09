@@ -38,6 +38,7 @@ public class Repl {
                 var msg = e.toString();
                 System.out.print(msg);
             }
+            state = clientResult.state();
         }
         System.out.println();
     }

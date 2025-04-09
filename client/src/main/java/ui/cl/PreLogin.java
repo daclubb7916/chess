@@ -10,11 +10,9 @@ import static ui.EscapeSequences.*;
 
 public class PreLogin implements ClientUI {
     private final ServerFacade server;
-    private final String serverUrl;
 
     public PreLogin(String serverUrl) {
         server = new ServerFacade(serverUrl);
-        this.serverUrl = serverUrl;
     }
 
     @Override
@@ -35,7 +33,6 @@ public class PreLogin implements ClientUI {
         }
     }
 
-    @Override
     public ClientResult help() {
         String result = """
                 commands:
