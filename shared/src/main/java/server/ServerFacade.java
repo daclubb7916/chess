@@ -17,46 +17,80 @@ public class ServerFacade {
     }
 
     public void clear() throws ResponseException {
-        this.makeRequest("DELETE", "/db", null, null);
+        try {
+            HttpURLConnection http = setupHttp("DELETE", "/db");
+            http.connect();
+            throwIfNotSuccessful(http);
+        } catch (Exception ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
     }
 
     public CreateGameResult createGame(CreateGameRequest req) throws ResponseException {
-        return this.makeRequest("POST", "/game", req, CreateGameResult.class);
+        try {
+            HttpURLConnection http = setupHttp("POST", "/game");
+            http.addRequestProperty("authorization", req.authToken());
+            writeBody(new CreateGameRequest(req.gameName(), null), http);
+            http.connect();
+            throwIfNotSuccessful(http);
+            return readBody(http, CreateGameResult.class);
+        } catch (Exception ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
     }
 
     public void joinGame(JoinGameRequest req) throws ResponseException {
-        this.makeRequest("PUT", "/game", req, null);
+        try {
+            HttpURLConnection http = setupHttp("PUT", "/game");
+
+        } catch (Exception ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
     }
 
     public LoginResult login(LoginRequest req) throws ResponseException {
-        return this.makeRequest("POST", "/session", req, LoginResult.class);
+        try {
+            HttpURLConnection http = setupHttp("DELETE", "/db");
+
+        } catch (Exception ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
     }
 
     public void logout(LogoutRequest req) throws ResponseException {
-        this.makeRequest("DELETE", "/session", req, null);
+        try {
+            HttpURLConnection http = setupHttp("DELETE", "/session");
+
+        } catch (Exception ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
     }
 
     public RegisterResult register(RegisterRequest req) throws ResponseException {
-        return this.makeRequest("POST", "/user", req, RegisterResult.class);
+        try {
+            HttpURLConnection http = setupHttp("POST", "/user");
+
+        } catch (Exception ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
     }
 
     public ListGamesResult listGames(ListGamesRequest req) throws ResponseException {
-        return this.makeRequest("GET", "/game", req, ListGamesResult.class);
+        try {
+            HttpURLConnection http = setupHttp("GET", "/game");
+
+        } catch (Exception ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    private HttpURLConnection setupHttp(String method, String path) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-
-            writeBody(request, http);
-            http.connect();
-            throwIfNotSuccessful(http);
-            return readBody(http, responseClass);
-        } catch (ResponseException ex) {
-            throw ex;
+            return http;
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }
