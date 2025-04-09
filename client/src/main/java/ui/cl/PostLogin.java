@@ -1,6 +1,7 @@
 package ui.cl;
 
 import server.ServerFacade;
+import static ui.EscapeSequences.*;
 
 public class PostLogin implements ClientUI {
     private final ServerFacade server;
@@ -23,6 +24,7 @@ public class PostLogin implements ClientUI {
 
     @Override
     public void printPrompt() {
-
+        System.out.print("\n" + RESET_BG_COLOR + SET_TEXT_COLOR_LIGHT_GREY);
+        System.out.print("Chess >>> " + SET_TEXT_COLOR_MAGENTA);
     }
 }

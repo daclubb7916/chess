@@ -2,7 +2,6 @@ package ui;
 
 import ui.cl.*;
 import java.util.Scanner;
-import static ui.EscapeSequences.*;
 
 public class Repl {
     private final PreLogin preLogin;
@@ -21,27 +20,25 @@ public class Repl {
         System.out.println("♔ This is Chess! Type 'help' to get started ♔");
         Scanner scanner = new Scanner(System.in);
         String result = "";
+        ClientUI ui = null;
+
         while (!result.equals("quit")) {
-            System.out.print(RESET_BG_COLOR + SET_TEXT_COLOR_LIGHT_GREY);
             switch (state) {
-                case SIGNEDOUT -> {
-                    System.out.print("\nLogin ");
-                    printPrompt();
-                }
-                case SIGNEDIN -> {
-                    System.out.print("\nChess ");
-                    printPrompt();
-                }
-                case INGAME -> {
-                    System.out.print("\nChess Game ");
-                    printPrompt();
-                }
+                case SIGNEDOUT -> ui = preLogin;
+                case SIGNEDIN -> ui = postLogin;
+                case INGAME -> ui = gamePlay;
+            }
+            ui.printPrompt();
+            String line = scanner.nextLine();
+
+            try {
+                result = ui.eval(line);
+                System.out.println(result);
+            } catch (Throwable e) {
+                var msg = e.toString();
+                System.out.println(msg);
             }
         }
-    }
-
-    private void printPrompt() {
-        System.out.print(">>> " + SET_TEXT_COLOR_MAGENTA);
     }
 
     public enum State {
