@@ -65,6 +65,6 @@ public class PreLogin implements ClientUI {
             String message = String.format("Signed in as %s", result.username());
             return new ClientResult(message, State.SIGNEDIN, result.authToken());
         }
-        throw new ResponseException(400, "Expected format: register <USERNAME> <PASSWORD>");
+        throw new ResponseException(400, "Expected format: login <USERNAME> <PASSWORD>");
     }
 }
