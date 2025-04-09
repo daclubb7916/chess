@@ -42,7 +42,10 @@ public class ServerFacade {
     public void joinGame(JoinGameRequest req) throws ResponseException {
         try {
             HttpURLConnection http = setupHttp("PUT", "/game");
-
+            http.addRequestProperty("authorization", req.authToken());
+            writeBody(new JoinGameRequest(req.playerColor(), req.gameID(), null), http);
+            http.connect();
+            throwIfNotSuccessful(http);
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }
@@ -51,7 +54,10 @@ public class ServerFacade {
     public LoginResult login(LoginRequest req) throws ResponseException {
         try {
             HttpURLConnection http = setupHttp("DELETE", "/db");
-
+            writeBody(req, http);
+            http.connect();
+            throwIfNotSuccessful(http);
+            return readBody(http, LoginResult.class);
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }
@@ -60,7 +66,9 @@ public class ServerFacade {
     public void logout(LogoutRequest req) throws ResponseException {
         try {
             HttpURLConnection http = setupHttp("DELETE", "/session");
-
+            http.addRequestProperty("authorization", req.authorization());
+            http.connect();
+            throwIfNotSuccessful(http);
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }
@@ -69,7 +77,10 @@ public class ServerFacade {
     public RegisterResult register(RegisterRequest req) throws ResponseException {
         try {
             HttpURLConnection http = setupHttp("POST", "/user");
-
+            writeBody(req, http);
+            http.connect();
+            throwIfNotSuccessful(http);
+            return readBody(http, RegisterResult.class);
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }
@@ -78,7 +89,10 @@ public class ServerFacade {
     public ListGamesResult listGames(ListGamesRequest req) throws ResponseException {
         try {
             HttpURLConnection http = setupHttp("GET", "/game");
-
+            http.addRequestProperty("authorization", req.authToken());
+            http.connect();
+            throwIfNotSuccessful(http);
+            return readBody(http, ListGamesResult.class);
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }
