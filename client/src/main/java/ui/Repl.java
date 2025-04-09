@@ -21,6 +21,7 @@ public class Repl {
         Scanner scanner = new Scanner(System.in);
         String result = "";
         while (!result.equals("quit")) {
+            System.out.print(RESET_BG_COLOR + SET_TEXT_COLOR_LIGHT_GREY);
             switch (state) {
                 case SIGNEDOUT -> {
                     System.out.print("\nLogin ");
@@ -39,6 +40,12 @@ public class Repl {
     }
 
     private void printPrompt() {
-        System.out.print(RESET_BG_COLOR + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_MAGENTA);
+        System.out.print(">>> " + SET_TEXT_COLOR_MAGENTA);
+    }
+
+    public enum State {
+        SIGNEDOUT,
+        SIGNEDIN,
+        INGAME
     }
 }
