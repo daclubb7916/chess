@@ -1,6 +1,7 @@
 package ui.cl;
 
 import server.ServerFacade;
+import ui.*;
 import static ui.EscapeSequences.*;
 
 public class PostLogin implements ClientUI {
@@ -13,13 +14,13 @@ public class PostLogin implements ClientUI {
     }
 
     @Override
-    public String eval(String input) {
-        return "";
+    public ClientResult eval(ClientRequest request) {
+        return new ClientResult(null, null, null);
     }
 
     @Override
-    public String help() {
-        return """
+    public ClientResult help() {
+        String result = """
                 commands:
                     create <NAME> - to create a chess game
                     list - to list all chess games
@@ -28,6 +29,8 @@ public class PostLogin implements ClientUI {
                     logout - to exit to login menu
                     help - to view commands
                 """;
+        // change authToken from null once you figure stuff out
+        return new ClientResult(result, State.SIGNEDIN, null);
     }
 
     @Override

@@ -2,9 +2,8 @@ package ui.cl;
 
 import exception.ResponseException;
 import server.ServerFacade;
-
 import java.util.Arrays;
-
+import ui.*;
 import static ui.EscapeSequences.*;
 
 public class PreLogin implements ClientUI {
@@ -17,31 +16,33 @@ public class PreLogin implements ClientUI {
     }
 
     @Override
-    public String eval(String input) {
+    public ClientResult eval(ClientRequest request) {
         try {
-            var tokens = input.toLowerCase().split(" ");
-            var cmd = (tokens.length > 0) ? tokens[0] : "help";
+            String input = request.input();
+            var tokens = input.split(" ");
+            var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "register" -> register(params);
                 case "login" -> login(params);
-                case "quit" -> "quit";
+                case "quit" -> new ClientResult("quit", State.SIGNEDOUT, request.authToken());
                 default -> help();
             };
         } catch (ResponseException ex) {
-            return ex.getMessage();
+            return new ClientResult(ex.getMessage(), State.SIGNEDOUT, request.authToken());
         }
     }
 
     @Override
-    public String help() {
-        return """
+    public ClientResult help() {
+        String result = """
                 commands:
                     register <USERNAME> <PASSWORD> <EMAIL> - to create an account
                     login <USERNAME> <PASSWORD> - to login to your account
                     quit - to exit application
                     help - to view commands
                 """;
+        return new ClientResult(result, State.SIGNEDOUT, null);
     }
 
     @Override
@@ -50,11 +51,14 @@ public class PreLogin implements ClientUI {
         System.out.print("Login >>> " + SET_TEXT_COLOR_MAGENTA);
     }
 
-    private String register(String... params) throws ResponseException {
-        return "";
+    private ClientResult register(String... params) throws ResponseException {
+        if (params.length == 3) {
+
+        }
+        throw new ResponseException(400, "Expected format: register <USERNAME> <PASSWORD> <EMAIL>");
     }
 
-    private String login(String... params) throws ResponseException {
-        return "";
+    private ClientResult login(String... params) throws ResponseException {
+        return new ClientResult("", State.SIGNEDIN, null);
     }
 }

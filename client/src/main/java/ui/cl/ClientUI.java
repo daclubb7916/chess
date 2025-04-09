@@ -1,7 +1,9 @@
 package ui.cl;
 
+import ui.*;
+
 public interface ClientUI {
-    String eval(String input);
-    String help();
+    ClientResult eval(ClientRequest request);
+    ClientResult help();
     void printPrompt();
 }

@@ -1,6 +1,7 @@
 package ui.cl;
 
 import server.ServerFacade;
+import ui.*;
 import static ui.EscapeSequences.*;
 
 public class GamePlay implements ClientUI {
@@ -13,13 +14,13 @@ public class GamePlay implements ClientUI {
     }
 
     @Override
-    public String eval(String input) {
-        return "";
+    public ClientResult eval(ClientRequest request) {
+        return new ClientResult(null, null, null);
     }
 
     @Override
-    public String help() {
-        return "";
+    public ClientResult help() {
+        return new ClientResult(null, null, null);
     }
 
     @Override

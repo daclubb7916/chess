@@ -19,10 +19,10 @@ public class Repl {
     public void run() {
         System.out.println("♔ This is Chess! Type 'help' to get started ♔");
         Scanner scanner = new Scanner(System.in);
-        String result = "";
+        ClientResult clientResult = new ClientResult("", state, null);
         ClientUI ui = null;
 
-        while (!result.equals("quit")) {
+        while (!clientResult.result().equals("quit")) {
             switch (state) {
                 case SIGNEDOUT -> ui = preLogin;
                 case SIGNEDIN -> ui = postLogin;
@@ -32,19 +32,13 @@ public class Repl {
             String line = scanner.nextLine();
 
             try {
-                result = ui.eval(line);
-                System.out.print(result);
+                clientResult = ui.eval(new ClientRequest(line, clientResult.authToken()));
+                System.out.print(clientResult.result());
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
             }
         }
         System.out.println();
-    }
-
-    public enum State {
-        SIGNEDOUT,
-        SIGNEDIN,
-        INGAME
     }
 }
