@@ -1,11 +1,11 @@
-package ui.cl;
+package ui;
 
 import exception.ResponseException;
 import model.GameData;
 import result.*;
 import request.*;
 import server.ServerFacade;
-import ui.*;
+
 import java.util.*;
 import static ui.EscapeSequences.*;
 

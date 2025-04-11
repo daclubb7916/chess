@@ -1,6 +1,9 @@
 package client;
 
+import chess.ChessGame;
+import dataaccess.*;
 import model.GameData;
+import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
 import server.ServerFacade;
@@ -16,6 +19,13 @@ public class ServerFacadeTests {
 
     private static Server server;
     static ServerFacade facade;
+    private SqlUserDAO userDAO;
+    private SqlAuthDAO authDAO;
+    private SqlGameDAO gameDAO;
+
+    public ServerFacadeTests() {
+        configureDAOs();
+    }
 
     @BeforeAll
     public static void init() {
@@ -34,30 +44,56 @@ public class ServerFacadeTests {
     @BeforeEach
     public void clear() {
         try {
-            facade.clear();
-        } catch (ResponseException ex) {
-            Assertions.fail("Clear method threw exception: " + ex.getMessage());
+            userDAO.clear();
+            authDAO.clear();
+            gameDAO.clear();
+        } catch (DataAccessException ex) {
+            System.out.println("Error clearing database: " + ex.getMessage());
         }
     }
 
     @Test
-    public void createGameTests() {
+    public void clearTest() {
+        addSomeGames();
         try {
-            RegisterRequest registerRequest = new RegisterRequest("dak", "duk", "dok@byu.edu");
-            RegisterResult registerResult = facade.register(registerRequest);
-            CreateGameRequest createGameRequest = new CreateGameRequest("jenga", registerResult.authToken());
+            Assertions.assertDoesNotThrow(() -> facade.clear());
+            Assertions.assertTrue(gameDAO.isEmpty());
+            Assertions.assertTrue(userDAO.isEmpty());
+            Assertions.assertTrue(authDAO.isEmpty());
+        } catch (DataAccessException ex) {
+            Assertions.fail("Threw exception: " + ex.getMessage());
+        }
+    }
+
+    @Test
+    public void createGamePositiveTest() {
+        try {
+            String authToken = getAuthToken();
+            CreateGameRequest createGameRequest = new CreateGameRequest("jenga", authToken);
             CreateGameResult createResult = facade.createGame(createGameRequest);
-            ListGamesRequest listGamesRequest = new ListGamesRequest(registerResult.authToken());
-            ListGamesResult listGamesResult = facade.listGames(listGamesRequest);
-            Collection<GameData> games = listGamesResult.games();
+            Collection<GameData> games = gameDAO.listGames();
+            boolean gameAdded = false;
             for (GameData game : games) {
                 if (game.gameName().equals("jenga")) {
-                    Assertions.assertTrue(true);
-                } else {
-                    Assertions.fail("Game names did not match");
+                    gameAdded = true;
+                    break;
                 }
             }
+            Assertions.assertTrue(gameAdded);
 
+        } catch (ResponseException ex) {
+            Assertions.fail("Threw exception :" + ex.getMessage());
+        } catch (DataAccessException e) {
+            System.out.println("Error getting games");
+        }
+    }
+
+    @Test
+    public void createGameNegativeTest() {
+        try {
+            String authToken = getAuthToken();
+            addSomeGames();
+            CreateGameRequest createGameRequest = new CreateGameRequest("quackers", authToken);
             Assertions.assertThrows(ResponseException.class, () -> facade.createGame(createGameRequest));
 
         } catch (ResponseException ex) {
@@ -66,26 +102,38 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void joinGameTests() {
+    public void joinGamePositiveTest() {
         try {
-            RegisterRequest registerRequest = new RegisterRequest("dak", "duk", "dok@byu.edu");
-            RegisterResult registerResult = facade.register(registerRequest);
-            CreateGameRequest createGameRequest = new CreateGameRequest("jenga", registerResult.authToken());
-            CreateGameResult createResult = facade.createGame(createGameRequest);
+            String authToken = getAuthToken();
+            addSomeGames();
             JoinGameRequest joinGameRequest =
-                    new JoinGameRequest("WHITE", createResult.gameID(), registerResult.authToken());
-            facade.joinGame(joinGameRequest);
-            ListGamesRequest listGamesRequest = new ListGamesRequest(registerResult.authToken());
-            ListGamesResult listGamesResult = facade.listGames(listGamesRequest);
-            Collection<GameData> games = listGamesResult.games();
+                    new JoinGameRequest("WHITE", 1, authToken);
+            Assertions.assertDoesNotThrow(() -> facade.joinGame(joinGameRequest));
+            Collection<GameData> games = gameDAO.listGames();
+            boolean containsUser = false;
             for (GameData game : games) {
                 if (game.whiteUsername().equals("dak")) {
-                    Assertions.assertTrue(true);
-                } else {
-                    Assertions.fail("Usernames did not match");
+                    containsUser = true;
+                    break;
                 }
             }
+            Assertions.assertTrue(containsUser);
 
+        } catch (ResponseException ex) {
+            Assertions.fail("Threw exception :" + ex.getMessage());
+        } catch (DataAccessException exc) {
+            System.out.println("Error getting games");
+        }
+    }
+
+    @Test
+    public void joinGameNegativeTest() {
+        try {
+            String authToken = getAuthToken();
+            addSomeGames();
+            JoinGameRequest joinGameRequest =
+                    new JoinGameRequest("WHITE", 1, authToken);
+            facade.joinGame(joinGameRequest);
             Assertions.assertThrows(ResponseException.class, () -> facade.joinGame(joinGameRequest));
 
         } catch (ResponseException ex) {
@@ -94,27 +142,74 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void loginTests() {
-        RegisterRequest registerRequest = new RegisterRequest("dak", "duk", "dok@byu.edu");
-        Assertions.assertDoesNotThrow(() -> facade.register(registerRequest));
+    public void loginPositiveTest() {
+        addUser();
         LoginRequest loginRequest = new LoginRequest("dak", "duk");
         Assertions.assertDoesNotThrow(() -> facade.login(loginRequest));
+    }
 
+    @Test
+    public void loginNegativeTest() {
+        addUser();
         LoginRequest badRequest = new LoginRequest("dak", "incorrect_password");
         Assertions.assertThrows(ResponseException.class, () -> facade.login(badRequest));
     }
 
     @Test
-    public void logoutTests() {
+    public void logoutPositiveTest() {
         try {
-            RegisterRequest registerRequest = new RegisterRequest("dak", "duk", "dok@byu.edu");
-            RegisterResult registerResult = facade.register(registerRequest);
-            LogoutRequest logoutRequest = new LogoutRequest(registerResult.authToken());
-            facade.logout(logoutRequest);
-            CreateGameRequest createGameRequest = new CreateGameRequest("jenga", registerResult.authToken());
-            Assertions.assertThrows(ResponseException.class, () -> facade.createGame(createGameRequest));
+            String authToken = getAuthToken();
+            LogoutRequest logoutRequest = new LogoutRequest(authToken);
+            Assertions.assertDoesNotThrow(() -> facade.logout(logoutRequest));
+        } catch (ResponseException ex) {
+            Assertions.fail("Threw exception :" + ex.getMessage());
+        }
+    }
 
+    @Test
+    public void logoutNegativeTest() {
+        try {
+            String authToken = getAuthToken();
+            authDAO.deleteAuth(authToken);
+            LogoutRequest logoutRequest = new LogoutRequest(authToken);
             Assertions.assertThrows(ResponseException.class, () -> facade.logout(logoutRequest));
+        } catch (ResponseException ex) {
+            Assertions.fail("Threw exception :" + ex.getMessage());
+        } catch (DataAccessException exc) {
+            System.out.println("Error deleting authToken");
+        }
+    }
+
+    @Test
+    public void registerPositiveTest() {
+        RegisterRequest registerRequest = new RegisterRequest("dak", "duk", "dok@byu.edu");
+        Assertions.assertDoesNotThrow(() -> facade.register(registerRequest));
+    }
+
+    @Test
+    public void registerNegativeTest() {
+        addUser();
+        Assertions.assertThrows(ResponseException.class, () -> facade.register(
+                new RegisterRequest("dak", "duk", "dok@byu.edu")));
+    }
+
+    @Test
+    public void listGamesPositiveTest() {
+        try {
+            String authToken = getAuthToken();
+            addSomeGames();
+            ListGamesRequest listGamesRequest = new ListGamesRequest(authToken);
+            ListGamesResult listGamesResult = facade.listGames(listGamesRequest);
+            Collection<GameData> games = listGamesResult.games();
+            boolean gameReturned = false;
+            for (GameData game : games) {
+                if ((game.gameName().equals("quackers")) || (game.gameName().equals("lemony"))) {
+                    gameReturned = true;
+                    break;
+                }
+            }
+            Assertions.assertTrue(gameReturned);
+            Assertions.assertEquals(2, games.size());
 
         } catch (ResponseException ex) {
             Assertions.fail("Threw exception :" + ex.getMessage());
@@ -122,36 +217,46 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void registerTests() {
-        RegisterRequest registerRequest = new RegisterRequest("dak", "duk", "dok@byu.edu");
-        Assertions.assertDoesNotThrow(() -> facade.register(registerRequest));
-
-        Assertions.assertThrows(ResponseException.class, () -> facade.register(registerRequest));
+    public void listGamesNegativeTest() {
+        ListGamesRequest badRequest = new ListGamesRequest(UUID.randomUUID().toString());
+        Assertions.assertThrows(ResponseException.class, () -> facade.listGames(badRequest));
     }
 
-    @Test
-    public void listGamesTests() {
+    private void addUser() {
         try {
-            RegisterRequest registerRequest = new RegisterRequest("dak", "duk", "dok@byu.edu");
-            RegisterResult registerResult = facade.register(registerRequest);
-            CreateGameRequest createGameRequest = new CreateGameRequest("jenga", registerResult.authToken());
-            CreateGameResult createResult = facade.createGame(createGameRequest);
-            ListGamesRequest listGamesRequest = new ListGamesRequest(registerResult.authToken());
-            ListGamesResult listGamesResult = facade.listGames(listGamesRequest);
-            Collection<GameData> games = listGamesResult.games();
-            for (GameData game : games) {
-                if (game.gameName().equals("jenga")) {
-                    Assertions.assertTrue(true);
-                } else {
-                    Assertions.fail("Game names did not match");
-                }
-            }
+            userDAO.createUser(new UserData("dak", "duk", "dok@byu.edu"));
+        } catch (DataAccessException ex) {
+            System.out.println("Error creating user");
+        }
+    }
 
-            ListGamesRequest badRequest = new ListGamesRequest(UUID.randomUUID().toString());
-            Assertions.assertThrows(ResponseException.class, () -> facade.listGames(badRequest));
+    private String getAuthToken() throws ResponseException {
+        try {
+            userDAO.createUser(new UserData("dak", "duk", "dok@byu.edu"));
+            return authDAO.createAuth("dak");
+        } catch (DataAccessException ex) {
+            throw new ResponseException(400, "Error getting authData");
+        }
+    }
 
-        } catch (ResponseException ex) {
-            Assertions.fail("Threw exception :" + ex.getMessage());
+    private void addSomeGames() {
+        try {
+            GameData game1 = gameDAO.createGame(new GameData(
+                    1, null, null, "quackers", new ChessGame()));
+            GameData game2 = gameDAO.createGame(new GameData(
+                    2, null, null, "lemony", new ChessGame()));
+        } catch (DataAccessException ex) {
+            System.out.println("Error adding games to database");
+        }
+    }
+
+    private void configureDAOs() {
+        try {
+            userDAO = new SqlUserDAO();
+            authDAO = new SqlAuthDAO();
+            gameDAO = new SqlGameDAO();
+        } catch (DataAccessException ex) {
+            System.out.println("Error creating data access objects");
         }
     }
 }

@@ -1,6 +1,4 @@
-package ui.cl;
-
-import ui.*;
+package ui;
 
 public interface ClientUI {
     ClientResult eval(ClientRequest request);

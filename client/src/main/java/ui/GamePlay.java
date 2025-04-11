@@ -1,7 +1,7 @@
-package ui.cl;
+package ui;
 
 import server.ServerFacade;
-import ui.*;
+
 import static ui.EscapeSequences.*;
 
 public class GamePlay implements ClientUI {

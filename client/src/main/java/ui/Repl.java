@@ -1,6 +1,5 @@
 package ui;
 
-import ui.cl.*;
 import java.util.Scanner;
 
 public class Repl {

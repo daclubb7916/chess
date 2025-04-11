@@ -1,11 +1,11 @@
-package ui.cl;
+package ui;
 
 import exception.ResponseException;
 import result.*;
 import request.*;
 import server.ServerFacade;
 import java.util.Arrays;
-import ui.*;
+
 import static ui.EscapeSequences.*;
 
 public class PreLogin implements ClientUI {
