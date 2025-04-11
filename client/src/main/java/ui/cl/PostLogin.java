@@ -113,7 +113,15 @@ public class PostLogin implements ClientUI {
     }
 
     private ClientResult observe(String[] params, String authToken) throws ResponseException {
-        return new ClientResult(null, State.SIGNEDIN, authToken);
+        if (params.length != 1) {
+            throw new ResponseException(400, "Expected format: observe <ID>");
+        }
+        int gameIndex = parseID(params[0]);
+        if (games.isEmpty()) {
+            throw new ResponseException(400, "No games yet");
+        }
+        whiteChessBoard();
+        return new ClientResult("", State.SIGNEDIN, authToken);
     }
 
     private ClientResult logout(String authToken) throws ResponseException {
