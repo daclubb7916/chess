@@ -25,6 +25,7 @@ public class PreLogin implements ClientUI {
             return switch (cmd) {
                 case "register" -> register(params);
                 case "login" -> login(params);
+                case "clear" -> clear();
                 case "quit" -> new ClientResult("quit", State.SIGNEDOUT, request.authToken());
                 default -> help();
             };
@@ -33,8 +34,9 @@ public class PreLogin implements ClientUI {
         }
     }
 
-    private void clear() throws ResponseException {
+    private ClientResult clear() throws ResponseException {
         server.clear();
+        return new ClientResult("Database cleared", State.SIGNEDOUT, null);
     }
 
     public ClientResult help() {

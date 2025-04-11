@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import request.*;
 import result.*;
-
 import java.io.*;
 import java.net.*;
+import java.util.HashMap;
 
 public class ServerFacade {
 
@@ -53,7 +53,7 @@ public class ServerFacade {
 
     public LoginResult login(LoginRequest req) throws ResponseException {
         try {
-            HttpURLConnection http = setupHttp("DELETE", "/db");
+            HttpURLConnection http = setupHttp("POST", "/session");
             writeBody(req, http);
             http.connect();
             throwIfNotSuccessful(http);
@@ -125,7 +125,9 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             try (InputStream respErr = http.getErrorStream()) {
                 if (respErr != null) {
-                    throw ResponseException.fromJson(respErr);
+                    var map = new Gson().fromJson(new InputStreamReader(respErr), HashMap.class);
+                    String message = map.get("message").toString();
+                    throw new ResponseException(status, message);
                 }
             }
 
