@@ -203,13 +203,14 @@ public class ServerFacadeTests {
             Collection<GameData> games = listGamesResult.games();
             boolean gameReturned = false;
             for (GameData game : games) {
-                if ((game.gameName().equals("quackers")) || (game.gameName().equals("lemony"))) {
+                if ((game.gameName().equals("quackers")) || (game.gameName().equals("lemony")) ||
+                        (game.gameName().equals("squirrel"))) {
                     gameReturned = true;
                     break;
                 }
             }
             Assertions.assertTrue(gameReturned);
-            Assertions.assertEquals(2, games.size());
+            Assertions.assertEquals(3, games.size());
 
         } catch (ResponseException ex) {
             Assertions.fail("Threw exception :" + ex.getMessage());
@@ -245,6 +246,8 @@ public class ServerFacadeTests {
                     1, null, null, "quackers", new ChessGame()));
             GameData game2 = gameDAO.createGame(new GameData(
                     2, null, null, "lemony", new ChessGame()));
+            GameData game3 = gameDAO.createGame(new GameData(
+                    3, null, null, "squirrel", new ChessGame()));
         } catch (DataAccessException ex) {
             System.out.println("Error adding games to database");
         }
