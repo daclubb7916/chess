@@ -17,7 +17,16 @@ public class GamePlay implements ClientUI {
     }
 
     public ClientResult help() {
-        return new ClientResult(null, null, null);
+        String result = """
+                commands:
+                    create <NAME> - to create a chess game
+                    list - to list all chess games
+                    join <ID> [WHITE|BLACK] - to join a chess game
+                    observe <ID> - to observe a chess game
+                    logout - to exit to login menu
+                    help - to view commands
+                """;
+        return new ClientResult(result, State.INGAME, null);
     }
 
     @Override
