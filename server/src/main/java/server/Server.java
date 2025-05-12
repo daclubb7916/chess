@@ -3,17 +3,19 @@ package server;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import handler.*;
+import server.websocket.WebSocketHandler;
 import spark.*;
 import dataaccess.*;
 import java.util.Map;
 
 public class Server {
-
     private UserDAO userDAO;
     private AuthDAO authDAO;
     private GameDAO gameDAO;
+    private final WebSocketHandler webSocketHandler;
 
     public Server() {
+        webSocketHandler = new WebSocketHandler();
     }
 
     public int run(int desiredPort) {
@@ -26,6 +28,7 @@ public class Server {
         }
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
+        Spark.webSocket("/ws", webSocketHandler);
 
         Spark.delete("/db", new ClearHandler(userDAO, authDAO, gameDAO));
         Spark.post("/user", new RegisterHandler(userDAO, authDAO));
