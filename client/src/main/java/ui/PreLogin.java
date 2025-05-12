@@ -26,17 +26,17 @@ public class PreLogin implements ClientUI {
                 case "register" -> register(params);
                 case "login" -> login(params);
                 case "clear" -> clear();
-                case "quit" -> new ClientResult("quit", State.SIGNEDOUT, request.authToken());
+                case "quit" -> new ClientResult("quit", State.SIGNEDOUT, request.authToken(), null);
                 default -> help();
             };
         } catch (ResponseException ex) {
-            return new ClientResult(ex.getMessage(), State.SIGNEDOUT, request.authToken());
+            return new ClientResult(ex.getMessage(), State.SIGNEDOUT, request.authToken(), null);
         }
     }
 
     private ClientResult clear() throws ResponseException {
         server.clear();
-        return new ClientResult("Database cleared", State.SIGNEDOUT, null);
+        return new ClientResult("Database cleared", State.SIGNEDOUT, null, null);
     }
 
     public ClientResult help() {
@@ -47,7 +47,7 @@ public class PreLogin implements ClientUI {
                     quit - to exit application
                     help - to view commands
                 """;
-        return new ClientResult(result, State.SIGNEDOUT, null);
+        return new ClientResult(result, State.SIGNEDOUT, null, null);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class PreLogin implements ClientUI {
         if (params.length == 3) {
             RegisterResult result = server.register(new RegisterRequest(params[0], params[1], params[2]));
             String message = String.format("Registered user %s", result.username());
-            return new ClientResult(message, State.SIGNEDIN, result.authToken());
+            return new ClientResult(message, State.SIGNEDIN, result.authToken(), null);
         }
         throw new ResponseException(400, "Expected format: register <USERNAME> <PASSWORD> <EMAIL>");
     }
@@ -69,7 +69,7 @@ public class PreLogin implements ClientUI {
         if (params.length == 2) {
             LoginResult result = server.login(new LoginRequest(params[0], params[1]));
             String message = String.format("Signed in as %s", result.username());
-            return new ClientResult(message, State.SIGNEDIN, result.authToken());
+            return new ClientResult(message, State.SIGNEDIN, result.authToken(), null);
         }
         throw new ResponseException(400, "Expected format: login <USERNAME> <PASSWORD>");
     }

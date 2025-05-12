@@ -12,7 +12,7 @@ public class GamePlay implements ClientUI {
 
     @Override
     public ClientResult eval(ClientRequest request) {
-        return new ClientResult(null, null, null);
+        return new ClientResult(null, null, null, null);
     }
 
     public ClientResult help() {
@@ -25,7 +25,7 @@ public class GamePlay implements ClientUI {
                     legal moves <piece> - highlights legal moves for a chess piece
                     help - to view commands
                 """;
-        return new ClientResult(result, State.INGAME, null);
+        return new ClientResult(result, State.INGAME, null, null);
     }
 
     @Override

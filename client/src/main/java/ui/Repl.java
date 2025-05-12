@@ -18,7 +18,7 @@ public class Repl {
     public void run() {
         System.out.println("♔ This is Chess! Type 'help' to get started ♔");
         Scanner scanner = new Scanner(System.in);
-        ClientResult clientResult = new ClientResult("", state, null);
+        ClientResult clientResult = new ClientResult("", state, null, null);
         ClientUI ui = null;
 
         while (!clientResult.result().equals("quit")) {
@@ -31,7 +31,7 @@ public class Repl {
             String line = scanner.nextLine();
 
             try {
-                clientResult = ui.eval(new ClientRequest(line, clientResult.authToken()));
+                clientResult = ui.eval(new ClientRequest(line, clientResult.authToken(), clientResult.gameData()));
                 System.out.print(clientResult.result());
             } catch (Throwable e) {
                 var msg = e.toString();
