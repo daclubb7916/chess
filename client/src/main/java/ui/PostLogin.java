@@ -1,5 +1,7 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import exception.ResponseException;
 import model.GameData;
 import result.*;
@@ -97,17 +99,16 @@ public class PostLogin implements ClientUI {
             throw new ResponseException(400, "No games yet");
         }
         GameData game = games.get(gameIndex);
+        ChessBoard board = game.game().getBoard();
 
         switch (params[1]) {
             case "WHITE" -> {
                 server.joinGame(new JoinGameRequest("WHITE", game.gameID(), authToken));
-
-                whiteChessBoard();
+                System.out.print(board.stringBoard(ChessGame.TeamColor.WHITE));
             }
             case "BLACK" -> {
                 server.joinGame(new JoinGameRequest("BLACK", game.gameID(), authToken));
-
-                blackChessBoard();
+                System.out.print(board.stringBoard(ChessGame.TeamColor.BLACK));
             }
             default -> throw new ResponseException(400, "Acceptable inputs for team color: [WHITE|BLACK]");
         }
@@ -124,8 +125,9 @@ public class PostLogin implements ClientUI {
             throw new ResponseException(400, "No games yet");
         }
         GameData game = games.get(gameIndex);
+        ChessBoard board = game.game().getBoard();
+        System.out.print(board.stringBoard(ChessGame.TeamColor.WHITE));
 
-        whiteChessBoard();
         return new ClientResult("", State.INGAME, authToken, game.gameID());
     }
 
@@ -146,95 +148,4 @@ public class PostLogin implements ClientUI {
         }
     }
 
-    private void whiteChessBoard() {
-        System.out.println();
-        printWhiteAlpha();
-        for (int i = 8; i > 0; i--) {
-            System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
-            System.out.print(" " + i + " ");
-            whiteRow(i);
-            System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
-            System.out.println(" " + i + " " + RESET_BG_COLOR);
-        }
-        printWhiteAlpha();
-    }
-
-    private void printWhiteAlpha() {
-        String[] columns = {" ", "a", "b", "c", "d", "e", "f", "g", "h", " "};
-        System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
-        for (int i = 0; i < 10; i++) {
-            System.out.print(" " + columns[i] + " ");
-        }
-        System.out.println(RESET_BG_COLOR + RESET_TEXT_COLOR);
-    }
-
-    private void whiteRow(int row) {
-        String[] whitePieces = {WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN,
-                WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK};
-        String[] blackPieces = {BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN,
-                BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK};
-        System.out.print(SET_TEXT_COLOR_BLUE);
-
-        for (int i = 0; i < 8; i++) {
-            if ((row + i) % 2 == 0) {
-                System.out.print(SET_BG_COLOR_WHITE);
-            } else {
-                System.out.print(SET_BG_COLOR_BLACK);
-            }
-
-            switch (row) {
-                case 8 -> System.out.print(blackPieces[i]);
-                case 7 -> System.out.print(BLACK_PAWN);
-                case 2 -> System.out.print(WHITE_PAWN);
-                case 1 -> System.out.print(whitePieces[i]);
-                default -> System.out.print(EMPTY);
-            }
-        }
-    }
-
-    private void blackChessBoard() {
-        System.out.println();
-        printBlackAlpha();
-        for (int i = 1; i < 9; i++) {
-            System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
-            System.out.print(" " + i + " ");
-            blackRow(i);
-            System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
-            System.out.println(" " + i + " " + RESET_BG_COLOR);
-        }
-        printBlackAlpha();
-    }
-
-    private void printBlackAlpha() {
-        String[] columns = {" ", "a", "b", "c", "d", "e", "f", "g", "h", " "};
-        System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
-        for (int i = 9; i > -1; i--) {
-            System.out.print(" " + columns[i] + " ");
-        }
-        System.out.println(RESET_BG_COLOR + RESET_TEXT_COLOR);
-    }
-
-    private void blackRow(int row) {
-        String[] whitePieces = {WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_KING,
-                WHITE_QUEEN, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK};
-        String[] blackPieces = {BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_KING,
-                BLACK_QUEEN, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK};
-        System.out.print(SET_TEXT_COLOR_BLUE);
-
-        for (int i = 0; i < 8; i++) {
-            if ((row + i) % 2 == 1) {
-                System.out.print(SET_BG_COLOR_WHITE);
-            } else {
-                System.out.print(SET_BG_COLOR_BLACK);
-            }
-
-            switch (row) {
-                case 8 -> System.out.print(blackPieces[i]);
-                case 7 -> System.out.print(BLACK_PAWN);
-                case 2 -> System.out.print(WHITE_PAWN);
-                case 1 -> System.out.print(whitePieces[i]);
-                default -> System.out.print(EMPTY);
-            }
-        }
-    }
 }

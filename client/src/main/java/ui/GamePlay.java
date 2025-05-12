@@ -54,4 +54,6 @@ public class GamePlay implements ClientUI {
         System.out.print("\n" + RESET_BG_COLOR + SET_TEXT_COLOR_LIGHT_GREY);
         System.out.print("Chess Game >>> " + SET_TEXT_COLOR_MAGENTA);
     }
+
+    // if leave or resign then set entering to true
 }

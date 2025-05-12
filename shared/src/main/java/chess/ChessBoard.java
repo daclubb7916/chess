@@ -2,6 +2,8 @@ package chess;
 
 import java.util.Arrays;
 
+import static chess.EscapeSequences.*;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -105,5 +107,134 @@ public class ChessBoard implements Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    public String stringBoard(ChessGame.TeamColor color) {
+        if (color == ChessGame.TeamColor.WHITE) {
+            return whiteChessBoard();
+        }
+        return blackChessBoard();
+    }
+
+    private String whiteChessBoard() {
+        StringBuilder stringBuilder = new StringBuilder("\n");
+        stringBuilder.append(whiteAlpha());
+        for (int i = 8; i > 0; i--) {
+            stringBuilder.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
+            stringBuilder.append(" ").append(i).append(" ");
+            stringBuilder.append(whiteRow(i - 1));
+            stringBuilder.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
+            stringBuilder.append(" ").append(i).append(" ").append(RESET_BG_COLOR);
+            stringBuilder.append("\n");
+        }
+        stringBuilder.append(whiteAlpha());
+        return stringBuilder.toString();
+    }
+
+    private String whiteAlpha() {
+        String[] columns = {" ", "a", "b", "c", "d", "e", "f", "g", "h", " "};
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
+        for (int i = 0; i < 10; i++) {
+            stringBuilder.append(" ").append(columns[i]).append(" ");
+        }
+        stringBuilder.append(RESET_BG_COLOR + RESET_TEXT_COLOR).append('\n');
+        return stringBuilder.toString();
+    }
+
+    private String whiteRow(int row) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int col = 0; col < 8; col++) {
+            if ((row + col) % 2 == 1) {
+                stringBuilder.append(SET_BG_COLOR_WHITE);
+            } else {
+                stringBuilder.append(SET_BG_COLOR_BLACK);
+            }
+
+            ChessPiece piece = squares[row][col]; // This might throw an error if null
+            stringBuilder.append(printPiece(piece));
+        }
+        return stringBuilder.toString();
+    }
+
+    private String printPiece(ChessPiece piece) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (piece == null) {
+            stringBuilder.append(EMPTY);
+
+        } else {
+
+            if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                stringBuilder.append(SET_TEXT_COLOR_RED);
+                switch (piece.getPieceType()) {
+                    case ChessPiece.PieceType.PAWN -> stringBuilder.append(WHITE_PAWN);
+                    case ChessPiece.PieceType.ROOK -> stringBuilder.append(WHITE_ROOK);
+                    case ChessPiece.PieceType.BISHOP -> stringBuilder.append(WHITE_BISHOP);
+                    case ChessPiece.PieceType.KNIGHT -> stringBuilder.append(WHITE_KNIGHT);
+                    case ChessPiece.PieceType.KING -> stringBuilder.append(WHITE_KING);
+                    case ChessPiece.PieceType.QUEEN -> stringBuilder.append(WHITE_QUEEN);
+                    default -> stringBuilder.append(EMPTY);
+                }
+            } else {
+                stringBuilder.append(SET_TEXT_COLOR_BLUE);
+                switch (piece.getPieceType()) {
+                    case ChessPiece.PieceType.PAWN -> stringBuilder.append(BLACK_PAWN);
+                    case ChessPiece.PieceType.ROOK -> stringBuilder.append(BLACK_ROOK);
+                    case ChessPiece.PieceType.BISHOP -> stringBuilder.append(BLACK_BISHOP);
+                    case ChessPiece.PieceType.KNIGHT -> stringBuilder.append(BLACK_KNIGHT);
+                    case ChessPiece.PieceType.KING -> stringBuilder.append(BLACK_KING);
+                    case ChessPiece.PieceType.QUEEN -> stringBuilder.append(BLACK_QUEEN);
+                    default -> stringBuilder.append(EMPTY);
+                }
+            }
+
+        }
+
+        return stringBuilder.toString();
+    }
+
+    private String blackChessBoard() {
+        StringBuilder stringBuilder = new StringBuilder("\n");
+        stringBuilder.append(blackAlpha());
+        for (int i = 1; i < 9; i++) {
+            stringBuilder.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
+            stringBuilder.append(" ").append(i).append(" ");
+            stringBuilder.append(blackRow(i - 1));
+            stringBuilder.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
+            stringBuilder.append(" ").append(i).append(" ").append(RESET_BG_COLOR);
+            stringBuilder.append("\n");
+        }
+        stringBuilder.append(blackAlpha());
+
+        return stringBuilder.toString();
+    }
+
+    private String blackAlpha() {
+        String[] columns = {" ", "a", "b", "c", "d", "e", "f", "g", "h", " "};
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
+        for (int i = 9; i > -1; i--) {
+            stringBuilder.append(" ").append(columns[i]).append(" ");
+        }
+        stringBuilder.append(RESET_BG_COLOR + RESET_TEXT_COLOR).append('\n');
+        return stringBuilder.toString();
+    }
+
+    private String blackRow(int row) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int col = 7; col > -1; col --) {
+            if ((row + col) % 2 == 0) {
+                stringBuilder.append(SET_BG_COLOR_WHITE);
+            } else {
+                stringBuilder.append(SET_BG_COLOR_BLACK);
+            }
+
+            ChessPiece piece = squares[row][col]; // This might throw an error if null
+            stringBuilder.append(printPiece(piece));
+        }
+        return stringBuilder.toString();
     }
 }
