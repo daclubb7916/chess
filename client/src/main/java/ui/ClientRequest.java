@@ -1,6 +1,4 @@
 package ui;
 
-import model.GameData;
-
-public record ClientRequest(String input, String authToken, GameData gameData) {
+public record ClientRequest(String input, String authToken, Integer gameID) {
 }

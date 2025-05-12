@@ -101,15 +101,18 @@ public class PostLogin implements ClientUI {
         switch (params[1]) {
             case "WHITE" -> {
                 server.joinGame(new JoinGameRequest("WHITE", game.gameID(), authToken));
+
                 whiteChessBoard();
             }
             case "BLACK" -> {
                 server.joinGame(new JoinGameRequest("BLACK", game.gameID(), authToken));
+
                 blackChessBoard();
             }
             default -> throw new ResponseException(400, "Acceptable inputs for team color: [WHITE|BLACK]");
         }
-        return new ClientResult("", State.SIGNEDIN, authToken, null);
+
+        return new ClientResult("", State.INGAME, authToken, game.gameID()); // Check back on this later
     }
 
     private ClientResult observe(String[] params, String authToken) throws ResponseException {
@@ -120,8 +123,10 @@ public class PostLogin implements ClientUI {
         if (games.isEmpty()) {
             throw new ResponseException(400, "No games yet");
         }
+        GameData game = games.get(gameIndex);
+
         whiteChessBoard();
-        return new ClientResult("", State.SIGNEDIN, authToken, null);
+        return new ClientResult("", State.INGAME, authToken, game.gameID());
     }
 
     private ClientResult logout(String authToken) throws ResponseException {

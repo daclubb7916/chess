@@ -14,7 +14,7 @@ public class Repl implements NotificationHandler {
     public Repl(String serverUrl) {
         preLogin = new PreLogin(serverUrl);
         postLogin = new PostLogin(serverUrl);
-        gamePlay = new GamePlay(serverUrl);
+        gamePlay = new GamePlay(serverUrl, this);
         state = State.SIGNEDOUT;
     }
 
@@ -34,7 +34,7 @@ public class Repl implements NotificationHandler {
             String line = scanner.nextLine();
 
             try {
-                clientResult = ui.eval(new ClientRequest(line, clientResult.authToken(), clientResult.gameData()));
+                clientResult = ui.eval(new ClientRequest(line, clientResult.authToken(), clientResult.gameID()));
                 System.out.print(clientResult.result());
             } catch (Throwable e) {
                 var msg = e.toString();

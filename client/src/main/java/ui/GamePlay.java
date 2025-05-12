@@ -1,17 +1,38 @@
 package ui;
 
+import exception.ResponseException;
 import server.ServerFacade;
+import ui.websocket.NotificationHandler;
+import ui.websocket.WebSocketFacade;
+
 import static ui.EscapeSequences.*;
 
 public class GamePlay implements ClientUI {
+    private String username;
     private final ServerFacade server;
+    private final String serverUrl;
+    private final NotificationHandler notificationHandler;
+    private WebSocketFacade ws;
 
-    public GamePlay(String serverUrl) {
+    public GamePlay(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
+        this.serverUrl = serverUrl;
+        this.notificationHandler = notificationHandler;
+        this.ws = null;
     }
 
     @Override
     public ClientResult eval(ClientRequest request) {
+        try {
+            if (ws == null) {
+                ws = new WebSocketFacade(serverUrl, notificationHandler);
+            }
+
+        } catch (ResponseException ex) {
+            return new ClientResult(ex.getMessage(), State.INGAME, request.authToken(), request.gameID());
+        }
+
+
         return new ClientResult(null, null, null, null);
     }
 
