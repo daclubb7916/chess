@@ -1,7 +1,6 @@
 package ui;
 
 import server.ServerFacade;
-
 import static ui.EscapeSequences.*;
 
 public class GamePlay implements ClientUI {
@@ -19,11 +18,11 @@ public class GamePlay implements ClientUI {
     public ClientResult help() {
         String result = """
                 commands:
-                    create <NAME> - to create a chess game
-                    list - to list all chess games
-                    join <ID> [WHITE|BLACK] - to join a chess game
-                    observe <ID> - to observe a chess game
-                    logout - to exit to login menu
+                    redraw - redraws the chess board
+                    leave - leave current chess game
+                    move <start> <end> - make a chess move (Example: move A2 A4)
+                    resign - forfeit current chess game
+                    legal moves <piece> - highlights legal moves for a chess piece
                     help - to view commands
                 """;
         return new ClientResult(result, State.INGAME, null);
