@@ -20,6 +20,7 @@ public class ConnectionManager {
     }
 
     public void broadcast(String excludeName, ServerMessage serverMessage) throws IOException {
+        // Need to only send to players playing and observing game
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
