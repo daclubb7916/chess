@@ -12,10 +12,9 @@ public class Server {
     private UserDAO userDAO;
     private AuthDAO authDAO;
     private GameDAO gameDAO;
-    private final WebSocketHandler webSocketHandler;
 
     public Server() {
-        webSocketHandler = new WebSocketHandler();
+
     }
 
     public int run(int desiredPort) {
@@ -26,6 +25,8 @@ public class Server {
         } catch (DataAccessException ex) {
             System.out.println("Unable to start SQL server");
         }
+        WebSocketHandler webSocketHandler = new WebSocketHandler(authDAO, gameDAO);
+
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
         Spark.webSocket("/ws", webSocketHandler);

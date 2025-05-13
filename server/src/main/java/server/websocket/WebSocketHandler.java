@@ -1,6 +1,7 @@
 package server.websocket;
 
 import com.google.gson.Gson;
+import dataaccess.*;
 import exception.ResponseException;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -13,41 +14,40 @@ import java.io.IOException;
 public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
+    private final AuthDAO authDAO;
+    private final GameDAO gameDAO;
+
+    public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO) {
+        this.authDAO = authDAO;
+        this.gameDAO = gameDAO;
+    }
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
-        /*
-        UserGameCommand command =
-        switch (action.type()) {
-            case ENTER -> enter(action.visitorName(), session);
-            case EXIT -> exit(action.visitorName());
+
+        UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+        switch (command.getCommandType()) {
+            case CONNECT -> connect();
+            case MAKE_MOVE -> makeMove();
+            case LEAVE -> leave();
+            case RESIGN -> resign();
         }
-       */
+
     }
 
-    /*
-    private void enter(String visitorName, Session session) throws IOException {
-        connections.add(visitorName, session);
-        var message = String.format("%s is in the shop", visitorName);
-        var notification = new Notification(Notification.Type.ARRIVAL, message);
-        connections.broadcast(visitorName, notification);
+    private void connect() {
+
     }
 
-    private void exit(String visitorName) throws IOException {
-        connections.remove(visitorName);
-        var message = String.format("%s left the shop", visitorName);
-        var notification = new Notification(Notification.Type.DEPARTURE, message);
-        connections.broadcast(visitorName, notification);
+    private void makeMove() {
+
     }
 
-    public void makeNoise(String petName, String sound) throws ResponseException {
-        try {
-            var message = String.format("%s says %s", petName, sound);
-            var notification = new Notification(Notification.Type.NOISE, message);
-            connections.broadcast("", notification);
-        } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
-        }
+    private void leave() {
+
     }
-     */
+
+    private void resign() {
+
+    }
 }

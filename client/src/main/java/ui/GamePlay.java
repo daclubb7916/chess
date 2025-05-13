@@ -18,7 +18,6 @@ public class GamePlay implements ClientUI {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.notificationHandler = notificationHandler;
-        this.ws = null;
     }
 
     @Override
@@ -55,5 +54,4 @@ public class GamePlay implements ClientUI {
         System.out.print("Chess Game >>> " + SET_TEXT_COLOR_MAGENTA);
     }
 
-    // if leave or resign then set entering to true
 }

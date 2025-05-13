@@ -7,6 +7,8 @@ import model.GameData;
 import result.*;
 import request.*;
 import server.ServerFacade;
+import ui.websocket.NotificationHandler;
+import ui.websocket.WebSocketFacade;
 
 import java.util.*;
 import static ui.EscapeSequences.*;
@@ -14,9 +16,13 @@ import static ui.EscapeSequences.*;
 public class PostLogin implements ClientUI {
     private final ServerFacade server;
     private HashMap<Integer, GameData> games;
+    private final String serverUrl;
+    private final NotificationHandler notificationHandler;
 
-    public PostLogin(String serverUrl) {
+    public PostLogin(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
+        this.serverUrl = serverUrl;
+        this.notificationHandler = notificationHandler;
     }
 
     @Override
@@ -99,19 +105,20 @@ public class PostLogin implements ClientUI {
             throw new ResponseException(400, "No games yet");
         }
         GameData game = games.get(gameIndex);
-        ChessBoard board = game.game().getBoard();
+        WebSocketFacade ws = new WebSocketFacade(serverUrl, notificationHandler);
 
         switch (params[1]) {
             case "WHITE" -> {
                 server.joinGame(new JoinGameRequest("WHITE", game.gameID(), authToken));
-                System.out.print(board.stringBoard(ChessGame.TeamColor.WHITE));
+                // System.out.print(board.stringBoard(ChessGame.TeamColor.WHITE));
             }
             case "BLACK" -> {
                 server.joinGame(new JoinGameRequest("BLACK", game.gameID(), authToken));
-                System.out.print(board.stringBoard(ChessGame.TeamColor.BLACK));
+                // System.out.print(board.stringBoard(ChessGame.TeamColor.BLACK));
             }
             default -> throw new ResponseException(400, "Acceptable inputs for team color: [WHITE|BLACK]");
         }
+        ws.join(authToken, game.gameID());
 
         return new ClientResult("", State.INGAME, authToken, game.gameID()); // Check back on this later
     }
@@ -125,8 +132,10 @@ public class PostLogin implements ClientUI {
             throw new ResponseException(400, "No games yet");
         }
         GameData game = games.get(gameIndex);
-        ChessBoard board = game.game().getBoard();
-        System.out.print(board.stringBoard(ChessGame.TeamColor.WHITE));
+        WebSocketFacade ws = new WebSocketFacade(serverUrl, notificationHandler);
+        ws.observe(authToken, game.gameID());
+        // System.out.print(board.stringBoard(ChessGame.TeamColor.WHITE));
+        // print board on return
 
         return new ClientResult("", State.INGAME, authToken, game.gameID());
     }
