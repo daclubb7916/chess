@@ -24,7 +24,6 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
-
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
             case CONNECT -> connect();
@@ -35,19 +34,19 @@ public class WebSocketHandler {
 
     }
 
-    private void connect() {
+    private void connect() throws IOException {
+        // add to connections, get the game, see if they're in the game, if not then they're observing
+    }
+
+    private void makeMove() throws IOException {
+        // throw error if not their turn? if not in game then they're observing
+    }
+
+    private void leave() throws IOException {
 
     }
 
-    private void makeMove() {
-
-    }
-
-    private void leave() {
-
-    }
-
-    private void resign() {
+    private void resign() throws IOException {
 
     }
 }

@@ -108,17 +108,11 @@ public class PostLogin implements ClientUI {
         WebSocketFacade ws = new WebSocketFacade(serverUrl, notificationHandler);
 
         switch (params[1]) {
-            case "WHITE" -> {
-                server.joinGame(new JoinGameRequest("WHITE", game.gameID(), authToken));
-                // System.out.print(board.stringBoard(ChessGame.TeamColor.WHITE));
-            }
-            case "BLACK" -> {
-                server.joinGame(new JoinGameRequest("BLACK", game.gameID(), authToken));
-                // System.out.print(board.stringBoard(ChessGame.TeamColor.BLACK));
-            }
+            case "WHITE" -> server.joinGame(new JoinGameRequest("WHITE", game.gameID(), authToken));
+            case "BLACK" -> server.joinGame(new JoinGameRequest("BLACK", game.gameID(), authToken));
             default -> throw new ResponseException(400, "Acceptable inputs for team color: [WHITE|BLACK]");
         }
-        ws.join(authToken, game.gameID());
+        ws.connect(authToken, game.gameID());
 
         return new ClientResult("", State.INGAME, authToken, game.gameID()); // Check back on this later
     }
@@ -133,9 +127,7 @@ public class PostLogin implements ClientUI {
         }
         GameData game = games.get(gameIndex);
         WebSocketFacade ws = new WebSocketFacade(serverUrl, notificationHandler);
-        ws.observe(authToken, game.gameID());
-        // System.out.print(board.stringBoard(ChessGame.TeamColor.WHITE));
-        // print board on return
+        ws.connect(authToken, game.gameID());
 
         return new ClientResult("", State.INGAME, authToken, game.gameID());
     }
