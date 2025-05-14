@@ -21,7 +21,8 @@ public class Repl implements NotificationHandler {
     public void run() {
         System.out.println("♔ This is Chess! Type 'help' to get started ♔");
         Scanner scanner = new Scanner(System.in);
-        ClientResult clientResult = new ClientResult("", state, null, null);
+        ClientResult clientResult = new ClientResult("", state, null, null,
+                null, null);
         ClientUI ui = null;
 
         while (!clientResult.result().equals("quit")) {
@@ -34,7 +35,8 @@ public class Repl implements NotificationHandler {
             String line = scanner.nextLine();
 
             try {
-                clientResult = ui.eval(new ClientRequest(line, clientResult.authToken(), clientResult.gameID()));
+                clientResult = ui.eval(new ClientRequest(line, clientResult.authToken(), clientResult.gameID(),
+                        clientResult.userName(), clientResult.gameData()));
                 System.out.print(clientResult.result());
             } catch (Throwable e) {
                 var msg = e.toString();

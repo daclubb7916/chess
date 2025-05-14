@@ -31,7 +31,7 @@ public class WebSocketHandler {
         switch (command.getCommandType()) {
             case CONNECT -> connect(command, session);
             case MAKE_MOVE -> makeMove();
-            case LEAVE -> leave();
+            case LEAVE -> leave(command, session);
             case RESIGN -> resign();
         }
 
@@ -67,8 +67,33 @@ public class WebSocketHandler {
         // throw error if not their turn? if not in game then they're observing
     }
 
-    private void leave() throws IOException {
+    private void leave(UserGameCommand command, Session session) throws IOException {
+        try {
+            AuthData authData = authDAO.getAuth(command.getAuthToken());
+            GameData game = gameDAO.getGame(command.getGameID());
+            connections.remove(authData.username());
 
+            String message;
+            if (authData.username().equals(game.whiteUsername())) {
+                message = String.format("%s playing as White Player left the Chess Game", authData.username());
+                game = new GameData(game.gameID(), null,
+                        game.blackUsername(), game.gameName(), game.game());
+            } else if (authData.username().equals(game.blackUsername())) {
+                message = String.format("%s playing as Black Player left the Chess Game", authData.username());
+                game = new GameData(game.gameID(), game.whiteUsername(),
+                        null, game.gameName(), game.game());
+            } else {
+                message = String.format("%s stopped observing the Chess Game", authData.username());
+            }
+
+            gameDAO.updateGame(game);
+            ServerMessage notifyMessage = new NotificationMessage(message);
+            connections.broadcastMessage(authData.username(), game.gameID(), notifyMessage);
+
+        } catch (DataAccessException ex) {
+            ServerMessage errorMessage = new ErrorMessage(ex.getMessage());
+            connections.sendMessage(session, errorMessage);
+        }
     }
 
     private void resign() throws IOException {

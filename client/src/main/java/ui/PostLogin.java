@@ -33,19 +33,20 @@ public class PostLogin implements ClientUI {
             var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "create" -> create(params, request.authToken());
-                case "list" -> list(request.authToken());
-                case "join" -> join(params, request.authToken());
-                case "observe" -> observe(params, request.authToken());
+                case "create" -> create(params, request.authToken(), request.userName());
+                case "list" -> list(request.authToken(), request.userName());
+                case "join" -> join(params, request.authToken(), request.userName());
+                case "observe" -> observe(params, request.authToken(), request.userName());
                 case "logout" -> logout(request.authToken());
-                default -> help(request.authToken());
+                default -> help(request.authToken(), request.userName());
             };
         } catch (ResponseException ex) {
-            return new ClientResult(ex.getMessage(), State.SIGNEDIN, request.authToken(), null);
+            return new ClientResult(ex.getMessage(), State.SIGNEDIN, request.authToken(), null,
+                    request.userName(), null);
         }
     }
 
-    public ClientResult help(String authToken) {
+    public ClientResult help(String authToken, String userName) {
         String result = """
                 commands:
                     create <NAME> - to create a chess game
@@ -55,7 +56,7 @@ public class PostLogin implements ClientUI {
                     logout - to exit to login menu
                     help - to view commands
                 """;
-        return new ClientResult(result, State.SIGNEDIN, authToken, null);
+        return new ClientResult(result, State.SIGNEDIN, authToken, null, userName, null);
     }
 
     @Override
@@ -64,20 +65,21 @@ public class PostLogin implements ClientUI {
         System.out.print("Chess >>> " + SET_TEXT_COLOR_MAGENTA);
     }
 
-    private ClientResult create(String[] params, String authToken) throws ResponseException {
+    private ClientResult create(String[] params, String authToken, String userName) throws ResponseException {
         if (params.length == 1) {
             CreateGameResult result = server.createGame(new CreateGameRequest(params[0], authToken));
             String message = String.format("Chess Game '%s' created", params[0]);
-            return new ClientResult(message, State.SIGNEDIN, authToken, null);
+            return new ClientResult(message, State.SIGNEDIN, authToken, null, userName, null);
         }
         throw new ResponseException(400, "Expected format: create <NAME>");
     }
 
-    private ClientResult list(String authToken) throws ResponseException {
+    private ClientResult list(String authToken, String userName) throws ResponseException {
         ListGamesResult result = server.listGames(new ListGamesRequest(authToken));
         Collection<GameData> tmpList = result.games();
         if (tmpList.isEmpty()) {
-            return new ClientResult("No Chess Games", State.SIGNEDIN, authToken, null);
+            return new ClientResult("No Chess Games", State.SIGNEDIN, authToken, null,
+                    userName, null);
         }
 
         HashMap<Integer, GameData> gameData = new HashMap<>();
@@ -93,10 +95,10 @@ public class PostLogin implements ClientUI {
         }
         sb.append("\n");
         games = gameData;
-        return new ClientResult(sb.toString(), State.SIGNEDIN, authToken, null);
+        return new ClientResult(sb.toString(), State.SIGNEDIN, authToken, null, userName, null);
     }
 
-    private ClientResult join(String[] params, String authToken) throws ResponseException {
+    private ClientResult join(String[] params, String authToken, String userName) throws ResponseException {
         if (params.length != 2) {
             throw new ResponseException(400, "Expected format: join <ID> [WHITE|BLACK]");
         }
@@ -114,10 +116,10 @@ public class PostLogin implements ClientUI {
         }
         ws.connect(authToken, game.gameID());
 
-        return new ClientResult("", State.INGAME, authToken, game.gameID()); // Check back on this later
+        return new ClientResult("", State.INGAME, authToken, game.gameID(), userName, game);
     }
 
-    private ClientResult observe(String[] params, String authToken) throws ResponseException {
+    private ClientResult observe(String[] params, String authToken, String userName) throws ResponseException {
         if (params.length != 1) {
             throw new ResponseException(400, "Expected format: observe <ID>");
         }
@@ -129,12 +131,13 @@ public class PostLogin implements ClientUI {
         WebSocketFacade ws = new WebSocketFacade(serverUrl, notificationHandler);
         ws.connect(authToken, game.gameID());
 
-        return new ClientResult("", State.INGAME, authToken, game.gameID());
+        return new ClientResult("", State.INGAME, authToken, game.gameID(), userName, game);
     }
 
     private ClientResult logout(String authToken) throws ResponseException {
         server.logout(new LogoutRequest(authToken));
-        return new ClientResult("Logged out user", State.SIGNEDOUT, null, null);
+        return new ClientResult("Logged out user", State.SIGNEDOUT, null, null,
+                null, null);
     }
 
     private int parseID(String id) throws ResponseException {
