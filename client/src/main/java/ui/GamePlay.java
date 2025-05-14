@@ -41,7 +41,7 @@ public class GamePlay implements ClientUI {
                 case "leave" -> leave(request.authToken(), request.gameID(), request.userName());
                 case "move" -> move(params, request.authToken(), request.gameID(),
                         request.userName(), request.gameData());
-                case "resign" -> resign(request.authToken(), request.gameID(), request.userName());
+                case "resign" -> resign(request.authToken(), request.gameID(), request.userName(), request.gameData());
                 case "legal" -> legalMoves(params, request.authToken(), request.gameID(),
                         request.userName(), request.gameData());
                 case "escape" -> escape(request.authToken(), request.userName());
@@ -90,24 +90,31 @@ public class GamePlay implements ClientUI {
         return new ClientResult("", State.SIGNEDIN, authToken, null, userName, null);
     }
 
-    // update ChessGame after
     private ClientResult move(String[] params, String authToken, Integer gameID, String userName,
                               GameData gameData) throws ResponseException {
+        checkIfObserver(userName, gameData);
         if (params.length != 2) {
             throw new ResponseException(400, "Expected Format: move <start> <end>\n(Example: move A2 A4)");
         }
+
         ChessMove chessMove = parseCoords(params);
-        // white cannot move black, observer cannot move any, confirm it is their turn (maybe not in this method)
+        ws.makeMove(authToken, gameID, chessMove);
+        gameData = updateGameData(authToken, gameID);
         return new ClientResult("", State.INGAME, authToken, gameID, userName, gameData);
     }
 
-    private ClientResult resign(String authToken, Integer gameID, String userName) {
+    private ClientResult resign(String authToken, Integer gameID, String userName, GameData gameData)
+            throws ResponseException {
+        checkIfObserver(userName, gameData);
         return new ClientResult("", State.SIGNEDIN, authToken, null, userName, null);
     }
 
-    //update ChessGame before
     private ClientResult legalMoves(String[] params, String authToken, Integer gameID,
-                                    String userName, GameData gameData) {
+                                    String userName, GameData gameData) throws ResponseException {
+        if ((params.length != 2) || (!params[0].equals("moves"))) {
+            throw new ResponseException(400, "Expected format: legal moves <piece>\n(Example: legal moves A1");
+        }
+        checkIfObserver(userName, gameData);
         return new ClientResult("", State.INGAME, authToken, gameID, userName, gameData);
     }
 
@@ -205,6 +212,12 @@ public class GamePlay implements ClientUI {
     public void printPrompt() {
         System.out.print("\n" + RESET_BG_COLOR + SET_TEXT_COLOR_LIGHT_GREY);
         System.out.print("Chess Game >>> " + SET_TEXT_COLOR_MAGENTA);
+    }
+
+    private void checkIfObserver(String userName, GameData gameData) throws ResponseException {
+        if ((!userName.equals(gameData.whiteUsername())) && (!userName.equals(gameData.blackUsername()))) {
+            throw new ResponseException(400, "This action cannot be performed as an Observer");
+        }
     }
 
 }

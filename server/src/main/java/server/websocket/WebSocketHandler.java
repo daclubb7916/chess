@@ -1,11 +1,13 @@
 package server.websocket;
 
+import chess.*;
 import com.google.gson.Gson;
 import dataaccess.*;
 import model.*;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.NotificationMessage;
@@ -30,7 +32,7 @@ public class WebSocketHandler {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
             case CONNECT -> connect(command, session);
-            case MAKE_MOVE -> makeMove();
+            case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MakeMoveCommand.class), session);
             case LEAVE -> leave(command, session);
             case RESIGN -> resign();
         }
@@ -63,8 +65,65 @@ public class WebSocketHandler {
         }
     }
 
-    private void makeMove() throws IOException {
-        // throw error if not their turn? if not in game then they're observing
+    private void makeMove(MakeMoveCommand command, Session session) throws IOException {
+        try {
+            AuthData authData = authDAO.getAuth(command.getAuthToken());
+            GameData gameData = gameDAO.getGame(command.getGameID());
+            ChessGame chessGame = gameData.game();
+            ChessGame.TeamColor teamColor;
+
+            if (authData.username().equals(gameData.whiteUsername())) {
+                teamColor = ChessGame.TeamColor.WHITE;
+            } else {
+                teamColor = ChessGame.TeamColor.BLACK;
+            }
+
+            if (!chessGame.getTeamTurn().equals(teamColor)) {
+                ServerMessage errorMessage = new ErrorMessage("It is not your turn yet");
+                connections.sendMessage(session, errorMessage);
+                return;
+            }
+
+            ChessBoard chessBoard = chessGame.getBoard();
+            ChessMove chessMove = command.getMove();
+            try {
+                chessGame.makeMove(chessMove);
+            } catch (InvalidMoveException ex) {
+                ServerMessage errorMessage = new ErrorMessage(ex.getMessage());
+                connections.sendMessage(session, errorMessage);
+                return;
+            }
+
+            connections.broadcastGame(gameData);
+            ChessPiece chessPiece = chessBoard.getPiece(chessMove.getStartPosition());
+            String pieceType = chessPiece.stringPieceType();
+            String message = authData.username() + " moved their " + pieceType + " from " +
+                    chessMove.getStartPosition().toString() + " to " + chessMove.getEndPosition().toString();
+            ServerMessage notifyMessage = new NotificationMessage(message);
+            connections.broadcastMessage(authData.username(), gameData.gameID(), notifyMessage);
+
+            if (chessGame.isInCheck(chessGame.getTeamTurn())) {
+                message = chessGame.stringTeamColor(chessGame.getTeamTurn()) + " is now in check";
+                notifyMessage = new NotificationMessage(message);
+                connections.sendMessage(session, notifyMessage);
+                connections.broadcastMessage(authData.username(), gameData.gameID(), notifyMessage);
+            } else if (chessGame.isInCheckmate(chessGame.getTeamTurn())) {
+                message = chessGame.stringTeamColor(chessGame.getTeamTurn()) + " is in checkmate";
+                notifyMessage = new NotificationMessage(message);
+                connections.sendMessage(session, notifyMessage);
+                connections.broadcastMessage(authData.username(), gameData.gameID(), notifyMessage);
+            } else if (chessGame.isInStalemate(chessGame.getTeamTurn())) {
+                message = "This move has resulted in a stalemate";
+                notifyMessage = new NotificationMessage(message);
+                connections.sendMessage(session, notifyMessage);
+                connections.broadcastMessage(authData.username(), gameData.gameID(), notifyMessage);
+            }
+
+        } catch (DataAccessException ex) {
+            ServerMessage errorMessage = new ErrorMessage(ex.getMessage());
+            connections.sendMessage(session, errorMessage);
+        }
+
     }
 
     private void leave(UserGameCommand command, Session session) throws IOException {

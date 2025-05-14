@@ -44,6 +44,16 @@ public class ChessGame {
         BLACK
     }
 
+    public String stringTeamColor(TeamColor teamColor) {
+        String stringTeamColor;
+        switch (teamColor) {
+            case BLACK -> stringTeamColor = "Black";
+            case WHITE -> stringTeamColor = "White";
+            default -> stringTeamColor = "Error";
+        }
+        return stringTeamColor;
+    }
+
     /**
      * Gets a valid moves for a piece at the given location
      *

@@ -99,4 +99,18 @@ public class ChessPiece {
             }
         };
     }
+
+    public String stringPieceType() {
+        String pieceName;
+        switch (type) {
+            case KNIGHT -> pieceName = "Knight";
+            case BISHOP -> pieceName = "Bishop";
+            case QUEEN -> pieceName = "Queen";
+            case ROOK -> pieceName = "Rook";
+            case KING -> pieceName = "King";
+            case PAWN -> pieceName = "Pawn";
+            default -> pieceName = "";
+        }
+        return pieceName;
+    }
 }
