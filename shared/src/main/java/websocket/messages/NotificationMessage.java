@@ -1,7 +1,5 @@
 package websocket.messages;
 
-import com.google.gson.Gson;
-
 public class NotificationMessage extends ServerMessage {
     private final String message;
 

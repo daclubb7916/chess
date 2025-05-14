@@ -1,5 +1,6 @@
 package server.websocket;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.ServerMessage;
 
@@ -21,10 +22,11 @@ public class ConnectionManager {
 
     public void broadcast(String excludeName, Integer allGameID, ServerMessage serverMessage) throws IOException {
         var removeList = new ArrayList<Connection>();
+        String message = new Gson().toJson(serverMessage);
         for (Connection c : connections.values()) {
             if (c.session.isOpen()) {
                 if ((!c.userName.equals(excludeName)) && (c.gameID.equals(allGameID))) {
-                    c.send(serverMessage.toJson());
+                    c.send(message);
                 }
             } else {
                 removeList.add(c);
@@ -37,9 +39,10 @@ public class ConnectionManager {
     }
 
     public void send(Session session, ServerMessage serverMessage) throws IOException {
+        String message = new Gson().toJson(serverMessage);
         for (Connection c : connections.values()) {
             if (c.session.equals(session)) {
-                c.send(serverMessage.toJson());
+                c.send(message);
                 break;
             }
         }
