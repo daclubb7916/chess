@@ -13,27 +13,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Scanner;
 
-import static chess.EscapeSequences.BLACK_BISHOP;
-import static chess.EscapeSequences.BLACK_KING;
-import static chess.EscapeSequences.BLACK_KNIGHT;
-import static chess.EscapeSequences.BLACK_PAWN;
-import static chess.EscapeSequences.BLACK_QUEEN;
-import static chess.EscapeSequences.BLACK_ROOK;
-import static chess.EscapeSequences.EMPTY;
-import static chess.EscapeSequences.RESET_BG_COLOR;
-import static chess.EscapeSequences.RESET_TEXT_COLOR;
-import static chess.EscapeSequences.SET_BG_COLOR_BLACK;
-import static chess.EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
-import static chess.EscapeSequences.SET_BG_COLOR_WHITE;
-import static chess.EscapeSequences.SET_TEXT_COLOR_BLACK;
-import static chess.EscapeSequences.SET_TEXT_COLOR_BLUE;
-import static chess.EscapeSequences.SET_TEXT_COLOR_RED;
-import static chess.EscapeSequences.WHITE_BISHOP;
-import static chess.EscapeSequences.WHITE_KING;
-import static chess.EscapeSequences.WHITE_KNIGHT;
-import static chess.EscapeSequences.WHITE_PAWN;
-import static chess.EscapeSequences.WHITE_QUEEN;
-import static chess.EscapeSequences.WHITE_ROOK;
 import static ui.EscapeSequences.*;
 
 public class GamePlay implements ClientUI {
