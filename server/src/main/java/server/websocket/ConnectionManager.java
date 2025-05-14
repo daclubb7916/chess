@@ -24,7 +24,9 @@ public class ConnectionManager {
         connections.remove(userName);
     }
 
-    public void broadcastMessage(String excludeName, Integer allGameID, ServerMessage serverMessage) throws IOException {
+    public void broadcastMessage(String excludeName, Integer allGameID, ServerMessage serverMessage)
+            throws IOException {
+
         var removeList = new ArrayList<Connection>();
         String message = new Gson().toJson(serverMessage);
         for (Connection c : connections.values()) {
@@ -42,16 +44,18 @@ public class ConnectionManager {
         }
     }
 
-    // Change ServerMessage to LoadGameMessage
-    public void broadcastGame(GameData gameData, ServerMessage serverMessage) throws IOException {
-        /*
+    public void broadcastGame(GameData gameData) throws IOException {
         var removeList = new ArrayList<Connection>();
-        String message = new Gson().toJson(serverMessage);
+        String chessBoard;
+        LoadGameMessage loadMessage;
         for (Connection c : connections.values()) {
             if (c.session.isOpen()) {
-                if ((!c.userName.equals(excludeName)) && (c.gameID.equals(allGameID))) {
-                    c.send(message);
+                if (c.gameID.equals(gameData.gameID())) {
+                    chessBoard = stringChessBoard(c.userName, gameData);
+                    loadMessage = new LoadGameMessage(chessBoard);
+                    c.send(new Gson().toJson(loadMessage));
                 }
+
             } else {
                 removeList.add(c);
             }
@@ -61,7 +65,6 @@ public class ConnectionManager {
             connections.remove(c.userName);
         }
 
-         */
     }
 
     public void sendMessage(Session session, ServerMessage serverMessage) throws IOException {
