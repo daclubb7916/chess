@@ -53,7 +53,7 @@ public class Repl implements NotificationHandler {
     }
 
     public void loadGame(LoadGameMessage loadMessage) {
-        System.out.println(loadMessage.getBoard());
+        System.out.print(loadMessage.getBoard());
         printPrompt();
     }
 
@@ -63,7 +63,6 @@ public class Repl implements NotificationHandler {
     }
 
     public void printPrompt() {
-        // Maybe remove new line character
         System.out.print("\n" + RESET_BG_COLOR + SET_TEXT_COLOR_LIGHT_GREY);
         System.out.print("Chess Game >>> " + SET_TEXT_COLOR_MAGENTA);
     }

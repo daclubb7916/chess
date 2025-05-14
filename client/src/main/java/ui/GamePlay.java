@@ -44,6 +44,7 @@ public class GamePlay implements ClientUI {
                 case "resign" -> resign(request.authToken(), request.gameID(), request.userName());
                 case "legal" -> legalMoves(params, request.authToken(), request.gameID(),
                         request.userName(), request.gameData());
+                case "escape" -> escape(request.authToken(), request.userName());
                 default -> help(request.authToken(), request.gameID(), request.userName(), request.gameData());
             };
 
@@ -51,6 +52,11 @@ public class GamePlay implements ClientUI {
             return new ClientResult(ex.getMessage(), State.INGAME, request.authToken(), request.gameID(),
                     request.userName(), request.gameData());
         }
+    }
+
+    private ClientResult escape(String authToken, String userName) {
+        return new ClientResult("", State.SIGNEDIN, authToken,
+                null, userName, null);
     }
 
     public ClientResult help(String authToken, Integer gameID, String userName, GameData gameData) {
@@ -86,7 +92,12 @@ public class GamePlay implements ClientUI {
 
     // update ChessGame after
     private ClientResult move(String[] params, String authToken, Integer gameID, String userName,
-                              GameData gameData) {
+                              GameData gameData) throws ResponseException {
+        if (params.length != 2) {
+            throw new ResponseException(400, "Expected Format: move <start> <end>\n(Example: move A2 A4)");
+        }
+        ChessMove chessMove = parseCoords(params);
+        // white cannot move black, observer cannot move any, confirm it is their turn (maybe not in this method)
         return new ClientResult("", State.INGAME, authToken, gameID, userName, gameData);
     }
 
@@ -108,7 +119,86 @@ public class GamePlay implements ClientUI {
                 return gameData;
             }
         }
-        throw new ResponseException(500, "Failed to update GameData");
+        throw new ResponseException(400, "Failed to update GameData");
+    }
+
+    private ChessMove parseCoords(String[] params) throws ResponseException {
+        String firstCoord = params[0];
+        String secondCoord = params[1];
+        if ((firstCoord.length() != 2) || (secondCoord.length() != 2)) {
+            throw new ResponseException(400, "Invalid Coordinates, use format <start> <end>\n(Example: A2 A4)");
+        }
+        char firstCol = Character.toLowerCase(firstCoord.charAt(0));
+        char secondCol = Character.toLowerCase(secondCoord.charAt(0));
+        char firstRowChar = firstCoord.charAt(1);
+        char secondRowChar = secondCoord.charAt(1);
+        /*
+        int startCol;
+        switch (firstCol) {
+            case 'a' -> startCol = 1;
+            case 'b' -> startCol = 2;
+            case 'c' -> startCol = 3;
+            case 'd' -> startCol = 4;
+            case 'e' -> startCol = 5;
+            case 'f' -> startCol = 6;
+            case 'g' -> startCol = 7;
+            case 'h' -> startCol = 8;
+            default -> throw new ResponseException(400, "Columns must be a letter from a-h");
+        }
+        int endCol;
+        switch (secondCol) {
+            case 'a' -> endCol = 1;
+            case 'b' -> endCol = 2;
+            case 'c' -> endCol = 3;
+            case 'd' -> endCol = 4;
+            case 'e' -> endCol = 5;
+            case 'f' -> endCol = 6;
+            case 'g' -> endCol = 7;
+            case 'h' -> endCol = 8;
+            default -> throw new ResponseException(400, "Columns must be a letter from a-h");
+        }
+
+        int startRow;
+        switch (firstRow) {
+            case '1' -> startRow = 1;
+            case '2' -> startRow = 2;
+            case '3' -> startRow = 3;
+            case '4' -> startRow = 4;
+            case '5' -> startRow = 5;
+            case '6' -> startRow = 6;
+            case '7' -> startRow = 7;
+            case '8' -> startRow = 8;
+            default -> throw new ResponseException(400, "Rows must be a number from 1-8");
+        }
+        int endRow;
+        switch (secondRow) {
+            case '1' -> endRow = 1;
+            case '2' -> endRow = 2;
+            case '3' -> endRow = 3;
+            case '4' -> endRow = 4;
+            case '5' -> endRow = 5;
+            case '6' -> endRow = 6;
+            case '7' -> endRow = 7;
+            case '8' -> endRow = 8;
+            default -> throw new ResponseException(400, "Rows must be a number from 1-8");
+        }
+
+         */
+        int startCol = firstCol - 'a' + 1;
+        int endCol = secondCol - 'a' + 1;
+        if (startCol < 1 || startCol > 8 || endCol < 1 || endCol > 8) {
+            throw new ResponseException(400, "Columns must be a letter from a-h");
+        }
+
+        int startRow = firstRowChar - '0';
+        int endRow = secondRowChar - '0';
+        if (startRow < 1 || startRow > 8 || endRow < 1 || endRow > 8) {
+            throw new ResponseException(400, "Rows must be a number from 1-8");
+        }
+
+        ChessPosition startPosition = new ChessPosition(startRow, startCol);
+        ChessPosition endPosition = new ChessPosition(endRow, endCol);
+        return new ChessMove(startPosition, endPosition, null);
     }
 
     @Override
