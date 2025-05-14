@@ -180,7 +180,6 @@ public class WebSocketHandler {
 
     private void resign(UserGameCommand command, Session session) throws IOException {
         String userName = "";
-        // why would this fail if someone else tried to use it?
         try {
             AuthData authData = authDAO.getAuth(command.getAuthToken());
             userName = authData.username();

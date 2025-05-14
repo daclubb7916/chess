@@ -4,7 +4,7 @@ import exception.ResponseException;
 import model.GameData;
 import result.*;
 import request.*;
-import server.ServerFacade;
+import facade.ServerFacade;
 import ui.websocket.NotificationHandler;
 import ui.websocket.WebSocketFacade;
 

@@ -5,7 +5,7 @@ import exception.ResponseException;
 import model.GameData;
 import request.ListGamesRequest;
 import result.ListGamesResult;
-import server.ServerFacade;
+import facade.ServerFacade;
 import ui.websocket.NotificationHandler;
 import ui.websocket.WebSocketFacade;
 

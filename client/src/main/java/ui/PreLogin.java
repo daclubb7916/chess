@@ -3,7 +3,7 @@ package ui;
 import exception.ResponseException;
 import result.*;
 import request.*;
-import server.ServerFacade;
+import facade.ServerFacade;
 import java.util.Arrays;
 
 import static ui.EscapeSequences.*;
