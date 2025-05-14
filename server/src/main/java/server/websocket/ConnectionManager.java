@@ -24,7 +24,7 @@ public class ConnectionManager {
         for (Connection c : connections.values()) {
             if (c.session.isOpen()) {
                 if ((!c.userName.equals(excludeName)) && (c.gameID.equals(allGameID))) {
-                    c.send(serverMessage.toString());
+                    c.send(serverMessage.toJson());
                 }
             } else {
                 removeList.add(c);
@@ -36,9 +36,13 @@ public class ConnectionManager {
         }
     }
 
-    public void send(String sendName, ServerMessage serverMessage) throws IOException {
-        Connection sendConnection = connections.get(sendName);
-        sendConnection.send(serverMessage.toString());
+    public void send(Session session, ServerMessage serverMessage) throws IOException {
+        for (Connection c : connections.values()) {
+            if (c.session.equals(session)) {
+                c.send(serverMessage.toJson());
+                break;
+            }
+        }
     }
 }
 

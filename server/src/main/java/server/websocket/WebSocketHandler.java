@@ -8,6 +8,9 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -25,7 +28,7 @@ public class WebSocketHandler {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws ResponseException {
+    public void onMessage(Session session, String message) throws IOException {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
             case CONNECT -> connect(command, session);
@@ -36,8 +39,7 @@ public class WebSocketHandler {
 
     }
 
-    private void connect(UserGameCommand command, Session session) throws ResponseException {
-        // add to connections, get the game, see if they're in the game, if not then they're observing
+    private void connect(UserGameCommand command, Session session) throws IOException {
         try {
             AuthData authData = authDAO.getAuth(command.getAuthToken());
             GameData game = gameDAO.getGame(command.getGameID());
@@ -52,22 +54,25 @@ public class WebSocketHandler {
                 message = String.format("%s is observing Chess Game", authData.username());
             }
 
-            ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        } catch (DataAccessException | IOException ex) {
-            // Instead use ErrorMessage
-            throw new ResponseException(500, ex.getMessage());
+            ServerMessage loadMessage = new LoadGameMessage(game.game());
+            ServerMessage notifyMessage = new NotificationMessage(message);
+            connections.send(session, loadMessage);
+            connections.broadcast(authData.username(), game.gameID(), notifyMessage);
+        } catch (DataAccessException ex) {
+            ServerMessage errorMessage = new ErrorMessage(ex.getMessage());
+            connections.send(session, errorMessage);
         }
     }
 
-    private void makeMove() throws ResponseException {
+    private void makeMove() throws IOException {
         // throw error if not their turn? if not in game then they're observing
     }
 
-    private void leave() {
+    private void leave() throws IOException {
 
     }
 
-    private void resign() throws ResponseException {
+    private void resign() throws IOException {
 
     }
 }
