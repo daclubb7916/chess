@@ -9,6 +9,8 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.NotificationMessage;
 
 
 import java.io.IOException;
@@ -55,10 +57,12 @@ public class WebSocketHandler {
             }
 
             connections.sendGame(userName, game);
-            connections.broadcastMessage(userName, game.gameID(), message);
+            NotificationMessage notificationMessage = new NotificationMessage(message);
+            connections.broadcastMessage(userName, game.gameID(), notificationMessage);
 
         } catch (DataAccessException ex) {
-            connections.sendError(userName, ex.getMessage());
+            ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
+            connections.sendError(userName, errorMessage);
         }
     }
 
@@ -73,7 +77,8 @@ public class WebSocketHandler {
             String opponentUserName;
 
             if (chessGame.isOver()) {
-                connections.sendError(userName, "This game is over");
+                ErrorMessage errorMessage = new ErrorMessage("This game is over");
+                connections.sendError(userName, errorMessage);
                 return;
             }
 
@@ -86,7 +91,8 @@ public class WebSocketHandler {
             }
 
             if (!chessGame.getTeamTurn().equals(teamColor)) {
-                connections.sendError(userName, "It is not your turn yet");
+                ErrorMessage errorMessage = new ErrorMessage("It is not your turn yet");
+                connections.sendError(userName, errorMessage);
                 return;
             }
 
@@ -96,7 +102,8 @@ public class WebSocketHandler {
             try {
                 chessGame.makeMove(chessMove);
             } catch (InvalidMoveException ex) {
-                connections.sendError(userName, ex.getMessage());
+                ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
+                connections.sendError(userName, errorMessage);
                 return;
             }
 
@@ -107,22 +114,26 @@ public class WebSocketHandler {
             String pieceType = chessPiece.stringPieceType();
             String message = authData.username() + " moved their " + pieceType + " from " +
                     chessMove.getStartPosition().toString() + " to " + chessMove.getEndPosition().toString();
-            connections.broadcastMessage(userName, gameData.gameID(), message);
+            NotificationMessage notificationMessage = new NotificationMessage(message);
+            connections.broadcastMessage(userName, gameData.gameID(), notificationMessage);
 
             if (chessGame.isInCheck(chessGame.getTeamTurn())) {
                 message = opponentUserName + " is in check";
-                connections.sendMessage(userName, message);
-                connections.broadcastMessage(userName, gameData.gameID(), message);
+                notificationMessage = new NotificationMessage(message);
+                connections.sendMessage(userName, notificationMessage);
+                connections.broadcastMessage(userName, gameData.gameID(), notificationMessage);
             } else if (chessGame.isInCheckmate(chessGame.getTeamTurn())) {
                 chessGame.endGame();
                 message = opponentUserName + " is in checkmate. Game over";
-                connections.sendMessage(userName, message);
-                connections.broadcastMessage(userName, gameData.gameID(), message);
+                notificationMessage = new NotificationMessage(message);
+                connections.sendMessage(userName, notificationMessage);
+                connections.broadcastMessage(userName, gameData.gameID(), notificationMessage);
             } else if (chessGame.isInStalemate(chessGame.getTeamTurn())) {
                 chessGame.endGame();
                 message = "This move has resulted in a stalemate. Game over";
-                connections.sendMessage(userName, message);
-                connections.broadcastMessage(userName, gameData.gameID(), message);
+                notificationMessage = new NotificationMessage(message);
+                connections.sendMessage(userName, notificationMessage);
+                connections.broadcastMessage(userName, gameData.gameID(), notificationMessage);
             }
 
             gameData = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(),
@@ -130,7 +141,8 @@ public class WebSocketHandler {
             gameDAO.updateGame(gameData);
 
         } catch (DataAccessException ex) {
-            connections.sendError(userName, ex.getMessage());
+            ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
+            connections.sendError(userName, errorMessage);
         }
 
     }
@@ -157,10 +169,12 @@ public class WebSocketHandler {
 
             gameDAO.updateGame(game);
             connections.remove(userName);
-            connections.broadcastMessage(userName, game.gameID(), message);
+            NotificationMessage notificationMessage = new NotificationMessage(message);
+            connections.broadcastMessage(userName, game.gameID(), notificationMessage);
 
         } catch (DataAccessException ex) {
-            connections.sendError(userName, ex.getMessage());
+            ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
+            connections.sendError(userName, errorMessage);
         }
     }
 
@@ -177,12 +191,14 @@ public class WebSocketHandler {
                     game.gameName(), game.game());
             gameDAO.updateGame(game);
 
-            connections.sendMessage(userName, message);
+            NotificationMessage notificationMessage = new NotificationMessage(message);
+            connections.sendMessage(userName, notificationMessage);
             connections.remove(userName);
-            connections.broadcastMessage(userName, game.gameID(), message);
+            connections.broadcastMessage(userName, game.gameID(), notificationMessage);
 
         } catch (DataAccessException ex) {
-            connections.sendError(userName, ex.getMessage());
+            ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
+            connections.sendError(userName, errorMessage);
         }
     }
 

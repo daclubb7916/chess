@@ -1,7 +1,5 @@
 package server.websocket;
 
-import chess.ChessBoard;
-import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
@@ -25,9 +23,8 @@ public class ConnectionManager {
         connections.remove(userName);
     }
 
-    public void broadcastMessage(String excludeName, Integer allGameID, String message)
+    public void broadcastMessage(String excludeName, Integer allGameID, NotificationMessage notificationMessage)
             throws IOException {
-        NotificationMessage notificationMessage = new NotificationMessage(message);
         var removeList = new ArrayList<Connection>();
         for (Connection c : connections.values()) {
             if (c.session.isOpen()) {
@@ -46,13 +43,11 @@ public class ConnectionManager {
 
     public void broadcastGame(GameData gameData) throws IOException {
         var removeList = new ArrayList<Connection>();
-        String chessBoard;
         LoadGameMessage loadMessage;
         for (Connection c : connections.values()) {
             if (c.session.isOpen()) {
                 if (c.gameID.equals(gameData.gameID())) {
-                    chessBoard = stringChessBoard(c.userName, gameData);
-                    loadMessage = new LoadGameMessage(chessBoard);
+                    loadMessage = new LoadGameMessage(gameData.game());
                     c.send(new Gson().toJson(loadMessage));
                 }
 
@@ -67,34 +62,24 @@ public class ConnectionManager {
 
     }
 
-    public void sendError(String userName, String message) throws IOException {
-        if (message.isEmpty()) {
-            message = "Invalid AuthToken";
+    public void sendError(String userName, ErrorMessage errorMessage) throws IOException {
+        if (errorMessage.getMessage().isEmpty()) {
+            errorMessage = new ErrorMessage("Invalid AuthToken");
         }
         Connection toSend = connections.get(userName);
-        ErrorMessage errorMessage = new ErrorMessage(message);
         toSend.send(new Gson().toJson(errorMessage));
     }
 
-    public void sendMessage(String userName, String message) throws IOException {
+    public void sendMessage(String userName, NotificationMessage notificationMessage) throws IOException {
         Connection toSend = connections.get(userName);
-        NotificationMessage notificationMessage = new NotificationMessage(message);
         toSend.send(new Gson().toJson(notificationMessage));
     }
 
     public void sendGame(String userName, GameData gameData) throws IOException {
         Connection toSend = connections.get(userName);
-        String chessBoard = stringChessBoard(userName, gameData);
-        LoadGameMessage loadMessage = new LoadGameMessage(chessBoard);
+        LoadGameMessage loadMessage = new LoadGameMessage(gameData.game());
         toSend.send(new Gson().toJson(loadMessage));
     }
 
-    public String stringChessBoard(String userName, GameData gameData) {
-        ChessBoard board = gameData.game().getBoard();
-        if (userName.equals(gameData.blackUsername())) {
-            return board.stringBoard(ChessGame.TeamColor.BLACK);
-        }
-        return board.stringBoard(ChessGame.TeamColor.WHITE);
-    }
 }
 
