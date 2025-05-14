@@ -32,18 +32,17 @@ public class WebSocketHandler {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
             case CONNECT -> connect(command, session);
-            case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MakeMoveCommand.class));
-            case LEAVE -> leave(command);
-            case RESIGN -> resign(command);
+            case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MakeMoveCommand.class), session);
+            case LEAVE -> leave(command, session);
+            case RESIGN -> resign(command, session);
         }
 
     }
 
     private void connect(UserGameCommand command, Session session) throws IOException {
-        String userName = "";
         try {
             AuthData authData = authDAO.getAuth(command.getAuthToken());
-            userName = authData.username();
+            String userName = authData.username();
             GameData game = gameDAO.getGame(command.getGameID());
             connections.add(userName, game.gameID(), session);
 
@@ -62,15 +61,14 @@ public class WebSocketHandler {
 
         } catch (DataAccessException ex) {
             ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
-            connections.sendError(userName, errorMessage);
+            connections.sendError(session, errorMessage);
         }
     }
 
-    private void makeMove(MakeMoveCommand command) throws IOException {
-        String userName = "";
+    private void makeMove(MakeMoveCommand command, Session session) throws IOException {
         try {
             AuthData authData = authDAO.getAuth(command.getAuthToken());
-            userName = authData.username();
+            String userName = authData.username();
             GameData gameData = gameDAO.getGame(command.getGameID());
             ChessGame chessGame = gameData.game();
             ChessGame.TeamColor teamColor;
@@ -78,7 +76,7 @@ public class WebSocketHandler {
 
             if (chessGame.isOver()) {
                 ErrorMessage errorMessage = new ErrorMessage("This game is over");
-                connections.sendError(userName, errorMessage);
+                connections.sendError(session, errorMessage);
                 return;
             }
 
@@ -92,7 +90,7 @@ public class WebSocketHandler {
 
             if (!chessGame.getTeamTurn().equals(teamColor)) {
                 ErrorMessage errorMessage = new ErrorMessage("It is not your turn yet");
-                connections.sendError(userName, errorMessage);
+                connections.sendError(session, errorMessage);
                 return;
             }
 
@@ -103,7 +101,7 @@ public class WebSocketHandler {
                 chessGame.makeMove(chessMove);
             } catch (InvalidMoveException ex) {
                 ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
-                connections.sendError(userName, errorMessage);
+                connections.sendError(session, errorMessage);
                 return;
             }
 
@@ -142,16 +140,15 @@ public class WebSocketHandler {
 
         } catch (DataAccessException ex) {
             ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
-            connections.sendError(userName, errorMessage);
+            connections.sendError(session, errorMessage);
         }
 
     }
 
-    private void leave(UserGameCommand command) throws IOException {
-        String userName = "";
+    private void leave(UserGameCommand command, Session session) throws IOException {
         try {
             AuthData authData = authDAO.getAuth(command.getAuthToken());
-            userName = authData.username();
+            String userName = authData.username();
             GameData game = gameDAO.getGame(command.getGameID());
 
             String message;
@@ -174,18 +171,29 @@ public class WebSocketHandler {
 
         } catch (DataAccessException ex) {
             ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
-            connections.sendError(userName, errorMessage);
+            connections.sendError(session, errorMessage);
         }
     }
 
-    private void resign(UserGameCommand command) throws IOException {
-        String userName = "";
+    private void resign(UserGameCommand command, Session session) throws IOException {
         try {
+            // first check if is Observer or if game is ended
             AuthData authData = authDAO.getAuth(command.getAuthToken());
-            userName = authData.username();
+            String userName = authData.username();
             GameData game = gameDAO.getGame(command.getGameID());
-            String message = String.format("%s has resigned. Chess Game is Over", authData.username());
+            if (game.game().isOver()) {
+                ErrorMessage errorMessage = new ErrorMessage("This game is over");
+                connections.sendError(session, errorMessage);
+                return;
+            }
 
+            if ((!userName.equals(game.whiteUsername())) && (!userName.equals(game.blackUsername()))) {
+                ErrorMessage errorMessage = new ErrorMessage("Observers cannot resign");
+                connections.sendError(session, errorMessage);
+                return;
+            }
+
+            String message = String.format("%s has resigned. Chess Game is Over", authData.username());
             game.game().endGame();
             game = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(),
                     game.gameName(), game.game());
@@ -198,7 +206,7 @@ public class WebSocketHandler {
 
         } catch (DataAccessException ex) {
             ErrorMessage errorMessage = new ErrorMessage(ex.getMessage());
-            connections.sendError(userName, errorMessage);
+            connections.sendError(session, errorMessage);
         }
     }
 

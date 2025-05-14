@@ -62,12 +62,20 @@ public class ConnectionManager {
 
     }
 
-    public void sendError(String userName, ErrorMessage errorMessage) throws IOException {
-        if (errorMessage.getMessage().isEmpty()) {
-            errorMessage = new ErrorMessage("Invalid AuthToken");
+    public void sendError(Session session, ErrorMessage errorMessage) throws IOException {
+        boolean inConnections = false;
+        for (Connection c : connections.values()) {
+            if (c.session.equals(session)) {
+                inConnections = true;
+                c.send(new Gson().toJson(errorMessage));
+                break;
+            }
         }
-        Connection toSend = connections.get(userName);
-        toSend.send(new Gson().toJson(errorMessage));
+        if (!inConnections) {
+            errorMessage = new ErrorMessage("Invalid Authorization");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+        }
+
     }
 
     public void sendMessage(String userName, NotificationMessage notificationMessage) throws IOException {
@@ -79,6 +87,10 @@ public class ConnectionManager {
         Connection toSend = connections.get(userName);
         LoadGameMessage loadMessage = new LoadGameMessage(gameData);
         toSend.send(new Gson().toJson(loadMessage));
+    }
+
+    public int numConnections() {
+        return connections.size();
     }
 
 }
