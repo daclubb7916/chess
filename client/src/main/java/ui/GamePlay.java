@@ -5,6 +5,8 @@ import server.ServerFacade;
 import ui.websocket.NotificationHandler;
 import ui.websocket.WebSocketFacade;
 
+import java.util.Arrays;
+
 import static ui.EscapeSequences.*;
 
 public class GamePlay implements ClientUI {
@@ -26,16 +28,25 @@ public class GamePlay implements ClientUI {
             if (ws == null) {
                 ws = new WebSocketFacade(serverUrl, notificationHandler);
             }
+            String input = request.input();
+            var tokens = input.split(" ");
+            var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
+            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            return switch (cmd) {
+                case "redraw" -> redraw(request.authToken(), request.gameID());
+                case "leave" -> leave(request.authToken(), request.gameID());
+                case "move" -> move(params, request.authToken(), request.gameID());
+                case "resign" -> resign(request.authToken(), request.gameID());
+                case "legal" -> legalMoves(params, request.authToken(), request.gameID());
+                default -> help(request.authToken(), request.gameID());
+            };
 
         } catch (ResponseException ex) {
             return new ClientResult(ex.getMessage(), State.INGAME, request.authToken(), request.gameID());
         }
-
-
-        return new ClientResult(null, null, null, null);
     }
 
-    public ClientResult help() {
+    public ClientResult help(String authToken, Integer gameID) {
         String result = """
                 commands:
                     redraw - redraws the chess board
@@ -45,7 +56,27 @@ public class GamePlay implements ClientUI {
                     legal moves <piece> - highlights legal moves for a chess piece
                     help - to view commands
                 """;
-        return new ClientResult(result, State.INGAME, null, null);
+        return new ClientResult(result, State.INGAME, authToken, gameID);
+    }
+
+    private ClientResult redraw(String authToken, Integer gameID) {
+        return new ClientResult("", State.INGAME, authToken, gameID);
+    }
+
+    private ClientResult leave(String authToken, Integer gameID) {
+        return new ClientResult("", State.SIGNEDIN, authToken, gameID);
+    }
+
+    private ClientResult move(String[] params, String authToken, Integer gameID) {
+        return new ClientResult("", State.INGAME, authToken, gameID);
+    }
+
+    private ClientResult resign(String authToken, Integer gameID) {
+        return new ClientResult("", State.SIGNEDIN, authToken, gameID);
+    }
+
+    private ClientResult legalMoves(String[] params, String authToken, Integer gameID) {
+        return new ClientResult("", State.INGAME, authToken, gameID);
     }
 
     @Override

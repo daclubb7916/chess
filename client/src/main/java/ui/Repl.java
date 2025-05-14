@@ -47,13 +47,22 @@ public class Repl implements NotificationHandler {
 
     public void notify(NotificationMessage notifyMessage) {
         System.out.println(SET_TEXT_COLOR_RED + notifyMessage.getMessage());
+        printPrompt();
     }
 
     public void loadGame(LoadGameMessage loadMessage) {
-
+        System.out.println(loadMessage.getBoard());
+        printPrompt();
     }
 
     public void error(ErrorMessage errorMessage) {
         System.out.println(SET_TEXT_COLOR_RED + "Error: " + errorMessage.getMessage());
+        printPrompt();
+    }
+
+    public void printPrompt() {
+        // Maybe remove new line character
+        System.out.print("\n" + RESET_BG_COLOR + SET_TEXT_COLOR_LIGHT_GREY);
+        System.out.print("Chess Game >>> " + SET_TEXT_COLOR_MAGENTA);
     }
 }
