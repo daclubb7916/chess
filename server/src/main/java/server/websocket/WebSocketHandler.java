@@ -58,12 +58,7 @@ public class WebSocketHandler {
             connections.broadcastMessage(userName, game.gameID(), message);
 
         } catch (DataAccessException ex) {
-            System.out.println("DataAccessException in connect");
             connections.sendError(userName, ex.getMessage());
-        } catch (NullPointerException ex) {
-            System.out.println("Null Pointer Exception in connect");
-        } catch (Exception ex) {
-            System.out.println("Exception in connect: " + ex.getMessage());
         }
     }
 
@@ -135,12 +130,7 @@ public class WebSocketHandler {
             gameDAO.updateGame(gameData);
 
         } catch (DataAccessException ex) {
-            System.out.println("DataAccessException in makeMove");
             connections.sendError(userName, ex.getMessage());
-        } catch (NullPointerException ex) {
-            System.out.println("Null Pointer Exception in makeMove");
-        } catch (Exception ex) {
-            System.out.println("Exception in makeMove: " + ex.getMessage());
         }
 
     }
@@ -154,11 +144,11 @@ public class WebSocketHandler {
 
             String message;
             if (authData.username().equals(game.whiteUsername())) {
-                message = String.format("%s playing as White Player left the Chess Game", userName);
+                message = String.format("%s left the Chess Game", userName);
                 game = new GameData(game.gameID(), null,
                         game.blackUsername(), game.gameName(), game.game());
             } else if (authData.username().equals(game.blackUsername())) {
-                message = String.format("%s playing as Black Player left the Chess Game", userName);
+                message = String.format("%s left the Chess Game", userName);
                 game = new GameData(game.gameID(), game.whiteUsername(),
                         null, game.gameName(), game.game());
             } else {
@@ -166,29 +156,21 @@ public class WebSocketHandler {
             }
 
             gameDAO.updateGame(game);
-            // send message?
-            connections.broadcastMessage(userName, game.gameID(), message);
             connections.remove(userName);
+            connections.broadcastMessage(userName, game.gameID(), message);
 
         } catch (DataAccessException ex) {
-            System.out.println("DataAccessException in leave");
             connections.sendError(userName, ex.getMessage());
-        } catch (NullPointerException ex) {
-            System.out.println("Null Pointer Exception in leave");
-        } catch (Exception ex) {
-            System.out.println("Exception in leave: " + ex.getMessage());
         }
     }
 
-    // resign is being invoked at an improper time?
-    // At the very least it is throwing an illegal state exception
     private void resign(UserGameCommand command) throws IOException {
         String userName = "";
         try {
             AuthData authData = authDAO.getAuth(command.getAuthToken());
             userName = authData.username();
             GameData game = gameDAO.getGame(command.getGameID());
-            String message = getString(authData, game);
+            String message = String.format("%s has resigned. Chess Game is Over", authData.username());
 
             game.game().endGame();
             game = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(),
@@ -196,29 +178,12 @@ public class WebSocketHandler {
             gameDAO.updateGame(game);
 
             connections.sendMessage(userName, message);
-            connections.broadcastMessage(userName, game.gameID(), message);
             connections.remove(userName);
+            connections.broadcastMessage(userName, game.gameID(), message);
 
         } catch (DataAccessException ex) {
-            System.out.println("DataAccessException in resign");
             connections.sendError(userName, ex.getMessage());
-        } catch (NullPointerException ex) {
-            System.out.println("Null Pointer Exception in resign");
-        } catch (Exception ex) {
-            System.out.println("Exception in resign: " + ex.getMessage());
         }
     }
 
-    private static String getString(AuthData authData, GameData game) {
-        String message;
-        if (authData.username().equals(game.whiteUsername())) {
-            message = String.format("%s playing as White Player has resigned. Chess Game is Over", authData.username());
-        } else if (authData.username().equals(game.blackUsername())) {
-            message = String.format("%s playing as Black Player has resigned. Chess Game is Over", authData.username());
-        } else {
-            message = String.format("%s has attempted to resign a game that they are not playing lol",
-                    authData.username());
-        }
-        return message;
-    }
 }
