@@ -13,11 +13,13 @@ public class ChessGame {
 
     private ChessBoard board;
     private TeamColor teamTurn;
+    private boolean isOver;
 
     public ChessGame() {
         this.board = new ChessBoard();
         this.teamTurn = TeamColor.WHITE;
         board.resetBoard();
+        this.isOver = false;
     }
 
     /**
@@ -136,6 +138,14 @@ public class ChessGame {
             }
         }
         return false;
+    }
+
+    public void endGame() {
+        isOver = true;
+    }
+
+    public boolean isOver() {
+        return isOver;
     }
 
     /**

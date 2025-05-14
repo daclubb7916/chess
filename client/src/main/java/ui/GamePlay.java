@@ -11,6 +11,7 @@ import ui.websocket.WebSocketFacade;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
@@ -106,7 +107,20 @@ public class GamePlay implements ClientUI {
     private ClientResult resign(String authToken, Integer gameID, String userName, GameData gameData)
             throws ResponseException {
         checkIfObserver(userName, gameData);
-        return new ClientResult("", State.SIGNEDIN, authToken, null, userName, null);
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("\n" + RESET_BG_COLOR + SET_TEXT_COLOR_LIGHT_GREY);
+        System.out.print("Are you sure you want to resign? [y/n]\n");
+        System.out.print(">>> " + SET_TEXT_COLOR_MAGENTA);
+
+        String line = scanner.nextLine();
+        if (line.equals("y")) {
+            ws.resign(authToken, gameID);
+            return new ClientResult("", State.SIGNEDIN, authToken, null, userName, null);
+        } else if (line.equals("n")) {
+            return new ClientResult("Successfully cancelled resignation", State.INGAME,
+                    authToken, gameID, userName, gameData);
+        }
+        throw new ResponseException(400, "Failed to resign from Chess Game");
     }
 
     private ClientResult legalMoves(String[] params, String authToken, Integer gameID,
@@ -115,6 +129,7 @@ public class GamePlay implements ClientUI {
             throw new ResponseException(400, "Expected format: legal moves <piece>\n(Example: legal moves A1");
         }
         checkIfObserver(userName, gameData);
+        gameData = updateGameData(authToken, gameID);
         return new ClientResult("", State.INGAME, authToken, gameID, userName, gameData);
     }
 

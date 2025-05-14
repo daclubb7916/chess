@@ -34,12 +34,11 @@ public class WebSocketHandler {
             case CONNECT -> connect(command, session);
             case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MakeMoveCommand.class), session);
             case LEAVE -> leave(command, session);
-            case RESIGN -> resign();
+            case RESIGN -> resign(command, session);
         }
 
     }
 
-    // If sending a message, specify notify or error. Otherwise, don't specify
     private void connect(UserGameCommand command, Session session) throws IOException {
         try {
             AuthData authData = authDAO.getAuth(command.getAuthToken());
@@ -72,6 +71,12 @@ public class WebSocketHandler {
             ChessGame chessGame = gameData.game();
             ChessGame.TeamColor teamColor;
 
+            if (chessGame.isOver()) {
+                ServerMessage errorMessage = new ErrorMessage("This game is over");
+                connections.sendMessage(session, errorMessage);
+                return;
+            }
+
             if (authData.username().equals(gameData.whiteUsername())) {
                 teamColor = ChessGame.TeamColor.WHITE;
             } else {
@@ -93,6 +98,9 @@ public class WebSocketHandler {
                 connections.sendMessage(session, errorMessage);
                 return;
             }
+            gameData = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(),
+                    gameData.gameName(), chessGame);
+            gameDAO.updateGame(gameData);
 
             connections.broadcastGame(gameData);
             ChessPiece chessPiece = chessBoard.getPiece(chessMove.getStartPosition());
@@ -108,16 +116,22 @@ public class WebSocketHandler {
                 connections.sendMessage(session, notifyMessage);
                 connections.broadcastMessage(authData.username(), gameData.gameID(), notifyMessage);
             } else if (chessGame.isInCheckmate(chessGame.getTeamTurn())) {
+                chessGame.endGame();
                 message = chessGame.stringTeamColor(chessGame.getTeamTurn()) + " is in checkmate";
                 notifyMessage = new NotificationMessage(message);
                 connections.sendMessage(session, notifyMessage);
                 connections.broadcastMessage(authData.username(), gameData.gameID(), notifyMessage);
             } else if (chessGame.isInStalemate(chessGame.getTeamTurn())) {
+                chessGame.endGame();
                 message = "This move has resulted in a stalemate";
                 notifyMessage = new NotificationMessage(message);
                 connections.sendMessage(session, notifyMessage);
                 connections.broadcastMessage(authData.username(), gameData.gameID(), notifyMessage);
             }
+
+            gameData = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(),
+                    gameData.gameName(), chessGame);
+            gameDAO.updateGame(gameData);
 
         } catch (DataAccessException ex) {
             ServerMessage errorMessage = new ErrorMessage(ex.getMessage());
@@ -130,7 +144,6 @@ public class WebSocketHandler {
         try {
             AuthData authData = authDAO.getAuth(command.getAuthToken());
             GameData game = gameDAO.getGame(command.getGameID());
-            connections.remove(authData.username());
 
             String message;
             if (authData.username().equals(game.whiteUsername())) {
@@ -148,6 +161,7 @@ public class WebSocketHandler {
             gameDAO.updateGame(game);
             ServerMessage notifyMessage = new NotificationMessage(message);
             connections.broadcastMessage(authData.username(), game.gameID(), notifyMessage);
+            connections.remove(authData.username());
 
         } catch (DataAccessException ex) {
             ServerMessage errorMessage = new ErrorMessage(ex.getMessage());
@@ -155,7 +169,37 @@ public class WebSocketHandler {
         }
     }
 
-    private void resign() throws IOException {
+    private void resign(UserGameCommand command, Session session) throws IOException {
+        try {
+            AuthData authData = authDAO.getAuth(command.getAuthToken());
+            GameData game = gameDAO.getGame(command.getGameID());
+            String message = getString(authData, game);
 
+            game.game().endGame();
+            game = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(),
+                    game.gameName(), game.game());
+            gameDAO.updateGame(game);
+            ServerMessage notifyMessage = new NotificationMessage(message);
+            connections.sendMessage(session, notifyMessage);
+            connections.broadcastMessage(authData.username(), game.gameID(), notifyMessage);
+            connections.remove(authData.username());
+
+        } catch (DataAccessException ex) {
+            ServerMessage errorMessage = new ErrorMessage(ex.getMessage());
+            connections.sendMessage(session, errorMessage);
+        }
+    }
+
+    private static String getString(AuthData authData, GameData game) {
+        String message;
+        if (authData.username().equals(game.whiteUsername())) {
+            message = String.format("%s playing as White Player has resigned. Chess Game is Over", authData.username());
+        } else if (authData.username().equals(game.blackUsername())) {
+            message = String.format("%s playing as Black Player has resigned. Chess Game is Over", authData.username());
+        } else {
+            message = String.format("%s has attempted to resign a game that they are not playing lol",
+                    authData.username());
+        }
+        return message;
     }
 }
