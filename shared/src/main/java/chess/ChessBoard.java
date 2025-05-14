@@ -152,7 +152,7 @@ public class ChessBoard implements Cloneable {
                 stringBuilder.append(SET_BG_COLOR_BLACK);
             }
 
-            ChessPiece piece = squares[row][col]; // This might throw an error if null
+            ChessPiece piece = squares[row][col];
             stringBuilder.append(printPiece(piece));
         }
         return stringBuilder.toString();
@@ -232,7 +232,7 @@ public class ChessBoard implements Cloneable {
                 stringBuilder.append(SET_BG_COLOR_BLACK);
             }
 
-            ChessPiece piece = squares[row][col]; // This might throw an error if null
+            ChessPiece piece = squares[row][col];
             stringBuilder.append(printPiece(piece));
         }
         return stringBuilder.toString();

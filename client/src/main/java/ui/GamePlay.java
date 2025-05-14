@@ -13,6 +13,27 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Scanner;
 
+import static chess.EscapeSequences.BLACK_BISHOP;
+import static chess.EscapeSequences.BLACK_KING;
+import static chess.EscapeSequences.BLACK_KNIGHT;
+import static chess.EscapeSequences.BLACK_PAWN;
+import static chess.EscapeSequences.BLACK_QUEEN;
+import static chess.EscapeSequences.BLACK_ROOK;
+import static chess.EscapeSequences.EMPTY;
+import static chess.EscapeSequences.RESET_BG_COLOR;
+import static chess.EscapeSequences.RESET_TEXT_COLOR;
+import static chess.EscapeSequences.SET_BG_COLOR_BLACK;
+import static chess.EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
+import static chess.EscapeSequences.SET_BG_COLOR_WHITE;
+import static chess.EscapeSequences.SET_TEXT_COLOR_BLACK;
+import static chess.EscapeSequences.SET_TEXT_COLOR_BLUE;
+import static chess.EscapeSequences.SET_TEXT_COLOR_RED;
+import static chess.EscapeSequences.WHITE_BISHOP;
+import static chess.EscapeSequences.WHITE_KING;
+import static chess.EscapeSequences.WHITE_KNIGHT;
+import static chess.EscapeSequences.WHITE_PAWN;
+import static chess.EscapeSequences.WHITE_QUEEN;
+import static chess.EscapeSequences.WHITE_ROOK;
 import static ui.EscapeSequences.*;
 
 public class GamePlay implements ClientUI {
@@ -98,7 +119,9 @@ public class GamePlay implements ClientUI {
             throw new ResponseException(400, "Expected Format: move <start> <end>\n(Example: move A2 A4)");
         }
 
-        ChessMove chessMove = parseCoords(params);
+        ChessPosition start = parseCoord(params[0]);
+        ChessPosition end = parseCoord(params[1]);
+        ChessMove chessMove = new ChessMove(start, end, null);
         ws.makeMove(authToken, gameID, chessMove);
         gameData = updateGameData(authToken, gameID);
         return new ClientResult("", State.INGAME, authToken, gameID, userName, gameData);
@@ -131,9 +154,17 @@ public class GamePlay implements ClientUI {
         checkIfObserver(userName, gameData);
         gameData = updateGameData(authToken, gameID);
 
+        ChessPosition chessPosition = parseCoord(params[1]);
         ChessGame chessGame = gameData.game();
+        Collection<ChessMove> chessMoves = chessGame.validMoves(chessPosition);
+        String result;
+        if (userName.equals(gameData.blackUsername())) {
+            result = blackChessBoard(chessMoves, chessGame.getBoard());
+        } else {
+            result = whiteChessBoard(chessMoves, chessGame.getBoard());
+        }
 
-        return new ClientResult("", State.INGAME, authToken, gameID, userName, gameData);
+        return new ClientResult(result, State.INGAME, authToken, gameID, userName, gameData);
     }
 
     private GameData updateGameData(String authToken, Integer gameID) throws ResponseException {
@@ -147,32 +178,24 @@ public class GamePlay implements ClientUI {
         throw new ResponseException(400, "Failed to update GameData");
     }
 
-    private ChessMove parseCoords(String[] params) throws ResponseException {
-        String firstCoord = params[0];
-        String secondCoord = params[1];
-        if ((firstCoord.length() != 2) || (secondCoord.length() != 2)) {
-            throw new ResponseException(400, "Invalid Coordinates, use format <start> <end>\n(Example: A2 A4)");
-        }
-        char firstCol = Character.toLowerCase(firstCoord.charAt(0));
-        char secondCol = Character.toLowerCase(secondCoord.charAt(0));
-        char firstRowChar = firstCoord.charAt(1);
-        char secondRowChar = secondCoord.charAt(1);
-
-        int startCol = firstCol - 'a' + 1;
-        int endCol = secondCol - 'a' + 1;
-        if (startCol < 1 || startCol > 8 || endCol < 1 || endCol > 8) {
-            throw new ResponseException(400, "Columns must be a letter from a-h");
+    private ChessPosition parseCoord(String coord) throws ResponseException {
+        if (coord == null || coord.length() != 2) {
+            throw new ResponseException(400, "Invalid coordinate format. Use format like A2");
         }
 
-        int startRow = firstRowChar - '0';
-        int endRow = secondRowChar - '0';
-        if (startRow < 1 || startRow > 8 || endRow < 1 || endRow > 8) {
-            throw new ResponseException(400, "Rows must be a number from 1-8");
+        char colChar = Character.toLowerCase(coord.charAt(0));
+        char rowChar = coord.charAt(1);
+        int col = colChar - 'a' + 1;
+        int row = rowChar - '0';
+
+        if (col < 1 || col > 8) {
+            throw new ResponseException(400, "Column must be a letter from A to H");
+        }
+        if (row < 1 || row > 8) {
+            throw new ResponseException(400, "Row must be a number from 1 to 8");
         }
 
-        ChessPosition startPosition = new ChessPosition(startRow, startCol);
-        ChessPosition endPosition = new ChessPosition(endRow, endCol);
-        return new ChessMove(startPosition, endPosition, null);
+        return new ChessPosition(row, col);
     }
 
     @Override
@@ -185,6 +208,189 @@ public class GamePlay implements ClientUI {
         if ((!userName.equals(gameData.whiteUsername())) && (!userName.equals(gameData.blackUsername()))) {
             throw new ResponseException(400, "This action cannot be performed as an Observer");
         }
+    }
+
+    private String whiteChessBoard(Collection<ChessMove> chessMoves, ChessBoard chessBoard) {
+        StringBuilder stringBuilder = new StringBuilder("\n");
+        stringBuilder.append(whiteAlpha());
+        for (int i = 8; i > 0; i--) {
+            stringBuilder.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
+            stringBuilder.append(" ").append(i).append(" ");
+            stringBuilder.append(whiteRow(i - 1, chessMoves, chessBoard));
+            stringBuilder.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
+            stringBuilder.append(" ").append(i).append(" ").append(RESET_BG_COLOR);
+            stringBuilder.append("\n");
+        }
+        stringBuilder.append(whiteAlpha());
+        return stringBuilder.toString();
+    }
+
+    private String whiteAlpha() {
+        String[] columns = {" ", "a", "b", "c", "d", "e", "f", "g", "h", " "};
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
+        for (int i = 0; i < 10; i++) {
+            stringBuilder.append(" ").append(columns[i]).append(" ");
+        }
+        stringBuilder.append(RESET_BG_COLOR + RESET_TEXT_COLOR).append('\n');
+        return stringBuilder.toString();
+    }
+
+    private String whiteRow(int row, Collection<ChessMove> chessMoves, ChessBoard chessBoard) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        ChessPosition comparator;
+        for (int col = 0; col < 8; col++) {
+
+            comparator = new ChessPosition(row + 1, col + 1);
+            boolean isStartPosition = false;
+            boolean isEndPosition = false;
+            for (ChessMove chessMove : chessMoves) {
+                if (chessMove.getStartPosition().equals(comparator)) {
+                    isStartPosition = true;
+                    break;
+                } else if (chessMove.getEndPosition().equals(comparator)) {
+                    isEndPosition = true;
+                    break;
+                }
+            }
+
+            if (isStartPosition) {
+                stringBuilder.append(SET_BG_COLOR_YELLOW);
+            } else if ((row + col) % 2 == 1) {
+                if (isEndPosition) {
+                    stringBuilder.append(SET_BG_COLOR_GREEN);
+                } else {
+                    stringBuilder.append(SET_BG_COLOR_WHITE);
+                }
+
+            } else {
+                if (isEndPosition) {
+                    stringBuilder.append(SET_BG_COLOR_DARK_GREEN);
+                } else {
+                    stringBuilder.append(SET_BG_COLOR_BLACK);
+                }
+            }
+
+            ChessPiece piece = chessBoard.getPiece(comparator);
+            stringBuilder.append(printPiece(piece, isStartPosition, isEndPosition));
+        }
+        return stringBuilder.toString();
+    }
+
+    private String printPiece(ChessPiece piece, boolean isStartPosition, boolean isEndPosition) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (piece == null) {
+            stringBuilder.append(EMPTY);
+
+        } else {
+
+            if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                stringBuilder.append(SET_TEXT_COLOR_RED);
+
+                if ((isStartPosition) || (isEndPosition)) {
+                    stringBuilder.append(SET_TEXT_COLOR_BLACK);
+                }
+                switch (piece.getPieceType()) {
+                    case ChessPiece.PieceType.PAWN -> stringBuilder.append(WHITE_PAWN);
+                    case ChessPiece.PieceType.ROOK -> stringBuilder.append(WHITE_ROOK);
+                    case ChessPiece.PieceType.BISHOP -> stringBuilder.append(WHITE_BISHOP);
+                    case ChessPiece.PieceType.KNIGHT -> stringBuilder.append(WHITE_KNIGHT);
+                    case ChessPiece.PieceType.KING -> stringBuilder.append(WHITE_KING);
+                    case ChessPiece.PieceType.QUEEN -> stringBuilder.append(WHITE_QUEEN);
+                    default -> stringBuilder.append(EMPTY);
+                }
+            } else {
+                stringBuilder.append(SET_TEXT_COLOR_BLUE);
+
+                if ((isStartPosition) || (isEndPosition)) {
+                    stringBuilder.append(SET_TEXT_COLOR_BLACK);
+                }
+                switch (piece.getPieceType()) {
+                    case ChessPiece.PieceType.PAWN -> stringBuilder.append(BLACK_PAWN);
+                    case ChessPiece.PieceType.ROOK -> stringBuilder.append(BLACK_ROOK);
+                    case ChessPiece.PieceType.BISHOP -> stringBuilder.append(BLACK_BISHOP);
+                    case ChessPiece.PieceType.KNIGHT -> stringBuilder.append(BLACK_KNIGHT);
+                    case ChessPiece.PieceType.KING -> stringBuilder.append(BLACK_KING);
+                    case ChessPiece.PieceType.QUEEN -> stringBuilder.append(BLACK_QUEEN);
+                    default -> stringBuilder.append(EMPTY);
+                }
+            }
+
+        }
+
+        return stringBuilder.toString();
+    }
+
+    private String blackChessBoard(Collection<ChessMove> chessMoves, ChessBoard chessBoard) {
+        StringBuilder stringBuilder = new StringBuilder("\n");
+        stringBuilder.append(blackAlpha());
+        for (int i = 1; i < 9; i++) {
+            stringBuilder.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
+            stringBuilder.append(" ").append(i).append(" ");
+            stringBuilder.append(blackRow(i - 1, chessMoves, chessBoard));
+            stringBuilder.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
+            stringBuilder.append(" ").append(i).append(" ").append(RESET_BG_COLOR);
+            stringBuilder.append("\n");
+        }
+        stringBuilder.append(blackAlpha());
+
+        return stringBuilder.toString();
+    }
+
+    private String blackAlpha() {
+        String[] columns = {" ", "a", "b", "c", "d", "e", "f", "g", "h", " "};
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
+        for (int i = 9; i > -1; i--) {
+            stringBuilder.append(" ").append(columns[i]).append(" ");
+        }
+        stringBuilder.append(RESET_BG_COLOR + RESET_TEXT_COLOR).append('\n');
+        return stringBuilder.toString();
+    }
+
+    private String blackRow(int row, Collection<ChessMove> chessMoves, ChessBoard chessBoard) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        ChessPosition comparator;
+        for (int col = 7; col > -1; col --) {
+
+            comparator = new ChessPosition(row + 1, col + 1);
+            boolean isStartPosition = false;
+            boolean isEndPosition = false;
+            for (ChessMove chessMove : chessMoves) {
+                if (chessMove.getStartPosition().equals(comparator)) {
+                    isStartPosition = true;
+                    break;
+                } else if (chessMove.getEndPosition().equals(comparator)) {
+                    isEndPosition = true;
+                    break;
+                }
+            }
+
+            if (isStartPosition) {
+                stringBuilder.append(SET_BG_COLOR_YELLOW);
+            } else if ((row + col) % 2 == 0) {
+                if (isEndPosition) {
+                    stringBuilder.append(SET_BG_COLOR_GREEN);
+                } else {
+                    stringBuilder.append(SET_BG_COLOR_WHITE);
+                }
+
+            } else {
+                if (isEndPosition) {
+                    stringBuilder.append(SET_BG_COLOR_DARK_GREEN);
+                } else {
+                    stringBuilder.append(SET_BG_COLOR_BLACK);
+                }
+            }
+
+            ChessPiece piece = chessBoard.getPiece(comparator);
+            stringBuilder.append(printPiece(piece, isStartPosition, isEndPosition));
+        }
+        return stringBuilder.toString();
+
     }
 
 }
