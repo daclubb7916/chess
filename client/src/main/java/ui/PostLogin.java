@@ -44,7 +44,7 @@ public class PostLogin implements ClientUI {
         }
     }
 
-    // Two main problems. One - connections are randomly dropping. Two - broadcast message is not broadcasting message
+    // Errors are causing connections to close, broadcast messages are still not working fml
 
     public ClientResult help(String authToken, String userName) {
         String result = """

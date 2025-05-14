@@ -58,7 +58,12 @@ public class WebSocketHandler {
             connections.broadcastMessage(userName, game.gameID(), message);
 
         } catch (DataAccessException ex) {
+            System.out.println("DataAccessException in connect");
             connections.sendError(userName, ex.getMessage());
+        } catch (NullPointerException ex) {
+            System.out.println("Null Pointer Exception in connect");
+        } catch (Exception ex) {
+            System.out.println("Exception in connect: " + ex.getMessage());
         }
     }
 
@@ -92,6 +97,7 @@ public class WebSocketHandler {
 
             ChessBoard chessBoard = chessGame.getBoard();
             ChessMove chessMove = command.getMove();
+            ChessPiece chessPiece = chessBoard.getPiece(chessMove.getStartPosition());
             try {
                 chessGame.makeMove(chessMove);
             } catch (InvalidMoveException ex) {
@@ -102,15 +108,11 @@ public class WebSocketHandler {
             gameData = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(),
                     gameData.gameName(), chessGame);
             gameDAO.updateGame(gameData);
-
             connections.broadcastGame(gameData);
-            ChessPiece chessPiece = chessBoard.getPiece(chessMove.getStartPosition());
             String pieceType = chessPiece.stringPieceType();
             String message = authData.username() + " moved their " + pieceType + " from " +
                     chessMove.getStartPosition().toString() + " to " + chessMove.getEndPosition().toString();
             connections.broadcastMessage(userName, gameData.gameID(), message);
-
-
 
             if (chessGame.isInCheck(chessGame.getTeamTurn())) {
                 message = opponentUserName + " is in check";
@@ -133,7 +135,12 @@ public class WebSocketHandler {
             gameDAO.updateGame(gameData);
 
         } catch (DataAccessException ex) {
+            System.out.println("DataAccessException in makeMove");
             connections.sendError(userName, ex.getMessage());
+        } catch (NullPointerException ex) {
+            System.out.println("Null Pointer Exception in makeMove");
+        } catch (Exception ex) {
+            System.out.println("Exception in makeMove: " + ex.getMessage());
         }
 
     }
@@ -159,14 +166,22 @@ public class WebSocketHandler {
             }
 
             gameDAO.updateGame(game);
+            // send message?
             connections.broadcastMessage(userName, game.gameID(), message);
             connections.remove(userName);
 
         } catch (DataAccessException ex) {
+            System.out.println("DataAccessException in leave");
             connections.sendError(userName, ex.getMessage());
+        } catch (NullPointerException ex) {
+            System.out.println("Null Pointer Exception in leave");
+        } catch (Exception ex) {
+            System.out.println("Exception in leave: " + ex.getMessage());
         }
     }
 
+    // resign is being invoked at an improper time?
+    // At the very least it is throwing an illegal state exception
     private void resign(UserGameCommand command) throws IOException {
         String userName = "";
         try {
@@ -185,7 +200,12 @@ public class WebSocketHandler {
             connections.remove(userName);
 
         } catch (DataAccessException ex) {
+            System.out.println("DataAccessException in resign");
             connections.sendError(userName, ex.getMessage());
+        } catch (NullPointerException ex) {
+            System.out.println("Null Pointer Exception in resign");
+        } catch (Exception ex) {
+            System.out.println("Exception in resign: " + ex.getMessage());
         }
     }
 
