@@ -16,7 +16,7 @@ public class ConnectionManager {
 
     public void add(String userName, Integer gameID, Session session) {
         var connection = new Connection(userName, gameID, session);
-        connections.put(userName, connection); // are these thread safe operations?
+        connections.put(userName, connection);
     }
 
     public void remove(String userName) {

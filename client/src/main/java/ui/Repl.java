@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import com.google.gson.Gson;
 import model.GameData;
 import ui.websocket.NotificationHandler;
 import websocket.messages.*;
@@ -52,8 +53,8 @@ public class Repl implements NotificationHandler {
         System.out.println();
     }
 
-    public void notify(NotificationMessage notifyMessage) {
-        System.out.println(SET_TEXT_COLOR_RED + notifyMessage.getMessage());
+    public void notify(NotificationMessage notificationMessage) {
+        System.out.println(SET_TEXT_COLOR_RED + notificationMessage.getMessage());
         printPrompt();
     }
 
@@ -61,15 +62,15 @@ public class Repl implements NotificationHandler {
         GameData gameData = loadMessage.getGameData();
         ChessBoard chessBoard = gameData.game().getBoard();
         if (userName.equals(gameData.blackUsername())) {
-            chessBoard.stringBoard(ChessGame.TeamColor.BLACK);
+            System.out.println(chessBoard.stringBoard(ChessGame.TeamColor.BLACK));
         } else {
-            chessBoard.stringBoard(ChessGame.TeamColor.WHITE);
+            System.out.println(chessBoard.stringBoard(ChessGame.TeamColor.WHITE));
         }
         printPrompt();
     }
 
     public void error(ErrorMessage errorMessage) {
-        System.out.println(SET_TEXT_COLOR_RED + "Error: " + errorMessage.getMessage());
+        System.out.println(SET_TEXT_COLOR_RED + errorMessage.getMessage());
         printPrompt();
     }
 
@@ -77,4 +78,5 @@ public class Repl implements NotificationHandler {
         System.out.print("\n" + RESET_BG_COLOR + SET_TEXT_COLOR_LIGHT_GREY);
         System.out.print("Chess Game >>> " + SET_TEXT_COLOR_MAGENTA);
     }
+
 }

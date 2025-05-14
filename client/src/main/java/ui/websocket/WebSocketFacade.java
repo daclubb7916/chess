@@ -28,7 +28,6 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    // Potential error?
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
                     ServerMessage.ServerMessageType serverMessageType = serverMessage.getServerMessageType();
                     switch (serverMessageType) {
