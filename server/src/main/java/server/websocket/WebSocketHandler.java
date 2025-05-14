@@ -38,20 +38,21 @@ public class WebSocketHandler {
         // add to connections, get the game, see if they're in the game, if not then they're observing
         try {
             AuthData authData = authDAO.getAuth(command.getAuthToken());
-            connections.add(authData.username(), session);
             GameData game = gameDAO.getGame(command.getGameID());
+            connections.add(authData.username(), game.gameID(), session);
 
             String message;
             if (authData.username().equals(game.whiteUsername())) {
                 message = String.format("%s joined Chess Game as White Player", authData.username());
             } else if (authData.username().equals(game.blackUsername())) {
-                message = String.format("%s joined Chess Game as White Player", authData.username());
+                message = String.format("%s joined Chess Game as Black Player", authData.username());
             } else {
                 message = String.format("%s is observing Chess Game", authData.username());
             }
 
             ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         } catch (DataAccessException ex) {
+            // Instead use ErrorMessage
             throw new ResponseException(500, ex.getMessage());
         }
     }
