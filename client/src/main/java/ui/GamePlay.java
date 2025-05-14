@@ -130,6 +130,9 @@ public class GamePlay implements ClientUI {
         }
         checkIfObserver(userName, gameData);
         gameData = updateGameData(authToken, gameID);
+
+        ChessGame chessGame = gameData.game();
+
         return new ClientResult("", State.INGAME, authToken, gameID, userName, gameData);
     }
 

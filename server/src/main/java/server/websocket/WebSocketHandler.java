@@ -70,6 +70,7 @@ public class WebSocketHandler {
             GameData gameData = gameDAO.getGame(command.getGameID());
             ChessGame chessGame = gameData.game();
             ChessGame.TeamColor teamColor;
+            String opponentUserName;
 
             if (chessGame.isOver()) {
                 ServerMessage errorMessage = new ErrorMessage("This game is over");
@@ -79,8 +80,10 @@ public class WebSocketHandler {
 
             if (authData.username().equals(gameData.whiteUsername())) {
                 teamColor = ChessGame.TeamColor.WHITE;
+                opponentUserName = gameData.blackUsername();
             } else {
                 teamColor = ChessGame.TeamColor.BLACK;
+                opponentUserName = gameData.whiteUsername();
             }
 
             if (!chessGame.getTeamTurn().equals(teamColor)) {
@@ -110,20 +113,22 @@ public class WebSocketHandler {
             ServerMessage notifyMessage = new NotificationMessage(message);
             connections.broadcastMessage(authData.username(), gameData.gameID(), notifyMessage);
 
+
+
             if (chessGame.isInCheck(chessGame.getTeamTurn())) {
-                message = chessGame.stringTeamColor(chessGame.getTeamTurn()) + " is now in check";
+                message = opponentUserName + " is in check";
                 notifyMessage = new NotificationMessage(message);
                 connections.sendMessage(session, notifyMessage);
                 connections.broadcastMessage(authData.username(), gameData.gameID(), notifyMessage);
             } else if (chessGame.isInCheckmate(chessGame.getTeamTurn())) {
                 chessGame.endGame();
-                message = chessGame.stringTeamColor(chessGame.getTeamTurn()) + " is in checkmate";
+                message = opponentUserName + " is in checkmate. Game over";
                 notifyMessage = new NotificationMessage(message);
                 connections.sendMessage(session, notifyMessage);
                 connections.broadcastMessage(authData.username(), gameData.gameID(), notifyMessage);
             } else if (chessGame.isInStalemate(chessGame.getTeamTurn())) {
                 chessGame.endGame();
-                message = "This move has resulted in a stalemate";
+                message = "This move has resulted in a stalemate. Game over";
                 notifyMessage = new NotificationMessage(message);
                 connections.sendMessage(session, notifyMessage);
                 connections.broadcastMessage(authData.username(), gameData.gameID(), notifyMessage);
