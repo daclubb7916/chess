@@ -44,6 +44,8 @@ public class PostLogin implements ClientUI {
         }
     }
 
+    // Two main problems. One - connections are randomly dropping. Two - broadcast message is not broadcasting message
+
     public ClientResult help(String authToken, String userName) {
         String result = """
                 commands:
@@ -113,6 +115,7 @@ public class PostLogin implements ClientUI {
             default -> throw new ResponseException(400, "Acceptable inputs for team color: [WHITE|BLACK]");
         }
         ws.connect(authToken, game.gameID());
+        game = updateGameData(authToken, game.gameID());
 
         return new ClientResult("", State.INGAME, authToken, game.gameID(), userName, game);
     }
@@ -128,6 +131,7 @@ public class PostLogin implements ClientUI {
         GameData game = games.get(gameIndex);
         WebSocketFacade ws = new WebSocketFacade(serverUrl, notificationHandler);
         ws.connect(authToken, game.gameID());
+        game = updateGameData(authToken, game.gameID());
 
         return new ClientResult("", State.INGAME, authToken, game.gameID(), userName, game);
     }
@@ -148,6 +152,17 @@ public class PostLogin implements ClientUI {
         } catch (NumberFormatException ex) {
             throw new ResponseException(400, "Invalid gameID");
         }
+    }
+
+    private GameData updateGameData(String authToken, Integer gameID) throws ResponseException {
+        ListGamesResult result = server.listGames(new ListGamesRequest(authToken));
+        Collection<GameData> gameList = result.games();
+        for (GameData gameData : gameList) {
+            if (gameData.gameID() == gameID) {
+                return gameData;
+            }
+        }
+        throw new ResponseException(400, "Failed to update GameData");
     }
 
 }
