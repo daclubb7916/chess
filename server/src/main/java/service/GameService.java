@@ -44,6 +44,7 @@ public class GameService {
         }
     }
 
+    // adjust so same person can't join one game
     public JoinGameResult joinGame(JoinGameRequest request) throws ResponseException {
         AuthData authData = authenticateUser(request.authToken());
         try {

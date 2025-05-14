@@ -3,6 +3,7 @@ package ui;
 import ui.websocket.NotificationHandler;
 import websocket.messages.*;
 import java.util.Scanner;
+import static ui.EscapeSequences.*;
 
 public class Repl implements NotificationHandler {
     private final PreLogin preLogin;
@@ -45,7 +46,7 @@ public class Repl implements NotificationHandler {
     }
 
     public void notify(NotificationMessage notifyMessage) {
-
+        System.out.println(SET_TEXT_COLOR_RED + notifyMessage.getMessage());
     }
 
     public void loadGame(LoadGameMessage loadMessage) {
@@ -53,6 +54,6 @@ public class Repl implements NotificationHandler {
     }
 
     public void error(ErrorMessage errorMessage) {
-
+        System.out.println(SET_TEXT_COLOR_RED + "Error: " + errorMessage.getMessage());
     }
 }

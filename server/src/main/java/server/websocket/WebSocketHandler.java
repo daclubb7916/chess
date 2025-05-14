@@ -8,7 +8,6 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
-import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
@@ -38,6 +37,7 @@ public class WebSocketHandler {
 
     }
 
+    // If sending a message, specify notify or error. Otherwise, don't specify
     private void connect(UserGameCommand command, Session session) throws IOException {
         try {
             AuthData authData = authDAO.getAuth(command.getAuthToken());
@@ -53,13 +53,13 @@ public class WebSocketHandler {
                 message = String.format("%s is observing Chess Game", authData.username());
             }
 
-            ServerMessage loadMessage = new LoadGameMessage(game.game());
+            connections.sendGame(authData.username(), game);
             ServerMessage notifyMessage = new NotificationMessage(message);
-            connections.send(session, loadMessage);
-            connections.broadcast(authData.username(), game.gameID(), notifyMessage);
+            connections.broadcastMessage(authData.username(), game.gameID(), notifyMessage);
+
         } catch (DataAccessException ex) {
             ServerMessage errorMessage = new ErrorMessage(ex.getMessage());
-            connections.send(session, errorMessage);
+            connections.sendMessage(session, errorMessage);
         }
     }
 

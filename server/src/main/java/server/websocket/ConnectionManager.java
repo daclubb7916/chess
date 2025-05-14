@@ -1,7 +1,11 @@
 package server.websocket;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import com.google.gson.Gson;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -20,7 +24,7 @@ public class ConnectionManager {
         connections.remove(userName);
     }
 
-    public void broadcast(String excludeName, Integer allGameID, ServerMessage serverMessage) throws IOException {
+    public void broadcastMessage(String excludeName, Integer allGameID, ServerMessage serverMessage) throws IOException {
         var removeList = new ArrayList<Connection>();
         String message = new Gson().toJson(serverMessage);
         for (Connection c : connections.values()) {
@@ -38,7 +42,29 @@ public class ConnectionManager {
         }
     }
 
-    public void send(Session session, ServerMessage serverMessage) throws IOException {
+    // Change ServerMessage to LoadGameMessage
+    public void broadcastGame(GameData gameData, ServerMessage serverMessage) throws IOException {
+        /*
+        var removeList = new ArrayList<Connection>();
+        String message = new Gson().toJson(serverMessage);
+        for (Connection c : connections.values()) {
+            if (c.session.isOpen()) {
+                if ((!c.userName.equals(excludeName)) && (c.gameID.equals(allGameID))) {
+                    c.send(message);
+                }
+            } else {
+                removeList.add(c);
+            }
+        }
+
+        for (Connection c : removeList) {
+            connections.remove(c.userName);
+        }
+
+         */
+    }
+
+    public void sendMessage(Session session, ServerMessage serverMessage) throws IOException {
         String message = new Gson().toJson(serverMessage);
         for (Connection c : connections.values()) {
             if (c.session.equals(session)) {
@@ -46,6 +72,21 @@ public class ConnectionManager {
                 break;
             }
         }
+    }
+
+    public void sendGame(String userName, GameData gameData) throws IOException {
+        Connection toSend = connections.get(userName);
+        String chessBoard = stringChessBoard(userName, gameData);
+        LoadGameMessage loadMessage = new LoadGameMessage(chessBoard);
+        toSend.send(new Gson().toJson(loadMessage));
+    }
+
+    public String stringChessBoard(String userName, GameData gameData) {
+        ChessBoard board = gameData.game().getBoard();
+        if (userName.equals(gameData.blackUsername())) {
+            return board.stringBoard(ChessGame.TeamColor.BLACK);
+        }
+        return board.stringBoard(ChessGame.TeamColor.WHITE);
     }
 }
 
