@@ -1,5 +1,8 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+import model.GameData;
 import ui.websocket.NotificationHandler;
 import websocket.messages.*;
 import java.util.Scanner;
@@ -10,6 +13,7 @@ public class Repl implements NotificationHandler {
     private final PostLogin postLogin;
     private final GamePlay gamePlay;
     private State state;
+    private String userName = "";
 
     public Repl(String serverUrl) {
         preLogin = new PreLogin(serverUrl);
@@ -37,6 +41,7 @@ public class Repl implements NotificationHandler {
             try {
                 clientResult = ui.eval(new ClientRequest(line, clientResult.authToken(), clientResult.gameID(),
                         clientResult.userName(), clientResult.gameData()));
+                userName = clientResult.userName();
                 System.out.print(clientResult.result());
             } catch (Throwable e) {
                 var msg = e.toString();
@@ -53,7 +58,13 @@ public class Repl implements NotificationHandler {
     }
 
     public void loadGame(LoadGameMessage loadMessage) {
-        System.out.print(loadMessage.getBoard());
+        GameData gameData = loadMessage.getGameData();
+        ChessBoard chessBoard = gameData.game().getBoard();
+        if (userName.equals(gameData.blackUsername())) {
+            chessBoard.stringBoard(ChessGame.TeamColor.BLACK);
+        } else {
+            chessBoard.stringBoard(ChessGame.TeamColor.WHITE);
+        }
         printPrompt();
     }
 

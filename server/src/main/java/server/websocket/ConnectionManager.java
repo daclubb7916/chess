@@ -47,7 +47,7 @@ public class ConnectionManager {
         for (Connection c : connections.values()) {
             if (c.session.isOpen()) {
                 if (c.gameID.equals(gameData.gameID())) {
-                    loadMessage = new LoadGameMessage(gameData.game());
+                    loadMessage = new LoadGameMessage(gameData);
                     c.send(new Gson().toJson(loadMessage));
                 }
 
@@ -77,7 +77,7 @@ public class ConnectionManager {
 
     public void sendGame(String userName, GameData gameData) throws IOException {
         Connection toSend = connections.get(userName);
-        LoadGameMessage loadMessage = new LoadGameMessage(gameData.game());
+        LoadGameMessage loadMessage = new LoadGameMessage(gameData);
         toSend.send(new Gson().toJson(loadMessage));
     }
 
