@@ -27,10 +27,26 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
+                    // Potential error?
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-                    notificationHandler.notify(serverMessage);
+                    ServerMessage.ServerMessageType serverMessageType = serverMessage.getServerMessageType();
+                    switch (serverMessageType) {
+                        case LOAD_GAME -> {
+                            LoadGameMessage loadGameMessage = new Gson().fromJson(message, LoadGameMessage.class);
+                            notificationHandler.loadGame(loadGameMessage);
+                        }
+                        case ERROR -> {
+                            ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
+                            notificationHandler.error(errorMessage);
+                        }
+                        case NOTIFICATION -> {
+                            NotificationMessage notifyMessage = new Gson().fromJson(message, NotificationMessage.class);
+                            notificationHandler.notify(notifyMessage);
+                        }
+                    }
                 }
             });
+
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new ResponseException(500, ex.getMessage());
         }

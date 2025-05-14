@@ -1,8 +1,7 @@
 package ui;
 
 import ui.websocket.NotificationHandler;
-import websocket.messages.ServerMessage;
-
+import websocket.messages.*;
 import java.util.Scanner;
 
 public class Repl implements NotificationHandler {
@@ -45,7 +44,15 @@ public class Repl implements NotificationHandler {
         System.out.println();
     }
 
-    public void notify(ServerMessage serverMessage) {
-        // Need to implement
+    public void notify(NotificationMessage notifyMessage) {
+
+    }
+
+    public void loadGame(LoadGameMessage loadMessage) {
+
+    }
+
+    public void error(ErrorMessage errorMessage) {
+
     }
 }
