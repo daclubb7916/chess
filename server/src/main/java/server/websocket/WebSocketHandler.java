@@ -10,6 +10,8 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
+import java.io.IOException;
+
 @WebSocket
 public class WebSocketHandler {
 
@@ -51,7 +53,7 @@ public class WebSocketHandler {
             }
 
             ServerMessage serverMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        } catch (DataAccessException ex) {
+        } catch (DataAccessException | IOException ex) {
             // Instead use ErrorMessage
             throw new ResponseException(500, ex.getMessage());
         }

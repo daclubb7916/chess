@@ -19,12 +19,11 @@ public class ConnectionManager {
         connections.remove(userName);
     }
 
-    public void broadcast(String excludeName, ServerMessage serverMessage) throws IOException {
-        // Need to only send to players playing and observing game
+    public void broadcast(String excludeName, Integer allGameID, ServerMessage serverMessage) throws IOException {
         var removeList = new ArrayList<Connection>();
-        for (var c : connections.values()) {
+        for (Connection c : connections.values()) {
             if (c.session.isOpen()) {
-                if (!c.userName.equals(excludeName)) {
+                if ((!c.userName.equals(excludeName)) && (c.gameID.equals(allGameID))) {
                     c.send(serverMessage.toString());
                 }
             } else {
@@ -32,10 +31,14 @@ public class ConnectionManager {
             }
         }
 
-        // Clean up any connections that were left open.
-        for (var c : removeList) {
+        for (Connection c : removeList) {
             connections.remove(c.userName);
         }
+    }
+
+    public void send(String sendName, ServerMessage serverMessage) throws IOException {
+        Connection sendConnection = connections.get(sendName);
+        sendConnection.send(serverMessage.toString());
     }
 }
 

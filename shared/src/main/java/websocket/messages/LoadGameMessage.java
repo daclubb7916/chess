@@ -13,4 +13,6 @@ public class LoadGameMessage extends ServerMessage {
     public ChessGame getGame() {
         return game;
     }
+
+    // Override toString() method to Json string
 }
