@@ -62,20 +62,20 @@ public class ConnectionManager {
 
     }
 
-    public void sendError(Session session, ErrorMessage errorMessage) throws IOException {
-        boolean inConnections = false;
-        for (Connection c : connections.values()) {
-            if (c.session.equals(session)) {
-                inConnections = true;
-                c.send(new Gson().toJson(errorMessage));
-                break;
-            }
-        }
-        if (!inConnections) {
+    public void sendError(Session session, ErrorMessage errorMessage, String userName) throws IOException {
+        if ((userName.isEmpty()) || connections.isEmpty()) {
             errorMessage = new ErrorMessage("Invalid Authorization");
-            session.getRemote().sendString(new Gson().toJson(errorMessage));
-        }
+        } else if (connections.containsKey(userName)) {
+            Connection c = connections.get(userName);
+            if (c.session.isOpen()) {
+                c.send(new Gson().toJson(errorMessage));
+                return;
+            } else {
+                errorMessage = new ErrorMessage("Session is unavailable");
+            }
 
+        }
+        session.getRemote().sendString(new Gson().toJson(errorMessage));
     }
 
     public void sendMessage(String userName, NotificationMessage notificationMessage) throws IOException {
