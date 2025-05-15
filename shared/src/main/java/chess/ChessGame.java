@@ -46,16 +46,6 @@ public class ChessGame {
         BLACK
     }
 
-    public String stringTeamColor(TeamColor teamColor) {
-        String stringTeamColor;
-        switch (teamColor) {
-            case BLACK -> stringTeamColor = "Black";
-            case WHITE -> stringTeamColor = "White";
-            default -> stringTeamColor = "Error";
-        }
-        return stringTeamColor;
-    }
-
     /**
      * Gets a valid moves for a piece at the given location
      *
@@ -102,7 +92,7 @@ public class ChessGame {
         }
 
         if (pieceToMove.getTeamColor() != teamTurn) {
-            throw new InvalidMoveException("Not this team's turn");
+            throw new InvalidMoveException("Cannot move this piece");
         }
 
         Collection<ChessMove> pieceMoves = validMoves(move.getStartPosition());

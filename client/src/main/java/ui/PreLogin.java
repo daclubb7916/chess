@@ -6,7 +6,7 @@ import request.*;
 import facade.ServerFacade;
 import java.util.Arrays;
 
-import static ui.EscapeSequences.*;
+import static chess.EscapeSequences.*;
 
 public class PreLogin implements ClientUI {
     private final ServerFacade server;

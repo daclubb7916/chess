@@ -9,7 +9,7 @@ import ui.websocket.NotificationHandler;
 import ui.websocket.WebSocketFacade;
 
 import java.util.*;
-import static ui.EscapeSequences.*;
+import static chess.EscapeSequences.*;
 
 public class PostLogin implements ClientUI {
     private final ServerFacade server;

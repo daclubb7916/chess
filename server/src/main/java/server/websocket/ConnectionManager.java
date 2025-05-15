@@ -89,9 +89,5 @@ public class ConnectionManager {
         toSend.send(new Gson().toJson(loadMessage));
     }
 
-    public int numConnections() {
-        return connections.size();
-    }
-
 }
 

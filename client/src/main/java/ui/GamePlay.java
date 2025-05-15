@@ -9,11 +9,12 @@ import facade.ServerFacade;
 import ui.websocket.NotificationHandler;
 import ui.websocket.WebSocketFacade;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Scanner;
 
-import static ui.EscapeSequences.*;
+import static chess.EscapeSequences.*;
 
 public class GamePlay implements ClientUI {
     private final ServerFacade server;
@@ -100,7 +101,46 @@ public class GamePlay implements ClientUI {
 
         ChessPosition start = parseCoord(params[0]);
         ChessPosition end = parseCoord(params[1]);
+
+        ChessGame chessGame = gameData.game();
+        ChessBoard chessBoard = chessGame.getBoard();
+        if (chessBoard.getPiece(start) == null) {
+            throw new ResponseException(400, "Not a valid Piece to move");
+        }
+        ChessPiece chessPiece = chessBoard.getPiece(start);
         ChessMove chessMove = new ChessMove(start, end, null);
+
+        if (chessPiece.getPieceType().equals(ChessPiece.PieceType.PAWN)) {
+            Collection<ChessMove> pieceMoves = chessGame.validMoves(start);
+            Collection<ChessPosition> promotionPositions = promotePositions(pieceMoves);
+            if (!promotionPositions.isEmpty()) {
+                Scanner scanner = new Scanner(System.in);
+                System.out.print("\n" + RESET_BG_COLOR + SET_TEXT_COLOR_LIGHT_GREY);
+                System.out.print("What Chess Piece would you like to promote to?\n");
+                System.out.print("Valid inputs: Knight Rook Queen Bishop\n>>> " + SET_TEXT_COLOR_MAGENTA);
+
+                ChessPiece.PieceType toPromote = null;
+                boolean invalid = true;
+                while (invalid) {
+                    String input = scanner.nextLine();
+                    switch (input.toLowerCase()) {
+                        case "knight" -> toPromote = ChessPiece.PieceType.KNIGHT;
+                        case "rook" -> toPromote = ChessPiece.PieceType.ROOK;
+                        case "queen" -> toPromote = ChessPiece.PieceType.QUEEN;
+                        case "bishop" -> toPromote = ChessPiece.PieceType.BISHOP;
+                    }
+                    if (toPromote != null) {
+                        chessMove = new ChessMove(start, end, toPromote);
+                        invalid = false;
+                    } else {
+                        System.out.print("\n" + RESET_BG_COLOR + SET_TEXT_COLOR_LIGHT_GREY);
+                        System.out.print("Error: Invalid Input\n");
+                        System.out.print("Valid inputs: Knight Rook Queen Bishop\n>>> " + SET_TEXT_COLOR_MAGENTA);
+                    }
+                }
+            }
+        }
+
         ws.makeMove(authToken, gameID, chessMove);
         gameData = updateGameData(authToken, gameID);
         return new ClientResult("", State.INGAME, authToken, gameID, userName, gameData);
@@ -130,7 +170,6 @@ public class GamePlay implements ClientUI {
         if ((params.length != 2) || (!params[0].equals("moves"))) {
             throw new ResponseException(400, "Expected format: legal moves <piece>\n(Example: legal moves A1");
         }
-        checkIfObserver(userName, gameData);
         gameData = updateGameData(authToken, gameID);
 
         ChessPosition chessPosition = parseCoord(params[1]);
@@ -370,6 +409,16 @@ public class GamePlay implements ClientUI {
         }
         return stringBuilder.toString();
 
+    }
+
+    private Collection<ChessPosition> promotePositions(Collection<ChessMove> pieceMoves) {
+        Collection<ChessPosition> promotionPositions = new ArrayList<>();
+        for (ChessMove chessMove : pieceMoves) {
+            if (chessMove.getPromotionPiece() != null) {
+                promotionPositions.add(chessMove.getEndPosition());
+            }
+        }
+        return promotionPositions;
     }
 
 }

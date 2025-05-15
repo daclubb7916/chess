@@ -2,12 +2,11 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
-import com.google.gson.Gson;
 import model.GameData;
 import ui.websocket.NotificationHandler;
 import websocket.messages.*;
 import java.util.Scanner;
-import static ui.EscapeSequences.*;
+import static chess.EscapeSequences.*;
 
 public class Repl implements NotificationHandler {
     private final PreLogin preLogin;
