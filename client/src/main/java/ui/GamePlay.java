@@ -174,6 +174,10 @@ public class GamePlay implements ClientUI {
 
         ChessPosition chessPosition = parseCoord(params[1]);
         ChessGame chessGame = gameData.game();
+        if (chessGame.getBoard().getPiece(chessPosition) == null) {
+            throw new ResponseException(400, "Error: Invalid input");
+        }
+
         Collection<ChessMove> chessMoves = chessGame.validMoves(chessPosition);
         String result;
         if (userName.equals(gameData.blackUsername())) {
