@@ -102,6 +102,7 @@ public class GamePlay implements ClientUI {
         ChessPosition start = parseCoord(params[0]);
         ChessPosition end = parseCoord(params[1]);
 
+        gameData = updateGameData(authToken, gameID);
         ChessGame chessGame = gameData.game();
         ChessBoard chessBoard = chessGame.getBoard();
         if (chessBoard.getPiece(start) == null) {
